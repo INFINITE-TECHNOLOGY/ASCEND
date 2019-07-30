@@ -17,13 +17,13 @@ apply plugin: 'com.jfrog.bintray'
 
 bootJar {
     baseName = 'ascend-app'
-    version = '0.0.1'
+    version = '0.0.1-SNAPSHOT'
 }
 
 ext['groovy.version'] = '2.5.4'
 sourceCompatibility = 1.7
 group = "io.infinite"
-version = "0.0.1"
+version = "0.0.1-SNAPSHOT"
 description = "Web Service Access Management"
 
 repositories {

@@ -1,4 +1,4 @@
-# Infinite Technology ∞ Ascend 🕊
+# Infinite Technology ∞ Ascend ⏫
 
 |Attribute\Release type|Latest|
 |----------------------|------|

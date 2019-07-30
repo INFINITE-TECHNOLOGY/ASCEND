@@ -2,11 +2,11 @@
 
 |Attribute\Release type|Latest|
 |----------------------|------|
-|Version|1.0.0-SNAPSHOT|
+|Version|0.0.0-SNAPSHOT|
 |Branch|[master](https://github.com/INFINITE-TECHNOLOGY/ASCEND)|
 |CI Build status|[![Build Status](https://travis-ci.com/INFINITE-TECHNOLOGY/ASCEND.svg?branch=master)](https://travis-ci.com/INFINITE-TECHNOLOGY/ASCEND)|
 |Test coverage|[![codecov](https://codecov.io/gh/INFINITE-TECHNOLOGY/ASCEND/branch/master/graphs/badge.svg)](https://codecov.io/gh/INFINITE-TECHNOLOGY/ASCEND/branch/master/graphs)|
-|Library (Maven)|[oss.jfrog.org snapshot](https://oss.jfrog.org/artifactory/webapp/#/artifacts/browse/tree/General/oss-snapshot-local/io/infinite/ascend/1.0.0-SNAPSHOT)|
+|Library (Maven)|[oss.jfrog.org snapshot](https://oss.jfrog.org/artifactory/webapp/#/artifacts/browse/tree/General/oss-snapshot-local/io/infinite/ascend/0.0.1-SNAPSHOT)|
 |Heroku|![Heroku](https://heroku-badge.herokuapp.com/?app=ascend-demo&root=/ascend/unsecured)|
 
 ## Purpose

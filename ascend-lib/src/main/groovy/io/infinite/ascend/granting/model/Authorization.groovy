@@ -1,0 +1,41 @@
+package io.infinite.ascend.granting.model
+
+import com.fasterxml.jackson.annotation.JsonFormat
+import io.infinite.ascend.config.entities.Scope
+import io.infinite.ascend.granting.model.enums.AuthorizationErrorCode
+import io.infinite.ascend.granting.model.enums.AuthorizationPurpose
+import io.infinite.ascend.granting.model.enums.AuthorizationStatus
+
+class Authorization {
+
+    UUID id = UUID.randomUUID()
+
+    String name
+
+    Identity identity
+
+    Scope scope
+
+    Integer durationSeconds
+
+    Integer maxUsageCount
+
+    Authorization refreshAuthorization
+
+    @JsonFormat(timezone = "UTC", pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    Date creationDate
+
+    @JsonFormat(timezone = "UTC", pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    Date expiryDate
+
+    AuthorizationStatus status
+
+    AuthorizationErrorCode errorCode
+
+    String jwt
+
+    String prerequisiteJwt
+
+    AuthorizationPurpose purpose
+
+}

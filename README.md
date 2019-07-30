@@ -11,28 +11,16 @@
 
 ## Purpose
 
-`Ascend` is a step-up on-demand Cloud Security abstraction layer provider.
-
-With `Ascend` it is no longer needed to hard-wire the business application with security framework.
-
-Even legacy unsecured intranet APIs can now be secured with `Ascend` and published into the cloud.
-
-On top of that `Ascend` is built around `Step-up` authorization - making it an ideal tool for securing 
-Web Banking apps.
-
-`Ascend` supports `OAuth2` as well as any possible protocol (including proprietary) encapsulated in its advanced innovative 
-Web Token format.
+`Ascend` is `Authorization Server` supporting `Step-up Authorization` and many other features.
 
 ## In short
 
-'Ascend' allows to create and validate cryptographic credentials used to provide a Client Software (Apps) the permission
-to access secured Web Services within the scope of their user authority.
-
-`Ascend` fulfils `Authorization Server` role in `OAuth2` terminology.
+'Ascend' allows to create and validate cryptographic credentials (`JWTs`) used to provide a `Client Software` (Apps) the permission
+to access secured `Web Services` within the scope of their user authority.
 
 `Ascend` is consists of:
 1) Authorization Granting Server - issuing JWTs
-2) Authorization Validation Server - validating JWTs and acting as reverse proxy.
+2) Authorization Validation Server - validating JWTs and if needed acting as reverse proxy.
 
 ## Documentation
 

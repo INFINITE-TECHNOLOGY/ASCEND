@@ -1,100 +1,56 @@
-# Infinite Technology ∞ Pigeon 🕊
+# Infinite Technology ∞ Ascend 🕊
 
 |Attribute\Release type|Latest|
 |----------------------|------|
 |Version|1.0.0-SNAPSHOT|
-|Branch|[master](https://github.com/INFINITE-TECHNOLOGY/PIGEON)|
-|CI Build status|[![Build Status](https://travis-ci.com/INFINITE-TECHNOLOGY/PIGEON.svg?branch=master)](https://travis-ci.com/INFINITE-TECHNOLOGY/PIGEON)|
-|Test coverage|[![codecov](https://codecov.io/gh/INFINITE-TECHNOLOGY/PIGEON/branch/master/graphs/badge.svg)](https://codecov.io/gh/INFINITE-TECHNOLOGY/PIGEON/branch/master/graphs)|
-|Library (Maven)|[oss.jfrog.org snapshot](https://oss.jfrog.org/artifactory/webapp/#/artifacts/browse/tree/General/oss-snapshot-local/io/infinite/pigeon/1.0.0-SNAPSHOT)|
-|Heroku|![Heroku](https://heroku-badge.herokuapp.com/?app=pigeon-public&root=/pigeon/inputMessages)|
+|Branch|[master](https://github.com/INFINITE-TECHNOLOGY/ASCEND)|
+|CI Build status|[![Build Status](https://travis-ci.com/INFINITE-TECHNOLOGY/ASCEND.svg?branch=master)](https://travis-ci.com/INFINITE-TECHNOLOGY/ASCEND)|
+|Test coverage|[![codecov](https://codecov.io/gh/INFINITE-TECHNOLOGY/ASCEND/branch/master/graphs/badge.svg)](https://codecov.io/gh/INFINITE-TECHNOLOGY/ASCEND/branch/master/graphs)|
+|Library (Maven)|[oss.jfrog.org snapshot](https://oss.jfrog.org/artifactory/webapp/#/artifacts/browse/tree/General/oss-snapshot-local/io/infinite/ascend/1.0.0-SNAPSHOT)|
+|Heroku|![Heroku](https://heroku-badge.herokuapp.com/?app=ascend-public&root=/ascend/inputMessages)|
 
 ## Purpose
 
-`Pigeon` is an end-user server application (HTTP Message Broker) designed for distribution of text messages in HTTP format.
+`Ascend` is a step-up on-demand Cloud Security abstraction layer provider.
 
+With `Ascend` it is no longer needed to hard-wire the business application with security framework.
+
+Even legacy unsecured intranet APIs can now be secured with `Ascend` and published into the cloud.
+
+On top of that `Ascend` is built around `Step-up` authorization - making it an ideal tool for securing 
+Web Banking apps.
+
+`Ascend` supports `OAuth2` as well as any possible protocol (including proprietary) encapsulated in its advanced innovative 
+Web Token format.
 
 ## In short
 
-`Pigeon` is capable to:
-1) Enqueue a text message from external source using REST API or direct insert into Pigeon DB by the external app
-2) Convert it into one or more HTTP messages with a specified body/query string parameters using appropriate `Plugins` (plugins can be developed by end-users using Groovy script)
-3) Dispatch the resulting messages ansynchronously to one or more recipients (URLs) using a variety of HTTP connection and authentication mechanisms (such as AWS v4 signature)
-4) If needed retry sending the message several times
+'Ascend' allows to create and validate cryptographic credentials used to provide a Client Software (Apps) the permission
+to access secured Web Services within the scope of their user authority.
+
+`Ascend` fulfils `Authorization Server` role in `OAuth2` terminology.
+
+`Ascend` is consists of:
+1) Authorization Granting Server - issuing JWTs
+2) Authorization Validation Server - validating JWTs and acting as reverse proxy.
 
 ## Documentation
 
-* [**Pigeon Documentation**](https://github.com/INFINITE-TECHNOLOGY/PIGEON/wiki)
+* [**Ascend Documentation**](https://github.com/INFINITE-TECHNOLOGY/ASCEND/wiki)
 
 ## Technology stack
 
+* Docker
 * Spring Boot
 * Groovy
 * SQL DB (via JPA and Spring Data)
 * REST+HATEOAS (via Spring Data Rest repositories)
-* Functionality extensible using Plugins (Groovy scripts)
-* Scalable (multithreaded app with configurable outbound thread pool sizes for load balancing and scalability)
+* Authentication providers extensible using Plugins (Groovy scripts)
 
 ## Try me now!
 
-We have deployed a demo [Pigeon Plugins](https://github.com/INFINITE-TECHNOLOGY/PIGEON_PLUGINS) repository is as a demo Heroku app (`pigeon-public`).
+We have deployed a demo [Ascend Demo](https://github.com/INFINITE-TECHNOLOGY/ASCEND_DEMO) repository is as a demo Heroku app (`ascend-demo`).
 
 Just open the below URL in your browser:
 
-https://pigeon-public.herokuapp.com/pigeon/enqueue?source=browser&endpoint=GET_TO_SMTP&recipient=email@gmail.com&subject=Test123&text=Test1234&from=pigeon@i-t.io
-
-This demo Heroku `pigeon-public` app asynchronously enqueues and sends a email.
-
-* Replace `email@gmail.com` with your email (we will not save/share/store/disclose it, it is fully private)<br/>
-* Only Gmail addresses are supported in this demo<br/>
-* You can change also subject, text and from <br/>
-* Check `spam` folder in your Gmail account<br/>
-* Navigate through returned URLs to see message status and HTTP logs<br/>
-* First time request may take up to 50 seconds, due to free Heroku dyno unidlying startup.
-
-## Sample configuration
-
-```json
-{
-  "inputQueues": [
-    {
-      "name": "SMSGLOBAL",
-      "outputQueues": [
-        {
-          "name": "SMSGLOBAL",
-          "url": "https://api.smsglobal.com/http-api.php",
-          "maxRetryCount": 0,
-          "normalThreadCount": 4,
-          "retryThreadCount": 0,
-          "conversionModuleName": "PASSTHROUGH_GET.groovy",
-          "senderClassName": "io.infinite.pigeon.http.SenderDefaultHttps",
-          "httpProperties": {
-            "username": "smsglobaluser",
-            "password": "smsglobalpassword"
-          },
-          "extensions": {
-            "from": "your%20service"
-          }
-        },
-        {
-          "name": "SMSGLOBAL_CLOSED_LOOP",
-          "pollPeriodMilliseconds": 500,
-          "url": "http://localhost:8089/pigeon/plugins/input/http/MOCK_SMSGLOBAL_HTTP",
-          "maxRetryCount": 0,
-          "normalThreadCount": 4,
-          "retryThreadCount": 0,
-          "conversionModuleName": "PASSTHROUGH_GET.groovy",
-          "senderClassName": "io.infinite.pigeon.http.SenderDefaultHttp",
-          "httpProperties": {
-            "username": "smsglobaluser",
-            "password": "smsglobalpassword"
-          },
-          "extensions": {
-            "from": "your%service"
-          }
-        }
-      ]
-    }
-  ]
-}
-```
+https://ascend-demo.herokuapp.com/ascend/secured

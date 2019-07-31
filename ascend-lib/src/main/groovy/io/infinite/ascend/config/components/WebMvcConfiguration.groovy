@@ -28,8 +28,8 @@ class WebMvcConfiguration implements WebMvcConfigurer {
     @Qualifier("yamlObjectMapper")
     private ObjectMapper yamlObjectMapper
 
-    @Value('${server.http.port}')
-    Integer serverHttpPort
+    /*@Value('${server.http.port}')
+    Integer serverHttpPort*/
 
     @Override
     void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
@@ -66,7 +66,7 @@ class WebMvcConfiguration implements WebMvcConfigurer {
     /**
      * Taken from: https://stackoverflow.com/a/52648698/6784237
      */
-    @Bean
+    /*@Bean
     ServletWebServerFactory servletContainer() {
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory()
         if (serverHttpPort != null) {
@@ -75,6 +75,6 @@ class WebMvcConfiguration implements WebMvcConfigurer {
             tomcat.addAdditionalTomcatConnectors(connector)
         }
         return tomcat
-    }
+    }*/
 
 }

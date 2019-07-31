@@ -10,22 +10,22 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource
 interface AuthorizationTypeRepository extends JpaRepository<AuthorizationType, Long> {
 
     @Query("""select a from AuthorizationType a
-        join a.scopeSet scopeSet
-        where scopeSet.name = :scopeName""")
+        join a.scopes scopes
+        where scopes.name = :scopeName""")
     Set<AuthorizationType> findByScopeName(
             @Param("scopeName") String scopeName
     )
 
     @Query("""select a from AuthorizationType a
-        join a.identitySet identitySet
-        join a.scopeSet scopeSet
+        join a.identityTypes identityTypes
+        join a.scopes scopes
         where a.name = :authorizationName
-        and scopeSet.name = :scopeName
-        and identitySet.name = :identityName """)
+        and scopes.name = :scopeName
+        and identityTypes.name = :identityTypeName""")
     Set<AuthorizationType> findForGranting(
             @Param("authorizationName") String authorizationName
             , @Param("scopeName") String scopeName
-            , @Param("identityName") String identityName
+            , @Param("identityTypeName") String identityTypeName
     )
 
 }

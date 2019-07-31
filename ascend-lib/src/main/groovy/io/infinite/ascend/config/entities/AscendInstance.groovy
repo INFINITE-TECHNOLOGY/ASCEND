@@ -5,7 +5,7 @@ import javax.persistence.Entity
 import javax.persistence.Id
 
 @Entity
-class AscendInfo {
+class AscendInstance {
 
     @Id
     @Column(nullable = false)

@@ -2,8 +2,7 @@ package io.infinite.ascend
 
 import groovy.transform.Memoized
 import groovy.util.logging.Slf4j
-import io.infinite.ascend.config.entities.AscendInfo
-import io.infinite.ascend.config.repositories.AscendInfoRepository
+import io.infinite.ascend.config.repositories.AscendInstance
 import io.infinite.blackbox.BlackBox
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -22,7 +21,7 @@ class App implements CommandLineRunner {
     ApplicationContext applicationContext
 
     @Autowired
-    AscendInfoRepository ascendInfoRepository
+    AscendInstance ascendInstanceRepository
 
     @Value('${ascendConfigInitPluginDir}')
     String ascendConfigInitPluginDir
@@ -39,14 +38,15 @@ class App implements CommandLineRunner {
     @BlackBox
     void runWithLogging() {
         log.info("Starting Ascend...")
-        AscendInfo ascendInfo = ascendInfoRepository.getAscendInfo()
-        if (ascendInfo == null) {
+        io.infinite.ascend.config.entities.AscendInstance ascendInstance = ascendInstanceRepository.getAscendInfo()
+        if (ascendInstance == null) {
             log.info("Loading configuration data")
             Binding binding = new Binding()
-            binding.setVariable("ascendInfoRepository", ascendInfoRepository)
+            binding.setVariable("ascendInstanceRepository", ascendInstanceRepository)
             getAuthenticationGroovyScriptEngine().run("ConfigInit.groovy", binding)
-            ascendInfo = new AscendInfo()
-            ascendInfoRepository.saveAndFlush(ascendInfo)
+            ascendInstance = new io.infinite.ascend.config.entities.AscendInstance()
+            ascendInstance.isDataInitialized = true
+            ascendInstanceRepository.saveAndFlush(ascendInstance)
         }
     }
 

@@ -1,16 +1,15 @@
 package io.infinite.ascend.config.repositories
 
-import io.infinite.ascend.config.entities.AscendInfo
-import io.infinite.ascend.config.entities.AuthorizationType
+
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.rest.core.annotation.RepositoryRestResource
 
 @RepositoryRestResource
-interface AscendInfoRepository extends JpaRepository<AscendInfo, Long> {
+interface AscendInstance extends JpaRepository<io.infinite.ascend.config.entities.AscendInstance, Long> {
 
-    @Query("""select a from AscendInfo a
+    @Query("""select a from AscendInstance a
         where a.id = 1""")
-    AscendInfo getAscendInfo()
+    io.infinite.ascend.config.entities.AscendInstance getAscendInfo()
 
 }

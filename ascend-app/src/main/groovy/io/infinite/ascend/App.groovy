@@ -31,13 +31,13 @@ class App implements CommandLineRunner {
     AuthorizationTypeRepository authorizationTypeRepository
 
     @Autowired
-    GrantTypeRepository grantTypeRepository
+    GrantRepository grantRepository
 
     @Autowired
     IdentityTypeRepository identityTypeRepository
 
     @Autowired
-    ScopeTypeRepository scopeTypeRepository
+    ScopeRepository scopeRepository
 
     @Value('${ascendConfigInitPluginDir}')
     String ascendConfigInitPluginDir
@@ -62,8 +62,9 @@ class App implements CommandLineRunner {
             binding.setVariable("ascendInstanceRepository", ascendInstanceRepository)
             binding.setVariable("authenticationTypeRepository", authenticationTypeRepository)
             binding.setVariable("authorizationTypeRepository", authorizationTypeRepository)
-            binding.setVariable("grantTypeRepository", grantTypeRepository)
+            binding.setVariable("grantRepository", grantRepository)
             binding.setVariable("identityTypeRepository", identityTypeRepository)
+            binding.setVariable("scopeRepository", scopeRepository)
             getAuthenticationGroovyScriptEngine().run("ConfigInit.groovy", binding)
             ascendInstance = new AscendInstance()
             ascendInstance.isDataInitialized = true

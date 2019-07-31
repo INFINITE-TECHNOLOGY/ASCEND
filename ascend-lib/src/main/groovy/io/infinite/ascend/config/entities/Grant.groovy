@@ -12,9 +12,9 @@ class Grant {
     @Column(nullable = false)
     Long id
 
-    String validationPluginName
+    String bodyRegex
 
-    String urlMask
+    String urlRegex
 
     HttpMethod httpMethod
 

@@ -3,7 +3,7 @@ package io.infinite.ascend
 import groovy.transform.Memoized
 import groovy.util.logging.Slf4j
 import io.infinite.ascend.config.entities.AscendInstance
-import io.infinite.ascend.config.repositories.AscendInstanceRepository
+import io.infinite.ascend.config.repositories.*
 import io.infinite.blackbox.BlackBox
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -24,6 +24,21 @@ class App implements CommandLineRunner {
     @Autowired
     AscendInstanceRepository ascendInstanceRepository
 
+    @Autowired
+    AuthenticationTypeRepository authenticationTypeRepository
+
+    @Autowired
+    AuthorizationTypeRepository authorizationTypeRepository
+
+    @Autowired
+    GrantTypeRepository grantTypeRepository
+
+    @Autowired
+    IdentityTypeRepository identityTypeRepository
+
+    @Autowired
+    ScopeTypeRepository scopeTypeRepository
+
     @Value('${ascendConfigInitPluginDir}')
     String ascendConfigInitPluginDir
 
@@ -43,7 +58,12 @@ class App implements CommandLineRunner {
         if (ascendInstance == null) {
             log.info("Loading configuration data")
             Binding binding = new Binding()
+            binding.setVariable("applicationContext", applicationContext)
             binding.setVariable("ascendInstanceRepository", ascendInstanceRepository)
+            binding.setVariable("authenticationTypeRepository", authenticationTypeRepository)
+            binding.setVariable("authorizationTypeRepository", authorizationTypeRepository)
+            binding.setVariable("grantTypeRepository", grantTypeRepository)
+            binding.setVariable("identityTypeRepository", identityTypeRepository)
             getAuthenticationGroovyScriptEngine().run("ConfigInit.groovy", binding)
             ascendInstance = new AscendInstance()
             ascendInstance.isDataInitialized = true

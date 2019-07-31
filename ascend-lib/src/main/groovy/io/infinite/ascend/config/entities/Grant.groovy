@@ -12,7 +12,7 @@ class Grant {
     @Column(nullable = false)
     Long id
 
-    String name
+    String validationPluginName
 
     String urlMask
 

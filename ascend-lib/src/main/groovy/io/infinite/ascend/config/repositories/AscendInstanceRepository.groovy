@@ -8,7 +8,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource
 @RepositoryRestResource
 interface AscendInstanceRepository extends JpaRepository<AscendInstance, Long> {
 
-    @Query("""select a from AscendInstanceRepository a
+    @Query("""select a from AscendInstance a
         where a.id = 1""")
     AscendInstance getAscendInfo()
 

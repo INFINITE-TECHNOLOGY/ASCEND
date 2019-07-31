@@ -99,8 +99,8 @@ class AuthorizationsController {
             for (Authentication authentication in iAuthorization.identity.authentications) {
                 if (authentication.name == authenticationType.name) {
                     authenticationFound = true
-                    commonAuthenticationValidation(authenticationType, authentication, iAuthorization)
-                    if (authentication.status == AuthenticationStatus.FAILED) {
+                    commonAuthenticationValidation(authentication, iAuthorization)
+                    if (authentication.status != AuthenticationStatus.SUCCESSFUL) {
                         log.debug("Failed authentication")
                         failure(iAuthorization, AuthorizationErrorCode.AUTHENTICATION_FAILED)
                         return
@@ -138,7 +138,7 @@ class AuthorizationsController {
         }
     }
 
-    void commonAuthenticationValidation(AuthenticationType iAuthenticationType, Authentication iAuthentication, Authorization iAuthorization) {
+    void commonAuthenticationValidation(Authentication iAuthentication, Authorization iAuthorization) {
         Binding binding = new Binding()
         binding.setVariable("authentication", iAuthentication)
         binding.setVariable("authorization", iAuthorization)

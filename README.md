@@ -11,7 +11,12 @@
 
 ## Purpose
 
-`Ascend` is `Authorization Server` supporting `Step-up Authorization` and many other features.
+`Ascend` is a read-to-work HTTP security solution.
+
+Specially designed for Serverless Web Apps (`React`, `Angular`) and Mobile Apps (`Swift`, `Kotlin`),
+`Ascend` is all you need to secure your `REST` APIs.
+
+PS: With `Ascend` you can even plug your legacy `SOAP` APIs into your new App.
 
 ## In short
 

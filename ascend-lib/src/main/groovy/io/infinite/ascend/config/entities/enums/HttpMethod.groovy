@@ -2,7 +2,14 @@ package io.infinite.ascend.config.entities.enums
 
 enum HttpMethod {
 
-    GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE;
+    GET("GET"),
+    HEAD("HEAD"),
+    POST("POST"),
+    PUT("PUT"),
+    PATCH("PATCH"),
+    DELETE("DELETE"),
+    OPTIONS("OPTIONS"),
+    TRACE("TRACE");
 
     private final String stringValue
 

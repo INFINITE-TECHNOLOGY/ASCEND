@@ -39,6 +39,10 @@
     {
       "name": "io.infinite.bobbin.destinations.ConsoleDestination",
       "levels": "['warn', 'error'].contains(level)"
+    },
+    {
+      "name": "io.infinite.bobbin.destinations.ConsoleDestination",
+      "classes": "className.contains('io.infinite.ascend.granting.controllers.AuthorizationsController')"
     }
   ]
 }

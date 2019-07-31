@@ -1,11 +1,13 @@
 package io.infinite.ascend.granting.model
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import groovy.transform.ToString
 import io.infinite.ascend.config.entities.Scope
 import io.infinite.ascend.granting.model.enums.AuthorizationErrorCode
 import io.infinite.ascend.granting.model.enums.AuthorizationPurpose
 import io.infinite.ascend.granting.model.enums.AuthorizationStatus
 
+@ToString(includeNames = true, includeFields = true)
 class Authorization {
 
     UUID id = UUID.randomUUID()

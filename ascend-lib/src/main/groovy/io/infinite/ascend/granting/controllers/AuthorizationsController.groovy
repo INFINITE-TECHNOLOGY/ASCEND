@@ -15,10 +15,12 @@ import io.infinite.ascend.granting.model.enums.AuthorizationErrorCode
 import io.infinite.ascend.granting.model.enums.AuthorizationPurpose
 import io.infinite.ascend.granting.model.enums.AuthorizationStatus
 import io.infinite.blackbox.BlackBox
+import io.infinite.carburetor.CarburetorLevel
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.ResponseBody
 
 @Controller
@@ -43,7 +45,8 @@ class AuthorizationsController {
     @PostMapping(value = "/ascend/authorization")
     @ResponseBody
     @CompileDynamic
-    Authorization postAuthorization(Authorization iAuthorization) {
+    @BlackBox(level = CarburetorLevel.METHOD)
+    Authorization postAuthorization(@RequestBody Authorization iAuthorization) {
         try {
             Set<AuthorizationType> authorizationTypes = authorizationTypeRepository.findForGranting(
                     iAuthorization.name,
@@ -63,8 +66,8 @@ class AuthorizationsController {
             failure(iAuthorization, AuthorizationErrorCode.OTHER)
             return iAuthorization
         } finally {
-            iAuthorization.identity.authentications.forEach {
-                it.authenticationData.privateDataFieldMap = null
+            iAuthorization.identity?.authentications?.forEach {
+                it.authenticationData?.privateDataFieldMap = null
             }
         }
     }

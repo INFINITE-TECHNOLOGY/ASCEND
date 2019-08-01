@@ -16,7 +16,7 @@ import org.springframework.hateoas.config.EnableHypermediaSupport
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 @SpringBootApplication
 @Slf4j
-class App implements CommandLineRunner {
+class GrantingApp implements CommandLineRunner {
 
     @Autowired
     ApplicationContext applicationContext
@@ -43,7 +43,7 @@ class App implements CommandLineRunner {
     String ascendConfigInitPluginDir
 
     static void main(String[] args) {
-        SpringApplication.run(App.class, args)
+        SpringApplication.run(GrantingApp.class, args)
     }
 
     @Override

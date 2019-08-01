@@ -14,9 +14,8 @@ plugins {
 }
 
 apply plugin: 'com.jfrog.bintray'
-
 bootJar {
-    baseName = 'ascend-app'
+    baseName = 'ascend-granting'
     version = '0.0.1-SNAPSHOT'
 }
 
@@ -49,10 +48,10 @@ task sourceJar(type: Jar) {
 }
 
 ext {
-    theTitle = "HTTP Message Broker"
+    theTitle = "Web Service Access Management"
     titleForDocumentation = archivesBaseName + " " + version
     packageTitle = group
-    description = "HTTP Message Broker"
+    description = "Web Service Access Management"
 }
 
 publishing {
@@ -84,8 +83,8 @@ bintray {
     pkg {
         userOrg = "infinite-technology"
         repo = "m2"
-        name = "ascend-app"
-        desc = "HTTP Message Broker"
+        name = "ascend-granting"
+        desc = "Web Service Access Management"
         issueTrackerUrl = "https://github.com/INFINITE-TECHNOLOGY/ASCEND/issues"
         vcsUrl = "https://github.com/INFINITE-TECHNOLOGY/ASCEND.git"
         websiteUrl = "https://i-t.io/Ascend/"

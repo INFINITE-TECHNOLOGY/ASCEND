@@ -1,4 +1,4 @@
-package io.infinite.ascend.granting.controllers
+package io.infinite.ascend
 
 import groovy.time.TimeCategory
 import groovy.transform.CompileDynamic

@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 @Controller
 @BlackBox
 @Slf4j
-class AuthorizationsController {
+class AuthorizationController {
 
     @Value('${ascendAuthenticationPluginsDir}')
     String ascendAuthenticationPluginsDir
@@ -67,7 +67,7 @@ class AuthorizationsController {
             return iAuthorization
         } finally {
             iAuthorization.identity?.authentications?.forEach {
-                it.authenticationData?.privateDataFieldMap = null
+                it.authenticationData?.privateCredentials = null
             }
         }
     }
@@ -99,11 +99,26 @@ class AuthorizationsController {
             for (Authentication authentication in iAuthorization.identity.authentications) {
                 if (authentication.name == authenticationType.name) {
                     authenticationFound = true
-                    commonAuthenticationValidation(authentication, iAuthorization)
+                    Map<String, String> authenticatedCredentials = commonAuthenticationValidation(authentication, iAuthorization)
                     if (authentication.status != AuthenticationStatus.SUCCESSFUL) {
                         log.debug("Failed authentication")
                         failure(iAuthorization, AuthorizationErrorCode.AUTHENTICATION_FAILED)
                         return
+                    } else {
+                        if (authenticatedCredentials != null) {
+                            for (authenticatedCredentialsName in authenticatedCredentials.keySet()) {
+                                if (iAuthorization.identity.authenticatedCredentials.containsKey(authenticatedCredentialsName)) {
+                                    if (iAuthorization.identity.authenticatedCredentials.get(authenticatedCredentialsName) !=
+                                            authenticatedCredentials.get(authenticatedCredentialsName)) {
+                                        log.debug("Inconsistent authenticated credentials")
+                                        failure(iAuthorization, AuthorizationErrorCode.OTHER)
+                                        return
+                                    }
+                                } else {
+                                    iAuthorization.identity.authenticatedCredentials.put(authenticatedCredentialsName, authenticatedCredentials.get(authenticatedCredentialsName))
+                                }
+                            }
+                        }
                     }
                     break
                 }
@@ -138,12 +153,13 @@ class AuthorizationsController {
         }
     }
 
-    void commonAuthenticationValidation(Authentication iAuthentication, Authorization iAuthorization) {
+    Map<String, String> commonAuthenticationValidation(Authentication iAuthentication, Authorization iAuthorization) {
         Binding binding = new Binding()
         binding.setVariable("authentication", iAuthentication)
         binding.setVariable("authorization", iAuthorization)
-        getAuthenticationGroovyScriptEngine().run(iAuthentication.name + ".groovy", binding)
-        iAuthentication.authenticationData?.privateDataFieldMap = null
+        Map<String, String> authenticatedCredentials = getAuthenticationGroovyScriptEngine().run(iAuthentication.name + ".groovy", binding) as Map<String, String>
+        iAuthentication.authenticationData?.privateCredentials = null
+        return authenticatedCredentials
     }
 
     @CompileDynamic

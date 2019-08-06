@@ -8,20 +8,22 @@ plugins {
     id "maven-publish"
     id "idea"
     id "jacoco"
+    id "org.springframework.boot" version "2.1.1.RELEASE"
     id "io.spring.dependency-management" version "1.0.6.RELEASE"
     id "enterprise.groovy.plugin" version "1.0.1"
 }
 
 apply plugin: 'com.jfrog.bintray'
-apply plugin: "com.jfrog.artifactory"
+bootJar {
+    baseName = 'ascend-validation'
+    version = '0.0.1-SNAPSHOT'
+}
 
 ext['groovy.version'] = '2.5.4'
-ext['springBootVersion'] = '2.1.1.RELEASE'
-
 sourceCompatibility = 1.7
 group = "io.infinite"
 version = "0.0.1-SNAPSHOT"
-description = "Authorization Granting Server"
+description = "Authorization Validation and Reverse Proxy Server"
 
 repositories {
     jcenter()
@@ -33,19 +35,13 @@ sourceSets {
 }
 
 dependencies {
+    compile project(':ascend-lib')
     compile 'org.codehaus.groovy:groovy-all:2.5.4'
     compile 'org.springframework.boot:spring-boot-starter-data-rest'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compile 'org.springframework.boot:spring-boot-starter-security'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
-    compile "io.infinite:bobbin:2.0.4"
-    compile 'io.infinite:blackbox:1.0.18'
-    //compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.7'
-    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.8'
-    compile 'com.h2database:h2:1.4.197'
-    //compile 'mysql:mysql-connector-java'
-    compile group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.11.449'
-    compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
-    testCompile group: 'org.testng', name: 'testng', version: '6.14.3'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.1.2.RELEASE'
 }
 
 task sourceJar(type: Jar) {
@@ -54,10 +50,10 @@ task sourceJar(type: Jar) {
 }
 
 ext {
-    theTitle = "HTTP Message Broker"
+    theTitle = "Authorization Validation and Reverse Proxy Server"
     titleForDocumentation = archivesBaseName + " " + version
     packageTitle = group
-    description = "HTTP Message Broker"
+    description = "Authorization Validation and Reverse Proxy Server"
 }
 
 publishing {
@@ -89,8 +85,8 @@ bintray {
     pkg {
         userOrg = "infinite-technology"
         repo = "m2"
-        name = "ascend-lib"
-        desc = "Authorization Granting Server"
+        name = "ascend-validation"
+        desc = "Authorization Validation and Reverse Proxy Server"
         issueTrackerUrl = "https://github.com/INFINITE-TECHNOLOGY/ASCEND/issues"
         vcsUrl = "https://github.com/INFINITE-TECHNOLOGY/ASCEND.git"
         websiteUrl = "https://i-t.io/Ascend/"
@@ -98,48 +94,7 @@ bintray {
     }
 }
 
-artifactory {
-    contextUrl = 'http://oss.jfrog.org'
-    publish {
-        repository {
-            repoKey = 'oss-snapshot-local'
-            username = System.getProperty('bintray.user')
-            password = System.getProperty('bintray.key')
-        }
-        defaults {
-            publications('groovyMaven')
-            publishArtifacts = true
-            publishPom = true
-        }
-    }
-    resolve {
-        repoKey = 'jcenter'
-    }
-    clientConfig.info.setBuildNumber(System.getProperty('build.number'))
-}
-
-test {
-    useTestNG()
-    testLogging {
-        events "passed", "skipped", "failed"
-        exceptionFormat "full"
-    }
-}
-
-jacocoTestReport {
-    reports {
-        xml.enabled true
-        html.enabled false
-    }
-}
-
-check.dependsOn jacocoTestReport
-
 configurations {
     providedRuntime
     compile.exclude(group: 'ch.qos.logback')
-}
-
-dependencyManagement {
-    imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
 }

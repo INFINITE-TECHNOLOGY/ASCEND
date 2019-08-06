@@ -2,3 +2,4 @@ rootProject.name = 'ascend'
 
 include 'ascend-lib'
 include 'ascend-granting'
+include 'ascend-validation'

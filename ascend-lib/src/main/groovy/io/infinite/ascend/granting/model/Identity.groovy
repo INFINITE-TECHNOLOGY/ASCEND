@@ -9,4 +9,6 @@ class Identity {
 
     Set<Authentication> authentications = new HashSet<Authentication>()
 
+    Map<String, String> authenticatedCredentials = new HashMap<String, String>()
+
 }

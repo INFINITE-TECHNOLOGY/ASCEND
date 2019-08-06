@@ -46,6 +46,9 @@ class JwtManager {
     @Value('${ascend.jwt.refresh.keystore.alias}')
     private String jwtRefreshKeystoreAlias
 
+    @Value('${ascend.jwt.issuer.name}')
+    private String ascendIssuerName
+
     @Autowired
     ObjectMapper objectMapper
 
@@ -68,12 +71,12 @@ class JwtManager {
     @CompileDynamic
     Authorization accessJwt2authorization(String iJwt) {
         Jwt jwt = Jwts.parser().setSigningKey(jwtAccessKey).parse(iJwt)
-        Authorization authorization = objectMapper.readValue(unzip(((Map) jwt.getBody()).get("token") as String), Authorization.class)
+        Authorization authorization = objectMapper.readValue(unzip(jwt.getBody() as String), Authorization.class)
         authorization.jwt = iJwt
         return authorization
     }
 
-    def unzip(String compressed) {
+    String unzip(String compressed) {
         def inflaterStream = new GZIPInputStream(new ByteArrayInputStream(compressed.decodeBase64()))
         def uncompressedStr = inflaterStream.getText(StandardCharsets.UTF_8.name())
         return uncompressedStr
@@ -91,7 +94,7 @@ class JwtManager {
 
     @CompileDynamic
     void setJwt(Authorization iAuthorization) {
-        String l_payload = zip(objectMapper.writeValueAsString(iAuthorization))
+        String body = zip(objectMapper.writeValueAsString(iAuthorization))
         Key key
         if (iAuthorization.purpose == AuthorizationPurpose.ACCESS) {
             key = jwtAccessKey
@@ -100,7 +103,12 @@ class JwtManager {
         } else {
             throw new AscendException("Unsupported authorization purpose " + iAuthorization.purpose.stringValue())
         }
-        iAuthorization.jwt = Jwts.builder().addClaims(["token": l_payload]).signWith(SignatureAlgorithm.HS512, key).compact()
+        iAuthorization.jwt = Jwts.builder()
+                .setPayload(body)
+                .setIssuer(ascendIssuerName)
+                .setIssuedAt(new Date())
+                .setExpiration(iAuthorization.expiryDate)
+                .signWith(SignatureAlgorithm.HS512, key).compact()
     }
 
 }

@@ -10,8 +10,6 @@ import io.infinite.ascend.repositories.UsageRepository
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.Configuration
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
 import org.springframework.web.filter.OncePerRequestFilter
@@ -26,18 +24,16 @@ import java.util.stream.Collectors
  * https://github.com/OmarElGabry/microservices-spring-boot/blob/master/spring-eureka-zuul/src/main/java/com/eureka/zuul/security/JwtTokenAuthenticationFilter.java
  */
 
-@Configuration
-@ComponentScan("io.infinite.ascend.granting.components")
 @Slf4j
+@BlackBox
 class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
     JwtManager jwtManager
 
-    @Autowired
     UsageRepository usageRepository
 
     @Override
+    @BlackBox(level = CarburetorLevel.METHOD)
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         try {
@@ -47,6 +43,7 @@ class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
                 return
             }
             String jwt = authorizationHeader.replace("Bearer ", "")
+            log.debug(jwtManager?.toString())
             Authorization authorization = jwtManager.accessJwt2authorization(jwt)
             validateAuthorization(authorization, request)
             PreAuthenticatedAuthenticationToken preAuthenticatedAuthenticationToken =

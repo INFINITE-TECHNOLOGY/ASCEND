@@ -42,7 +42,7 @@
     },
     {
       "name": "io.infinite.bobbin.destinations.ConsoleDestination",
-      "classes": "className.contains('io.infinite.ascend.granting.controllers.AuthorizationsController')"
+      "classes": "['io.infinite.ascend.granting.controllers.AuthorizationsController', 'io.infinite.ascend.security.JwtTokenAuthenticationFilter', 'io.infinite.ascend.security.JwtAuthenticationEntryPoint'].contains(className)"
     }
   ]
 }

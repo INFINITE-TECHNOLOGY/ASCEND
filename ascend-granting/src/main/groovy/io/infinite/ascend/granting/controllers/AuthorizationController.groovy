@@ -7,7 +7,7 @@ import groovy.util.logging.Slf4j
 import io.infinite.ascend.config.entities.AuthenticationType
 import io.infinite.ascend.config.entities.AuthorizationType
 import io.infinite.ascend.config.repositories.AuthorizationTypeRepository
-import io.infinite.ascend.granting.components.JwtManager
+import io.infinite.ascend.common.JwtManager
 import io.infinite.ascend.granting.model.Authentication
 import io.infinite.ascend.granting.model.Authorization
 import io.infinite.ascend.granting.model.enums.AuthenticationStatus

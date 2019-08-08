@@ -1,4 +1,4 @@
-package io.infinite.ascend.entities
+package io.infinite.ascend.validation.entities
 
 import groovy.transform.ToString
 

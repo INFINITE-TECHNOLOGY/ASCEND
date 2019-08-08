@@ -1,7 +1,8 @@
 package io.infinite.ascend.security
 
-import io.infinite.ascend.granting.components.JwtManager
-import io.infinite.ascend.repositories.UsageRepository
+import io.infinite.ascend.common.JwtManager
+import io.infinite.ascend.validation.AuthorizationValidator
+import io.infinite.ascend.validation.repositories.UsageRepository
 import io.infinite.blackbox.BlackBox
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
@@ -20,16 +21,13 @@ import javax.servlet.http.HttpServletResponse
 class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    JwtManager jwtManager
-
-    @Autowired
-    UsageRepository usageRepository
+    AuthorizationValidator authorizationValidator
 
     @Override
     @BlackBox
     protected void configure(HttpSecurity http) throws Exception {
         JwtTokenAuthenticationFilter jwtTokenAuthenticationFilter = new JwtTokenAuthenticationFilter(
-                jwtManager: jwtManager, usageRepository: usageRepository)
+                authorizationValidator: authorizationValidator)
         http
                 .csrf().disable()
         // make sure we use stateless session session won't be used to store user's state.

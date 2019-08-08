@@ -1,7 +1,7 @@
-package io.infinite.ascend.repositories
+package io.infinite.ascend.validation.repositories
 
 
-import io.infinite.ascend.entities.Usage
+import io.infinite.ascend.validation.entities.Usage
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.repository.query.Param
 import org.springframework.data.rest.core.annotation.RepositoryRestResource

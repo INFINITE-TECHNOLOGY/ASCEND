@@ -1,4 +1,4 @@
-package io.infinite.ascend.granting.components
+package io.infinite.ascend.common
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.transform.CompileDynamic

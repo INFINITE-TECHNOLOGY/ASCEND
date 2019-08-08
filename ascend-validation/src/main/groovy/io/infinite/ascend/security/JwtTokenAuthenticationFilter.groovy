@@ -38,6 +38,7 @@ class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
             Authorization authorization = authorizationValidator.validateAuthorizationHeader(authorizationHeader, request)
             PreAuthenticatedAuthenticationToken preAuthenticatedAuthenticationToken =
                     new PreAuthenticatedAuthenticationToken(authorization.identity, authorization.identity?.authentications)
+            preAuthenticatedAuthenticationToken.setAuthenticated(true)
             SecurityContextHolder.getContext().setAuthentication(preAuthenticatedAuthenticationToken)
         }
         catch (Exception e) {

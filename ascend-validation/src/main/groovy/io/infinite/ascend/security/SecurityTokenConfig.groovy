@@ -1,16 +1,13 @@
 package io.infinite.ascend.security
 
-import io.infinite.ascend.common.JwtManager
 import io.infinite.ascend.validation.AuthorizationValidator
-import io.infinite.ascend.validation.repositories.UsageRepository
 import io.infinite.blackbox.BlackBox
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter
 
 import javax.servlet.http.HttpServletResponse
 
@@ -40,14 +37,9 @@ class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
         })
                 .and()
         // Add a filter to validate the tokens with every request
-                .addFilterAfter(jwtTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtTokenAuthenticationFilter, AbstractPreAuthenticatedProcessingFilter.class)
         // authorization requests config
                 .authorizeRequests()
-        // allow all who are accessing "auth" service
-                .antMatchers(HttpMethod.POST, "/auth").permitAll()
-        // must be an admin if trying to access admin area (authentication is also required here)
-                .antMatchers("/gallery" + "/admin/**").hasRole("ADMIN")
-        // Any other request must be authenticated
                 .anyRequest().authenticated()
     }
 

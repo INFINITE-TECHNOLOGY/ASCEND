@@ -38,33 +38,45 @@ class AuthorizationValidator {
         if (iAuthorization.expiryDate.before(new Date())) {
             throw new AscendException("Expired Authorization")
         }
+        String incomingUrl = iHttpServletRequest.requestURL
+                .append('?')
+                .append(iHttpServletRequest.getQueryString())
+                .toString()
+        log.debug("Incoming URL", incomingUrl)
+        log.debug("Incoming Method", iHttpServletRequest.method)
         for (grant in iAuthorization.scope.grants) {
             if (grant.httpMethod.stringValue().toLowerCase() == iHttpServletRequest.method.toLowerCase()) {
                 if (grant.urlRegex != null) {
                     String processedUrlRegex = replaceSubstitutes(grant.urlRegex, iAuthorization)
-                    if (iHttpServletRequest.requestURL.toString().matches(processedUrlRegex)) {
+                    log.debug("Processed URL regex", processedUrlRegex)
+                    if (incomingUrl.matches(processedUrlRegex)) {
                         log.debug("URL matched regex.")
                         if (grant.bodyRegex != null) {
+                            //todo: check for DDOS (never ending input stream)
                             String processedBodyRegex = replaceSubstitutes(grant.bodyRegex, iAuthorization)
                             HttpServletRequestWrapper httpServletRequestWrapper = new HttpServletRequestWrapper(iHttpServletRequest)
-                            //todo: check for DDOS (never ending input stream)
                             String body = httpServletRequestWrapper.getReader().lines().collect(Collectors.toList())
-                            if (body.matches(processedBodyRegex)) {
-                                log.debug("Body matched regex.")
-                                if (iAuthorization.maxUsageCount > 0) {
-                                    if (usageRepository.findByAuthorizationId(iAuthorization.id).size() >= iAuthorization.maxUsageCount) {
-                                        throw new AscendException("Exceeded maximum usage count")
-                                    }
-                                    Usage usage = new Usage(authorizationId: iAuthorization.id, usageDate: new Date())
-                                    usageRepository.saveAndFlush(usage)
-                                    log.debug("Authorized")
-                                }
+                            log.debug("Body", body)
+                            log.debug("Processed body regex", processedUrlRegex)
+                            if (!body.matches(processedBodyRegex)) {
+                                log.debug("Body does not match regex")
+                                throw new AscendException("Unauthorized")
                             }
+                        }
+                        if (iAuthorization.maxUsageCount > 0) {
+                            if (usageRepository.findByAuthorizationId(iAuthorization.id).size() >= iAuthorization.maxUsageCount) {
+                                throw new AscendException("Exceeded maximum usage count")
+                            }
+                            Usage usage = new Usage(authorizationId: iAuthorization.id, usageDate: new Date())
+                            usageRepository.saveAndFlush(usage)
+                            log.debug("Authorized")
+                            return
                         }
                     }
                 }
             }
         }
+        log.debug("No matching grant found")
         throw new AscendException("Unauthorized")
     }
 

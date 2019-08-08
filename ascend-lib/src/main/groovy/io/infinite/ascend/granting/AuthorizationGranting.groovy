@@ -2,7 +2,6 @@ package io.infinite.ascend.granting
 
 import groovy.time.TimeCategory
 import groovy.transform.CompileDynamic
-import groovy.transform.Memoized
 import groovy.util.logging.Slf4j
 import io.infinite.ascend.common.JwtManager
 import io.infinite.ascend.config.entities.AuthenticationType
@@ -32,7 +31,7 @@ class AuthorizationGranting {
 
     @Autowired
     JwtManager jwtManager
-    
+
     Authorization authorizationGranting(Authorization iAuthorization) {
         try {
             Set<AuthorizationType> authorizationTypes = authorizationTypeRepository.findForGranting(
@@ -53,13 +52,14 @@ class AuthorizationGranting {
             failure(iAuthorization, AuthorizationErrorCode.OTHER)
             return iAuthorization
         } finally {
-            iAuthorization.identity?.authentications?.each {Authentication authentication->
+            iAuthorization.identity?.authentications?.each { Authentication authentication ->
                 authentication.authenticationData?.privateCredentials = null
             }
         }
     }
 
     void grantByType(Authorization iAuthorization, AuthorizationType iAuthorizationType) {
+        Map<String, String> prerequisiteAuthenticatedCredentials
         if (iAuthorizationType.prerequisiteAuthorizationTypes.size() != 0) {
             if (iAuthorization.prerequisiteJwt == null) {
                 log.debug("Missing prerequisite")
@@ -68,10 +68,10 @@ class AuthorizationGranting {
             }
             Authorization prerequisiteAuthorization = jwtManager.accessJwt2authorization(iAuthorization.prerequisiteJwt)
             Boolean prerequisiteFound = false
+            prerequisiteAuthenticatedCredentials = prerequisiteAuthorization?.identity?.authenticatedCredentials
             for (AuthorizationType prerequisiteAuthorizationType in iAuthorizationType.prerequisiteAuthorizationTypes) {
                 if (prerequisiteAuthorizationType.name == prerequisiteAuthorization.name) {
                     grantByType(prerequisiteAuthorization, prerequisiteAuthorizationType)
-                    //todo: prerequisite consistency
                     if (prerequisiteAuthorization.status != AuthorizationStatus.SUCCESSFUL) {
                         log.debug("Failed prerequisite")
                         failure(iAuthorization, AuthorizationErrorCode.OTHER)
@@ -127,6 +127,15 @@ class AuthorizationGranting {
                 return
             }
         }
+        if (prerequisiteAuthenticatedCredentials != null) {
+            iAuthorization.identity.authenticatedCredentials.each {
+                if (prerequisiteAuthenticatedCredentials.get(it.key) != it.value) {
+                    log.debug("Inconsistent prerequisite")
+                    failure(iAuthorization, AuthorizationErrorCode.OTHER)
+                    return
+                }
+            }
+        }
         log.debug("Success")
         iAuthorization.durationSeconds = iAuthorizationType.durationSeconds
         iAuthorization.maxUsageCount = iAuthorizationType.maxUsageCount
@@ -176,5 +185,5 @@ class AuthorizationGranting {
     GroovyScriptEngine getAuthenticationGroovyScriptEngine() {
         return new GroovyScriptEngine(ascendAuthenticationPluginsDir, this.getClass().getClassLoader())
     }
-    
+
 }

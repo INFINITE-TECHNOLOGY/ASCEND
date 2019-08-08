@@ -2,6 +2,7 @@ package io.infinite.ascend.security
 
 import io.infinite.ascend.granting.components.JwtManager
 import io.infinite.ascend.repositories.UsageRepository
+import io.infinite.blackbox.BlackBox
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -25,6 +26,7 @@ class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
     UsageRepository usageRepository
 
     @Override
+    @BlackBox
     protected void configure(HttpSecurity http) throws Exception {
         JwtTokenAuthenticationFilter jwtTokenAuthenticationFilter = new JwtTokenAuthenticationFilter(
                 jwtManager: jwtManager, usageRepository: usageRepository)

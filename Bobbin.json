@@ -42,7 +42,8 @@
     },
     {
       "name": "io.infinite.bobbin.destinations.ConsoleDestination",
-      "classes": "['io.infinite.ascend.granting.controllers.AuthorizationsController', 'io.infinite.ascend.security.JwtTokenAuthenticationFilter', 'io.infinite.ascend.security.JwtAuthenticationEntryPoint'].contains(className)"
+      "levels": "['debug'].contains(level)",
+      "classes": "['io.infinite.ascend.granting.controllers.AuthorizationsController', 'io.infinite.ascend.security.JwtTokenAuthenticationFilter', 'io.infinite.ascend.security.JwtAuthenticationEntryPoint', 'io.infinite.ascend.granting.components.JwtManager'].contains(className)"
     }
   ]
 }

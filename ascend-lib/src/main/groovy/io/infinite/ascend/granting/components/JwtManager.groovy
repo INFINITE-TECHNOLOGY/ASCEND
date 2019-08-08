@@ -2,9 +2,11 @@ package io.infinite.ascend.granting.components
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.transform.CompileDynamic
+import groovy.util.logging.Slf4j
 import io.infinite.ascend.granting.model.Authorization
 import io.infinite.ascend.granting.model.enums.AuthorizationPurpose
 import io.infinite.ascend.other.AscendException
+import io.infinite.blackbox.BlackBox
 import io.jsonwebtoken.Jwt
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -20,6 +22,8 @@ import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
 @Component
+@Slf4j
+@BlackBox
 class JwtManager {
 
     @Value('${ascend.jwt.access.keystore.path}')
@@ -58,14 +62,14 @@ class JwtManager {
 
     @PostConstruct
     void init() {
-        FileInputStream l_access_keystore_file_input_stream = new FileInputStream(jwtAccessKeystorePath)
-        KeyStore l_access_key_store = KeyStore.getInstance(jwtAccessKeystoreType)
-        l_access_key_store.load(l_access_keystore_file_input_stream, jwtAccessKeystorePassword.toCharArray())
-        jwtAccessKey = l_access_key_store.getKey(jwtAccessKeystoreAlias, jwtAccessKeystorePassword.toCharArray())
-        FileInputStream l_refresh_keystore_file_input_stream = new FileInputStream(jwtRefreshKeystorePath)
-        KeyStore l_refresh_key_store = KeyStore.getInstance(jwtRefreshKeystoreType)
-        l_refresh_key_store.load(l_refresh_keystore_file_input_stream, jwtRefreshKeystorePassword.toCharArray())
-        jwtRefreshKey = l_refresh_key_store.getKey(jwtRefreshKeystoreAlias, jwtRefreshKeystorePassword.toCharArray())
+        FileInputStream accessKeyStoreFileInputStream = new FileInputStream(jwtAccessKeystorePath)
+        KeyStore accessKeyStore = KeyStore.getInstance(jwtAccessKeystoreType)
+        accessKeyStore.load(accessKeyStoreFileInputStream, jwtAccessKeystorePassword.toCharArray())
+        jwtAccessKey = accessKeyStore.getKey(jwtAccessKeystoreAlias, jwtAccessKeystorePassword.toCharArray())
+        FileInputStream refreshKeyStoreFileInputStream = new FileInputStream(jwtRefreshKeystorePath)
+        KeyStore refreshKeyStore = KeyStore.getInstance(jwtRefreshKeystoreType)
+        refreshKeyStore.load(refreshKeyStoreFileInputStream, jwtRefreshKeystorePassword.toCharArray())
+        jwtRefreshKey = refreshKeyStore.getKey(jwtRefreshKeystoreAlias, jwtRefreshKeystorePassword.toCharArray())
     }
 
     @CompileDynamic
@@ -82,7 +86,7 @@ class JwtManager {
         return uncompressedStr
     }
 
-    static def zip(String s) {
+    def zip(String s) {
         def targetStream = new ByteArrayOutputStream()
         def zipStream = new GZIPOutputStream(targetStream)
         zipStream.write(s.getBytes(StandardCharsets.UTF_8.name()))
@@ -105,9 +109,6 @@ class JwtManager {
         }
         iAuthorization.jwt = Jwts.builder()
                 .setPayload(body)
-                .setIssuer(ascendIssuerName)
-                .setIssuedAt(new Date())
-                .setExpiration(iAuthorization.expiryDate)
                 .signWith(SignatureAlgorithm.HS512, key).compact()
     }
 

@@ -43,7 +43,6 @@ class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
                 return
             }
             String jwt = authorizationHeader.replace("Bearer ", "")
-            log.debug(jwtManager?.toString())
             Authorization authorization = jwtManager.accessJwt2authorization(jwt)
             validateAuthorization(authorization, request)
             PreAuthenticatedAuthenticationToken preAuthenticatedAuthenticationToken =

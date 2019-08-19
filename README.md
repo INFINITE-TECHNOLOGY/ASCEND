@@ -11,7 +11,7 @@
 
 ## Purpose
 
-`Ascend` is a read-to-work HTTP security solution.
+`Ascend` is a ready-to-work HTTP security solution.
 
 Specially designed for Serverless Web Apps (`React`, `Angular`) and Mobile Apps (`Swift`, `Kotlin`),
 `Ascend` is all you need to secure your `REST` APIs.

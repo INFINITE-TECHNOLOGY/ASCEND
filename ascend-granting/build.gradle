@@ -16,13 +16,13 @@ plugins {
 apply plugin: 'com.jfrog.bintray'
 bootJar {
     baseName = 'ascend-granting'
-    version = '0.0.1-SNAPSHOT'
+    version = '0.0.0'
 }
 
 ext['groovy.version'] = '2.5.4'
 sourceCompatibility = 1.7
-group = "io.infinite"
-version = "0.0.1-SNAPSHOT"
+group = "io.i-t"
+version = "0.0.0"
 description = "Web Service Access Management"
 
 repositories {
@@ -82,7 +82,7 @@ bintray {
     def projectDescription = project.description
     pkg {
         userOrg = "infinite-technology"
-        repo = "m2"
+        repo = "io.i-t"
         name = "ascend-granting"
         desc = "Web Service Access Management"
         issueTrackerUrl = "https://github.com/INFINITE-TECHNOLOGY/ASCEND/issues"

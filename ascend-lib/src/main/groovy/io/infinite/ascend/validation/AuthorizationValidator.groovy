@@ -17,13 +17,10 @@ import java.util.stream.Collectors
 
 @BlackBox
 @Slf4j
-@Component
 class AuthorizationValidator {
 
-    @Autowired
-    JwtManager jwtManager
+    AccessJwtManager jwtManager
 
-    @Autowired
     UsageRepository usageRepository
 
     Authorization validateAuthorizationHeader(String authorizationHeader, HttpServletRequest iHttpServletRequest) {

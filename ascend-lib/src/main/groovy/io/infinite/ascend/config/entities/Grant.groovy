@@ -18,6 +18,6 @@ class Grant {
 
     String urlRegex
 
-    HttpMethod httpMethod
+    String httpMethod
 
 }

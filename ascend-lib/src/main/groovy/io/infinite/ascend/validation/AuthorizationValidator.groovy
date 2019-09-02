@@ -42,7 +42,7 @@ class AuthorizationValidator {
         log.debug("Incoming URL", incomingUrl)
         log.debug("Incoming Method", iHttpServletRequest.method)
         for (grant in iAuthorization.scope.grants) {
-            if (grant.httpMethod.stringValue().toLowerCase() == iHttpServletRequest.method.toLowerCase()) {
+            if (grant.httpMethod.toLowerCase() == iHttpServletRequest.method.toLowerCase()) {
                 if (grant.urlRegex != null) {
                     String processedUrlRegex = replaceSubstitutes(grant.urlRegex, iAuthorization)
                     log.debug("Processed URL regex", processedUrlRegex)

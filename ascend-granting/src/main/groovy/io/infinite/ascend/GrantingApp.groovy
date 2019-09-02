@@ -72,6 +72,8 @@ class GrantingApp implements CommandLineRunner {
             ascendInstance = new AscendInstance()
             ascendInstance.isDataInitialized = true
             ascendInstanceRepository.saveAndFlush(ascendInstance)
+            log.info("Finished loading configuration data")
+            log.info("All set-up and running. Enjoy the Infinite Ascend!")
         }
     }
 

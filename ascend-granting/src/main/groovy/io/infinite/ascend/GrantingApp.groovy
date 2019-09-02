@@ -42,6 +42,9 @@ class GrantingApp implements CommandLineRunner {
     @Value('${ascendConfigInitPluginDir}')
     String ascendConfigInitPluginDir
 
+    @Value('${ascendStartupInit:false}')
+    Boolean ascendStartupInit
+
     static void main(String[] args) {
         SpringApplication.run(GrantingApp.class, args)
     }
@@ -55,7 +58,7 @@ class GrantingApp implements CommandLineRunner {
     void runWithLogging() {
         log.info("Starting Ascend...")
         AscendInstance ascendInstance = ascendInstanceRepository.getAscendInfo()
-        if (ascendInstance == null) {
+        if (ascendInstance == null && ascendStartupInit) {
             log.info("Loading configuration data")
             Binding binding = new Binding()
             binding.setVariable("applicationContext", applicationContext)

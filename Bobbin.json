@@ -42,8 +42,8 @@
     },
     {
       "name": "io.infinite.bobbin.destinations.ConsoleDestination",
-      "levels": "['debug'].contains(level)",
-      "classes": "className.contains('io.infinite.ascend') || className.contains('org.springframework.security.')"
+      "levels": "['info', 'info'].contains(level)",
+      "classes": "className.contains('io.infinite.ascend')"
     }
   ]
 }

@@ -2,15 +2,12 @@ package io.infinite.ascend.validation
 
 import com.netflix.zuul.http.HttpServletRequestWrapper
 import groovy.util.logging.Slf4j
-import io.infinite.ascend.common.JwtManager
 import io.infinite.ascend.granting.model.Authorization
 import io.infinite.ascend.other.AscendException
 import io.infinite.ascend.validation.entities.Usage
 import io.infinite.ascend.validation.repositories.UsageRepository
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
 
 import javax.servlet.http.HttpServletRequest
 import java.util.stream.Collectors

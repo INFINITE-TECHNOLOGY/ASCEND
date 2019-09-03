@@ -1,7 +1,6 @@
 package io.infinite.ascend.config.entities
 
 import groovy.transform.ToString
-import io.infinite.ascend.config.entities.enums.HttpMethod
 
 import javax.persistence.*
 

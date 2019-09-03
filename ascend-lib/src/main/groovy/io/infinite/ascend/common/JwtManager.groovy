@@ -61,7 +61,7 @@ class JwtManager {
 
     Key loadKeyFromEnv(String keyName) {
         byte[] keyBytes = Base64.getDecoder().decode(System.getenv(keyName))
-        return new SecretKeySpec(keyBytes, 0, keyBytes.length, "AES")
+        return new SecretKeySpec(keyBytes, 0, keyBytes.length, "HmacSHA512")
     }
 
     @CompileDynamic

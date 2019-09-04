@@ -16,10 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import javax.annotation.PostConstruct
-import javax.crypto.spec.SecretKeySpec
 import java.nio.charset.StandardCharsets
 import java.security.Key
+import java.security.KeyFactory
 import java.security.KeyPair
+import java.security.PrivateKey
+import java.security.PublicKey
+import java.security.spec.PKCS8EncodedKeySpec
+import java.security.spec.X509EncodedKeySpec
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
@@ -31,21 +35,21 @@ class JwtManager {
     @Autowired
     ObjectMapper objectMapper
 
-    Key jwtAccessKeyPrivate
+    PrivateKey jwtAccessKeyPrivate
 
-    Key jwtAccessKeyPublic
+    PublicKey jwtAccessKeyPublic
 
-    Key jwtRefreshKeyPrivate
+    PrivateKey jwtRefreshKeyPrivate
 
-    Key jwtRefreshKeyPublic
+    PublicKey jwtRefreshKeyPublic
 
     @PostConstruct
     void init() {
         if (System.getenv("useEnvKeys") == "true") {
-            jwtAccessKeyPrivate = loadKeyFromEnv("jwtAccessKeyPrivate")
-            jwtAccessKeyPublic = loadKeyFromEnv("jwtAccessKeyPublic")
-            jwtRefreshKeyPrivate = loadKeyFromEnv("jwtRefreshKeyPrivate")
-            jwtRefreshKeyPublic = loadKeyFromEnv("jwtRefreshKeyPublic")
+            jwtAccessKeyPrivate = loadPrivateKeyFromEnv("jwtAccessKeyPrivate")
+            jwtAccessKeyPublic = loadPublicKeyFromEnv("jwtAccessKeyPublic")
+            jwtRefreshKeyPrivate = loadPrivateKeyFromEnv("jwtRefreshKeyPrivate")
+            jwtRefreshKeyPublic = loadPublicKeyFromEnv("jwtRefreshKeyPublic")
         } else {
             log.info("No keys defined in the environment, generating keys. This will take some time.")
             log.info("To speed-up Ascend loading, consider defining the keys in the environment.")
@@ -57,11 +61,6 @@ class JwtManager {
             jwtRefreshKeyPublic = keyPairRefresh.getPublic()
             log.info("Finished generating the keys.")
         }
-    }
-
-    Key loadKeyFromEnv(String keyName) {
-        byte[] keyBytes = Base64.getDecoder().decode(System.getenv(keyName))
-        return new SecretKeySpec(keyBytes, 0, keyBytes.length, "HmacSHA512")
     }
 
     @CompileDynamic
@@ -106,6 +105,42 @@ class JwtManager {
         iAuthorization.jwt = Jwts.builder()
                 .setPayload(body)
                 .signWith(SignatureAlgorithm.HS512, key).compact()
+    }
+
+    PrivateKey loadPrivateKeyFromEnv(String keyName) {
+        byte[] clear = Base64.getDecoder().decode(System.getenv(keyName))
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(clear)
+        KeyFactory fact = KeyFactory.getInstance("HmacSHA512")
+        PrivateKey priv = fact.generatePrivate(keySpec)
+        Arrays.fill(clear, (byte) 0)
+        return priv
+    }
+
+
+    PublicKey loadPublicKeyFromEnv(String keyName) {
+        byte[] data = Base64.getDecoder().decode(System.getenv(keyName))
+        X509EncodedKeySpec spec = new X509EncodedKeySpec(data)
+        KeyFactory fact = KeyFactory.getInstance("HmacSHA512")
+        return fact.generatePublic(spec)
+    }
+
+    String privateKeyToString(PrivateKey privateKey) {
+        KeyFactory fact = KeyFactory.getInstance("HmacSHA512")
+        PKCS8EncodedKeySpec spec = fact.getKeySpec(privateKey,
+                PKCS8EncodedKeySpec.class)
+        byte[] packed = spec.getEncoded()
+        String key64 = Base64.encoder.encodeToString(packed)
+
+        Arrays.fill(packed, (byte) 0)
+        return key64
+    }
+
+
+    String publicKeyToString(PublicKey publicKey) {
+        KeyFactory fact = KeyFactory.getInstance("HmacSHA512")
+        X509EncodedKeySpec spec = fact.getKeySpec(publicKey,
+                X509EncodedKeySpec.class)
+        return Base64.encoder.encodeToString(spec.getEncoded())
     }
 
 }

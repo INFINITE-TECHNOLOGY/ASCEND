@@ -26,7 +26,7 @@ class PublicKeyController {
      * Returns Ascend JWT Access Public Key
      */
     String getPublicKey() {
-        return Base64.encoder.encodeToString(jwtManager.jwtAccessKeyPublic.encoded)
+        return jwtManager.publicKeyToString(jwtManager.jwtAccessKeyPublic)
     }
 
 }

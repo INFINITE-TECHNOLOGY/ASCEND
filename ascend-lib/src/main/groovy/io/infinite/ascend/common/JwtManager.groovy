@@ -1,6 +1,8 @@
 package io.infinite.ascend.common
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
 import groovy.transform.CompileDynamic
 import groovy.util.logging.Slf4j
 import io.infinite.ascend.granting.model.Authorization
@@ -30,7 +32,6 @@ import java.security.spec.X509EncodedKeySpec
 @BlackBox(level = CarburetorLevel.ERROR)
 class JwtManager {
 
-    @Autowired
     ObjectMapper objectMapper
 
     PrivateKey jwtAccessKeyPrivate
@@ -41,8 +42,13 @@ class JwtManager {
 
     PublicKey jwtRefreshKeyPublic
 
-    @PostConstruct
-    void init() {
+    JwtManager() {
+        YAMLFactory yamlFactory = new YAMLFactory()
+        yamlFactory.enable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
+        yamlFactory.disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
+        yamlFactory.disable(YAMLGenerator.Feature.SPLIT_LINES)
+        yamlFactory.enable(YAMLGenerator.Feature.INDENT_ARRAYS)
+        objectMapper = new ObjectMapper(yamlFactory)
         if (System.getenv("useEnvKeys") == "true") {
             jwtAccessKeyPrivate = loadPrivateKeyFromEnv("jwtAccessKeyPrivate")
             jwtAccessKeyPublic = loadPublicKeyFromEnv("jwtAccessKeyPublic")
@@ -74,6 +80,7 @@ class JwtManager {
     @BlackBox(level = CarburetorLevel.METHOD)
     void setJwt(Authorization authorization) {
         String body = objectMapper.writeValueAsString(authorization)
+        log.debug(body)
         PrivateKey privateKey
         if (authorization.purpose == AuthorizationPurpose.ACCESS) {
             privateKey = jwtAccessKeyPrivate

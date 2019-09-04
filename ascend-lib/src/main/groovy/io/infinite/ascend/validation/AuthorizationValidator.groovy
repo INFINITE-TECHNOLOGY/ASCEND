@@ -2,6 +2,7 @@ package io.infinite.ascend.validation
 
 import com.netflix.zuul.http.HttpServletRequestWrapper
 import groovy.util.logging.Slf4j
+import io.infinite.ascend.common.JwtManager
 import io.infinite.ascend.granting.model.Authorization
 import io.infinite.ascend.other.AscendException
 import io.infinite.ascend.validation.entities.Usage
@@ -16,7 +17,7 @@ import java.util.stream.Collectors
 @Slf4j
 class AuthorizationValidator {
 
-    AccessJwtManager jwtManager
+    JwtManager jwtManager
 
     UsageRepository usageRepository
 

@@ -8,24 +8,22 @@ import io.infinite.ascend.granting.model.enums.AuthorizationPurpose
 import io.infinite.ascend.other.AscendException
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
+import io.jsonwebtoken.CompressionCodecs
 import io.jsonwebtoken.Jwt
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
+import org.apache.shiro.codec.Hex
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import javax.annotation.PostConstruct
-import java.nio.charset.StandardCharsets
-import java.security.Key
 import java.security.KeyFactory
 import java.security.KeyPair
 import java.security.PrivateKey
 import java.security.PublicKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
-import java.util.zip.GZIPInputStream
-import java.util.zip.GZIPOutputStream
 
 @Component
 @Slf4j
@@ -66,81 +64,49 @@ class JwtManager {
     @CompileDynamic
     @BlackBox(level = CarburetorLevel.METHOD)
     Authorization accessJwt2authorization(String iJwt) {
-        Jwt jwt = Jwts.parser().setSigningKey(jwtAccessKeyPrivate).parse(iJwt)
-        Authorization authorization = objectMapper.readValue(unzip(jwt.getBody() as String), Authorization.class)
+        Jwt jwt = Jwts.parser().setSigningKey(jwtAccessKeyPublic).parse(iJwt)
+        Authorization authorization = objectMapper.readValue(jwt.getBody() as String, Authorization.class)
         authorization.jwt = iJwt
         return authorization
     }
 
-    @BlackBox(level = CarburetorLevel.METHOD)
-    String unzip(String compressed) {
-        def inflaterStream = new GZIPInputStream(new ByteArrayInputStream(compressed.decodeBase64()))
-        def uncompressedStr = inflaterStream.getText(StandardCharsets.UTF_8.name())
-        return uncompressedStr
-    }
-
-    @BlackBox(level = CarburetorLevel.METHOD)
-    def zip(String s) {
-        def targetStream = new ByteArrayOutputStream()
-        def zipStream = new GZIPOutputStream(targetStream)
-        zipStream.write(s.getBytes(StandardCharsets.UTF_8.name()))
-        zipStream.close()
-        def zippedBytes = targetStream.toByteArray()
-        targetStream.close()
-        return zippedBytes.encodeBase64()
-    }
-
     @CompileDynamic
     @BlackBox(level = CarburetorLevel.METHOD)
-    void setJwt(Authorization iAuthorization) {
-        String body = zip(objectMapper.writeValueAsString(iAuthorization))
-        Key key
-        if (iAuthorization.purpose == AuthorizationPurpose.ACCESS) {
-            key = jwtAccessKeyPrivate
-        } else if (iAuthorization.purpose == AuthorizationPurpose.REFRESH) {
-            key = jwtRefreshKeyPrivate
+    void setJwt(Authorization authorization) {
+        String body = objectMapper.writeValueAsString(authorization)
+        PrivateKey privateKey
+        if (authorization.purpose == AuthorizationPurpose.ACCESS) {
+            privateKey = jwtAccessKeyPrivate
+        } else if (authorization.purpose == AuthorizationPurpose.REFRESH) {
+            privateKey = jwtRefreshKeyPrivate
         } else {
-            throw new AscendException("Unsupported authorization purpose " + iAuthorization.purpose.stringValue())
+            throw new AscendException("Unsupported authorization purpose " + authorization.purpose.stringValue())
         }
-        iAuthorization.jwt = Jwts.builder()
+        authorization.jwt = Jwts.builder()
                 .setPayload(body)
-                .signWith(SignatureAlgorithm.HS512, key).compact()
+                .signWith(privateKey)
+                .compressWith(CompressionCodecs.GZIP)
+                .compact()
     }
 
     PrivateKey loadPrivateKeyFromEnv(String keyName) {
-        byte[] clear = Base64.getDecoder().decode(System.getenv(keyName))
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(clear)
-        KeyFactory fact = KeyFactory.getInstance("RSA")
-        PrivateKey priv = fact.generatePrivate(keySpec)
-        Arrays.fill(clear, (byte) 0)
-        return priv
+        PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(Hex.decode(System.getenv(keyName)))
+        return KeyFactory.getInstance(SignatureAlgorithm.RS512.getFamilyName()).generatePrivate(pkcs8EncodedKeySpec)
     }
 
 
     PublicKey loadPublicKeyFromEnv(String keyName) {
-        byte[] data = Base64.getDecoder().decode(System.getenv(keyName))
-        X509EncodedKeySpec spec = new X509EncodedKeySpec(data)
-        KeyFactory fact = KeyFactory.getInstance("RSA")
-        return fact.generatePublic(spec)
+        X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(Hex.decode(System.getenv(keyName)))
+        return KeyFactory.getInstance(SignatureAlgorithm.RS512.getFamilyName()).generatePublic(x509EncodedKeySpec)
     }
 
     String privateKeyToString(PrivateKey privateKey) {
-        KeyFactory fact = KeyFactory.getInstance("RSA")
-        PKCS8EncodedKeySpec spec = fact.getKeySpec(privateKey,
-                PKCS8EncodedKeySpec.class)
-        byte[] packed = spec.getEncoded()
-        String key64 = Base64.encoder.encodeToString(packed)
-
-        Arrays.fill(packed, (byte) 0)
-        return key64
+        return Hex.encodeToString(privateKey.getEncoded())
     }
 
 
     String publicKeyToString(PublicKey publicKey) {
-        KeyFactory fact = KeyFactory.getInstance("RSA")
-        X509EncodedKeySpec spec = fact.getKeySpec(publicKey,
-                X509EncodedKeySpec.class)
-        return Base64.encoder.encodeToString(spec.getEncoded())
+        return Hex.encodeToString(publicKey.getEncoded())
     }
 
 }

@@ -16,13 +16,13 @@ plugins {
 apply plugin: 'com.jfrog.bintray'
 bootJar {
     baseName = 'ascend-granting'
-    version = '0.0.21'
+    version = '0.0.22'
 }
 
 ext['groovy.version'] = '2.5.4'
 sourceCompatibility = 1.7
 group = "io.i-t"
-version = "0.0.21"
+version = "0.0.22"
 description = "Web Service Access Management"
 
 repositories {

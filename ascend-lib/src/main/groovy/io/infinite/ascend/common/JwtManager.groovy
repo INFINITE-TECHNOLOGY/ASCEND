@@ -110,7 +110,7 @@ class JwtManager {
     PrivateKey loadPrivateKeyFromEnv(String keyName) {
         byte[] clear = Base64.getDecoder().decode(System.getenv(keyName))
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(clear)
-        KeyFactory fact = KeyFactory.getInstance("HmacSHA512")
+        KeyFactory fact = KeyFactory.getInstance("RSA")
         PrivateKey priv = fact.generatePrivate(keySpec)
         Arrays.fill(clear, (byte) 0)
         return priv
@@ -120,12 +120,12 @@ class JwtManager {
     PublicKey loadPublicKeyFromEnv(String keyName) {
         byte[] data = Base64.getDecoder().decode(System.getenv(keyName))
         X509EncodedKeySpec spec = new X509EncodedKeySpec(data)
-        KeyFactory fact = KeyFactory.getInstance("HmacSHA512")
+        KeyFactory fact = KeyFactory.getInstance("RSA")
         return fact.generatePublic(spec)
     }
 
     String privateKeyToString(PrivateKey privateKey) {
-        KeyFactory fact = KeyFactory.getInstance("HmacSHA512")
+        KeyFactory fact = KeyFactory.getInstance("RSA")
         PKCS8EncodedKeySpec spec = fact.getKeySpec(privateKey,
                 PKCS8EncodedKeySpec.class)
         byte[] packed = spec.getEncoded()
@@ -137,7 +137,7 @@ class JwtManager {
 
 
     String publicKeyToString(PublicKey publicKey) {
-        KeyFactory fact = KeyFactory.getInstance("HmacSHA512")
+        KeyFactory fact = KeyFactory.getInstance("RSA")
         X509EncodedKeySpec spec = fact.getKeySpec(publicKey,
                 X509EncodedKeySpec.class)
         return Base64.encoder.encodeToString(spec.getEncoded())

@@ -111,7 +111,6 @@ class JwtManager {
         return Hex.encodeToString(privateKey.getEncoded())
     }
 
-
     String publicKeyToString(PublicKey publicKey) {
         return Hex.encodeToString(publicKey.getEncoded())
     }

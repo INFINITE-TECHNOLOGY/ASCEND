@@ -50,20 +50,22 @@ class JwtManager {
         yamlFactory.enable(YAMLGenerator.Feature.INDENT_ARRAYS)
         objectMapper = new ObjectMapper(yamlFactory)
         if (System.getenv("useEnvKeys") == "true") {
+            log.info("Using keys from Environment variables.")
             jwtAccessKeyPrivate = loadPrivateKeyFromEnv("jwtAccessKeyPrivate")
             jwtAccessKeyPublic = loadPublicKeyFromEnv("jwtAccessKeyPublic")
             jwtRefreshKeyPrivate = loadPrivateKeyFromEnv("jwtRefreshKeyPrivate")
             jwtRefreshKeyPublic = loadPublicKeyFromEnv("jwtRefreshKeyPublic")
         } else {
-            log.info("No keys defined in the environment, generating keys. This will take some time.")
-            log.info("To speed-up Ascend loading, consider defining the keys in the environment.")
-            KeyPair keyPairAccess = Keys.keyPairFor(SignatureAlgorithm.RS512)
-            jwtAccessKeyPrivate = keyPairAccess.getPrivate()
-            jwtAccessKeyPublic = keyPairAccess.getPublic()
-            KeyPair keyPairRefresh = Keys.keyPairFor(SignatureAlgorithm.RS512)
-            jwtRefreshKeyPrivate = keyPairRefresh.getPrivate()
-            jwtRefreshKeyPublic = keyPairRefresh.getPublic()
-            log.info("Finished generating the keys.")
+            if (System.getenv("genDynamicKeys")) {
+                log.info("Generating dynamic keys")
+                KeyPair keyPairAccess = Keys.keyPairFor(SignatureAlgorithm.RS512)
+                jwtAccessKeyPrivate = keyPairAccess.getPrivate()
+                jwtAccessKeyPublic = keyPairAccess.getPublic()
+                KeyPair keyPairRefresh = Keys.keyPairFor(SignatureAlgorithm.RS512)
+                jwtRefreshKeyPrivate = keyPairRefresh.getPrivate()
+                jwtRefreshKeyPublic = keyPairRefresh.getPublic()
+                log.info("Finished generating the keys.")
+            }
         }
     }
 

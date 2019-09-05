@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.ResponseBody
 @Controller
 @BlackBox
 @Slf4j
-class AuthorizationController {
+class GrantingController {
 
     @Autowired
     AuthorizationGranting authorizationGranting
 
-    @PostMapping(value = "/ascend/authorization")
+    @PostMapping(value = "/ascend/granting")
     @ResponseBody
     @CompileDynamic
     @BlackBox(level = CarburetorLevel.METHOD)

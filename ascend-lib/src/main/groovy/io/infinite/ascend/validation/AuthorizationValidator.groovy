@@ -9,13 +9,18 @@ import io.infinite.ascend.validation.entities.Usage
 import io.infinite.ascend.validation.repositories.UsageRepository
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 
 @BlackBox
 @Slf4j
+@Component
 class AuthorizationValidator {
 
+    @Autowired
     JwtManager jwtManager
 
+    @Autowired
     UsageRepository usageRepository
 
     Authorization validateAuthorizationHeader(String authorizationHeader, String incomingUrl, String method, String body) {

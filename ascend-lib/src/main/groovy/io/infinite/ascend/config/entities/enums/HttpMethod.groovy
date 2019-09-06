@@ -6,13 +6,13 @@ package io.infinite.ascend.config.entities.enums
  */
 class HttpMethod {
 
-    final String GET = "GET"
-    final String HEAD = "HEAD"
-    final String POST = "POST"
-    final String PUT = "PUT"
-    final String PATCH = "PATCH"
-    final String DELETE = "DELETE"
-    final String OPTIONS = "OPTIONS"
-    final String TRACE = "TRACE"
+    static final String GET = "GET"
+    static final String HEAD = "HEAD"
+    static final String POST = "POST"
+    static final String PUT = "PUT"
+    static final String PATCH = "PATCH"
+    static final String DELETE = "DELETE"
+    static final String OPTIONS = "OPTIONS"
+    static final String TRACE = "TRACE"
 
 }

@@ -33,11 +33,11 @@ class App2AppAuthorizationHelper {
                 headers: ["content-type": "text/yaml"],
                 method: "POST",
                 body: """---
-name: Enqueue
+name: App2app
 identity:
   name: Trusted Application
   authentications:
-  - name: App2app
+  - name: JWT
     authenticationData:
       publicCredentials:
         appName: $clientAppName

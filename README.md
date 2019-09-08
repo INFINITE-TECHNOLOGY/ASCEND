@@ -1,49 +1,26 @@
-# Infinite Technology ∞ Ascend ⏫
+# Infinite Technology ∞ Ascend 🚀
 
-|Attribute\Release type|Latest|
-|----------------------|------|
-|Version|0.0.0-SNAPSHOT|
-|Branch|[master](https://github.com/INFINITE-TECHNOLOGY/ASCEND)|
-|CI Build status|[![Build Status](https://travis-ci.com/INFINITE-TECHNOLOGY/ASCEND.svg?branch=master)](https://travis-ci.com/INFINITE-TECHNOLOGY/ASCEND)|
-|Test coverage|[![codecov](https://codecov.io/gh/INFINITE-TECHNOLOGY/ASCEND/branch/master/graphs/badge.svg)](https://codecov.io/gh/INFINITE-TECHNOLOGY/ASCEND/branch/master/graphs)|
-|Library (Maven)|[oss.jfrog.org snapshot](https://oss.jfrog.org/artifactory/webapp/#/artifacts/browse/tree/General/oss-snapshot-local/io/infinite/ascend/0.0.1-SNAPSHOT)|
-|Heroku|![Heroku](https://heroku-badge.herokuapp.com/?app=ascend-demo&root=/ascend/unsecured)|
+`Ascend` is a revolutionary Web Security framework, built on top of [JWT](https://en.wikipedia.org/wiki/JSON_Web_Token).
 
-## Purpose
+`Ascend` JWT represents an [ACID](https://www.ibm.com/support/knowledgecenter/en/SSGMCP_5.4.0/product-overview/acid.html)-compliant 
+Authorization [transaction](https://en.wikipedia.org/wiki/Transaction), containing sufficient information for validation of an HTTP request.
 
-`Ascend` is a ready-to-work HTTP security solution.
+No longer the `Authorization Header` has only `Authentication` or partial Authorization data - with `Ascend` it is what it was intended to be. 
 
-Specially designed for Serverless Web Apps (`React`, `Angular`) and Mobile Apps (`Swift`, `Kotlin`),
-`Ascend` is all you need to secure your `REST` APIs.
+`Ascend` provides:
 
-PS: With `Ascend` you can even plug your legacy `SOAP` APIs into your new App.
+- Authorization Granting Server
+    - App2app authentication
+    - User2app authentication
+    - Issuing Authorization JSON Web Tokens
+- Authorization Validation Server
+    - Autonomously validates HTTP Requests authorized using `Ascend Granting Server`
+- Client SDK
+    - Provides an API for simple communication with `Ascend Granting Server`
+- Server SDK
+    - Provides an API for simple communication with `Ascend Validation Server`
 
-## In short
-
-'Ascend' allows to create and validate cryptographic credentials (`JWTs`) used to provide a `Client Software` (Apps) the permission
-to access secured `Web Services` within the scope of their user authority.
-
-`Ascend` is consists of:
-1) Authorization Granting Server - issuing JWTs
-2) Authorization Validation Server - validating JWTs and if needed acting as reverse proxy.
 
 ## Documentation
 
 * [**Ascend Documentation**](https://github.com/INFINITE-TECHNOLOGY/ASCEND/wiki)
-
-## Technology stack
-
-* Docker
-* Spring Boot
-* Groovy
-* SQL DB (via JPA and Spring Data)
-* REST+HATEOAS (via Spring Data Rest repositories)
-* Authentication providers extensible using Plugins (Groovy scripts)
-
-## Try me now!
-
-We have deployed a demo [Ascend Demo](https://github.com/INFINITE-TECHNOLOGY/ASCEND_DEMO) repository is as a demo Heroku app (`ascend-demo`).
-
-Just open the below URL in your browser:
-
-https://ascend-demo.herokuapp.com/ascend/secured

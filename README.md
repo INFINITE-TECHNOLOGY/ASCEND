@@ -39,7 +39,7 @@ Monthly:
 `Ascend` JWT represents an [ACID](https://www.ibm.com/support/knowledgecenter/en/SSGMCP_5.4.0/product-overview/acid.html)-compliant 
 Authorization [transaction](https://en.wikipedia.org/wiki/Transaction), containing sufficient information for validation of an HTTP request.
 
-No longer the `Authorization Header` has only `Authentication` or partial Authorization data - with `Ascend` it is what it was intended to be. 
+No longer the `Authorization Header` has only `Authentication` or partial Authorization data - with `Ascend` it is what it was intended to be - an **authorization**. 
 
 `Ascend` provides:
 

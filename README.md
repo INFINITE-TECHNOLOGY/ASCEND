@@ -2,7 +2,7 @@
 
 ## In short
 
-`Ascend` is a SECaaS (Security as a Service) platform focused on Web Security.
+`Ascend` is a [SECaaS](https://en.wikipedia.org/wiki/Security_as_a_service) (Security as a Service) platform focused on Web Access Control.
 
 `Ascend` quickly integrates into your ecosystem and allows to:
 
@@ -43,6 +43,8 @@ No longer the `Authorization Header` has only `Authentication` or partial Author
 
 `Ascend` provides:
 
+- Access management portal
+    - Centralized and unified way to manage user access to your API
 - Authorization Granting Server
     - App2app authentication
     - User2app authentication

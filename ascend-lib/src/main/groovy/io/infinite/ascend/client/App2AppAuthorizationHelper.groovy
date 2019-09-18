@@ -20,7 +20,7 @@ class App2AppAuthorizationHelper {
     @CompileDynamic
     Authorization createApp2AppAuthorization(String clientAppName, String serverAppName, String scopeName) {
         JwtManager jwtManager = new JwtManager()
-        jwtManager.jwtAccessKeyPrivate = jwtManager.loadPrivateKeyFromEnv("PRIVATE_KEY_FOR_$serverAppName")
+        jwtManager.jwtAccessKeyPrivate = jwtManager.loadPrivateKeyFromEnv("PRIVATE_KEY_FOR_$serverAppName")//todo: have only 1 private key for app allowing access to all servers
         Authorization selfIssuedAuthorization = new Authorization()
         use(TimeCategory) {
             selfIssuedAuthorization.setExpiryDate(new Date() + 60.seconds)

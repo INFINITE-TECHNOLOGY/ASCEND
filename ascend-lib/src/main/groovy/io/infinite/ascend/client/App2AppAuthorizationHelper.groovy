@@ -22,8 +22,9 @@ class App2AppAuthorizationHelper {
         JwtManager jwtManager = new JwtManager()
         jwtManager.jwtAccessKeyPrivate = jwtManager.loadPrivateKeyFromEnv("PRIVATE_KEY_FOR_$serverAppName")//todo: have only 1 private key for app allowing access to all servers
         Authorization selfIssuedAuthorization = new Authorization()
+        selfIssuedAuthorization.creationDate = new Date()
         use(TimeCategory) {
-            selfIssuedAuthorization.setExpiryDate(new Date() + 60.seconds)
+            selfIssuedAuthorization.setExpiryDate(selfIssuedAuthorization.creationDate + 60.seconds)
         }
         selfIssuedAuthorization.durationSeconds = 60
         selfIssuedAuthorization.purpose = AuthorizationPurpose.ACCESS

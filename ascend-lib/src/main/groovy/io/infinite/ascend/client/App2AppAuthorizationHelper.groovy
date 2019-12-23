@@ -25,6 +25,7 @@ class App2AppAuthorizationHelper {
         use(TimeCategory) {
             selfIssuedAuthorization.setExpiryDate(new Date() + 60.seconds)
         }
+        selfIssuedAuthorization.durationSeconds = 60
         selfIssuedAuthorization.purpose = AuthorizationPurpose.ACCESS
         jwtManager.setJwt(selfIssuedAuthorization)
         log.debug(selfIssuedAuthorization.jwt)

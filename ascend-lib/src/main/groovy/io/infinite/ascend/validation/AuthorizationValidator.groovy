@@ -56,11 +56,11 @@ class AuthorizationValidator {
                             if (usageRepository.findByAuthorizationId(authorization.id).size() >= authorization.maxUsageCount) {
                                 throw new AscendException("Exceeded maximum usage count")
                             }
-                            Usage usage = new Usage(authorizationId: authorization.id, usageDate: new Date())
-                            usageRepository.saveAndFlush(usage)
-                            log.debug("Authorized")
-                            return
                         }
+                        Usage usage = new Usage(authorizationId: authorization.id, usageDate: new Date())
+                        usageRepository.saveAndFlush(usage)
+                        log.debug("Authorized")
+                        return
                     }
                 }
             }

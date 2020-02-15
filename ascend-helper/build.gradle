@@ -10,19 +10,19 @@ plugins {
     id "jacoco"
     id "org.springframework.boot" version "2.1.1.RELEASE"
     id "io.spring.dependency-management" version "1.0.6.RELEASE"
-    id "enterprise.groovy.plugin" version "1.0.1"
+    id "enterprise.groovy.plugin" version "1.0.4"
 }
 
 apply plugin: 'com.jfrog.bintray'
 bootJar {
     baseName = 'ascend-helper'
-    version = '0.1.5'
+    version = '0.1.6'
 }
 
 ext['groovy.version'] = '2.5.4'
 sourceCompatibility = 1.8
 group = "io.i-t"
-version = "0.1.5"
+version = "0.1.6"
 description = "Web Service Access Management"
 
 repositories {
@@ -39,6 +39,7 @@ dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.5.4'
     compile 'org.springframework.boot:spring-boot-starter-data-rest'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compile "io.i-t:bobbin:3.0.0"
 }
 
 task sourceJar(type: Jar) {

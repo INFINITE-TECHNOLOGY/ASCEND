@@ -9,9 +9,9 @@ import io.infinite.ascend.granting.model.enums.AuthorizationPurpose
 import io.infinite.ascend.other.AscendException
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
-import io.infinite.pigeon.http.HttpRequest
-import io.infinite.pigeon.http.HttpResponse
-import io.infinite.pigeon.http.SenderDefaultHttps
+import io.infinite.http.HttpRequest
+import io.infinite.http.HttpResponse
+import io.infinite.http.SenderDefaultHttps
 
 @Slf4j
 @BlackBox(level = CarburetorLevel.METHOD)

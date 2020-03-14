@@ -92,3 +92,6 @@ configurations {
     providedRuntime
     compile.exclude(group: 'ch.qos.logback')
 }
+
+task stage(dependsOn: ['build', 'clean'])
+build.mustRunAfter clean

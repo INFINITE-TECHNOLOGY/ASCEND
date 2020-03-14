@@ -7,7 +7,6 @@ plugins {
     id "groovy"
     id "maven-publish"
     id "idea"
-    id "jacoco"
     id "org.springframework.boot" version "2.1.1.RELEASE"
     id "io.spring.dependency-management" version "1.0.6.RELEASE"
     id "enterprise.groovy.plugin" version "1.0.4"
@@ -17,6 +16,10 @@ apply plugin: 'com.jfrog.bintray'
 bootJar {
     baseName = 'ascend-cli'
     version = '0.1.7-SNAPSHOT'
+}
+
+jar {
+    enabled = true
 }
 
 ext['groovy.version'] = '2.5.4'
@@ -109,3 +112,6 @@ configurations {
 dependencyManagement {
     imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
 }
+
+task stage(dependsOn: ['build', 'clean'])
+build.mustRunAfter clean

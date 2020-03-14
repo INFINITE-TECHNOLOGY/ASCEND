@@ -8,7 +8,6 @@ import io.jsonwebtoken.Jwt
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.apache.shiro.codec.Hex
-import org.junit.Test
 
 import java.security.KeyFactory
 import java.security.spec.X509EncodedKeySpec

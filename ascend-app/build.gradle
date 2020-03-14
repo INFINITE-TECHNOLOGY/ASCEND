@@ -20,6 +20,8 @@ bootJar {
 }
 
 ext['groovy.version'] = '2.5.4'
+ext['springBootVersion'] = '2.1.1.RELEASE'
+
 sourceCompatibility = 1.8
 group = "io.i-t"
 version = "0.1.7-SNAPSHOT"
@@ -35,11 +37,8 @@ sourceSets {
 }
 
 dependencies {
-    compile project(':ascend-lib')
+    compile project(':ascend-cli')
     compile 'org.codehaus.groovy:groovy-all:2.5.4'
-    compile 'org.springframework.boot:spring-boot-starter-data-rest'
-    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
-    compile "io.i-t:bobbin:3.0.0"
 }
 
 task sourceJar(type: Jar) {

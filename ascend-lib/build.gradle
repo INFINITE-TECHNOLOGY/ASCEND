@@ -8,7 +8,6 @@ plugins {
     id "maven-publish"
     id "idea"
     id "jacoco"
-    id "io.spring.dependency-management" version "1.0.6.RELEASE"
     id "enterprise.groovy.plugin" version "1.0.4"
 }
 
@@ -34,17 +33,7 @@ sourceSets {
 
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.5.4'
-    compile 'org.springframework.boot:spring-boot-starter-data-rest'
-    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
-    compile 'io.i-t:blackbox:1.0.21'
-    compile 'io.i-t:http:1.0.0'
-    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.8'
-    compile 'com.h2database:h2:1.4.197'
-    compile group: 'org.apache.shiro', name: 'shiro-core', version: '1.4.1'
-    compile 'io.jsonwebtoken:jjwt-api:0.10.7'
-    runtime 'io.jsonwebtoken:jjwt-impl:0.10.7',
-            'io.jsonwebtoken:jjwt-jackson:0.10.7'
-    testCompile group: 'org.testng', name: 'testng', version: '6.14.3'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.3'
 }
 
 task sourceJar(type: Jar) {
@@ -53,10 +42,10 @@ task sourceJar(type: Jar) {
 }
 
 ext {
-    theTitle = "HTTP Message Broker"
+    theTitle = "Web Service Access Management"
     titleForDocumentation = archivesBaseName + " " + version
     packageTitle = group
-    description = "HTTP Message Broker"
+    description = "Web Service Access Management"
 }
 
 publishing {
@@ -99,48 +88,7 @@ bintray {
     }
 }
 
-artifactory {
-    contextUrl = 'http://oss.jfrog.org'
-    publish {
-        repository {
-            repoKey = 'oss-snapshot-local'
-            username = System.getProperty('bintray.user')
-            password = System.getProperty('bintray.key')
-        }
-        defaults {
-            publications('groovyMaven')
-            publishArtifacts = true
-            publishPom = true
-        }
-    }
-    resolve {
-        repoKey = 'jcenter'
-    }
-    clientConfig.info.setBuildNumber(System.getProperty('build.number'))
-}
-
-test {
-    useTestNG()
-    testLogging {
-        events "passed", "skipped", "failed"
-        exceptionFormat "full"
-    }
-}
-
-jacocoTestReport {
-    reports {
-        xml.enabled true
-        html.enabled false
-    }
-}
-
-check.dependsOn jacocoTestReport
-
 configurations {
     providedRuntime
     compile.exclude(group: 'ch.qos.logback')
-}
-
-dependencyManagement {
-    imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
 }

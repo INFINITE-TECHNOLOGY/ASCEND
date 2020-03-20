@@ -13,6 +13,12 @@ plugins {
     id "enterprise.groovy.plugin" version "1.0.4"
 }
 
+repositories {//todo: add HTTP to jcenter
+    maven {
+        url  "https://dl.bintray.com/infinite-technology/io.i-t"
+    }
+}
+
 apply plugin: 'com.jfrog.bintray'
 bootJar {
     baseName = 'ascend-app'

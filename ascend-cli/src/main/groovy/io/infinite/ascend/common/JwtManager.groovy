@@ -23,11 +23,9 @@ import java.security.KeyPair
 import java.security.PrivateKey
 import java.security.PublicKey
 import java.security.spec.PKCS8EncodedKeySpec
-import java.security.spec.X509EncodedKeySpec
 
 @Component
 @Slf4j
-@BlackBox(level = CarburetorLevel.ERROR)
 class JwtManager {
 
     ObjectMapper objectMapper
@@ -49,10 +47,10 @@ class JwtManager {
         objectMapper = new ObjectMapper(yamlFactory)
         if (System.getenv("useEnvKeys") == "true") {
             log.info("Using keys from Environment variables.")
-            jwtAccessKeyPrivate = loadPrivateKeyFromEnv("jwtAccessKeyPrivate")
-            jwtAccessKeyPublic = loadPublicKeyFromEnv("jwtAccessKeyPublic")
-            jwtRefreshKeyPrivate = loadPrivateKeyFromEnv("jwtRefreshKeyPrivate")
-            jwtRefreshKeyPublic = loadPublicKeyFromEnv("jwtRefreshKeyPublic")
+            jwtAccessKeyPrivate = loadPrivateKeyFromHexString(System.getenv("jwtAccessKeyPrivate"))
+            jwtAccessKeyPublic = loadPublicKeyFromHexString(System.getenv("jwtAccessKeyPublic"))
+            jwtRefreshKeyPrivate = loadPrivateKeyFromHexString(System.getenv("jwtRefreshKeyPrivate"))
+            jwtRefreshKeyPublic = loadPublicKeyFromHexString(System.getenv("jwtRefreshKeyPublic"))
         } else {
             if (System.getenv("genDynamicKeys")) {
                 log.info("Generating dynamic keys")
@@ -96,15 +94,17 @@ class JwtManager {
                 .compact()
     }
 
-    PrivateKey loadPrivateKeyFromEnv(String keyName) {
-        PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(Hex.decode(System.getenv(keyName)))
-        return KeyFactory.getInstance(SignatureAlgorithm.RS512.getFamilyName()).generatePrivate(pkcs8EncodedKeySpec)
+    PKCS8EncodedKeySpec loadSpecFromHexString(String hexString) {
+        PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(Hex.decode(hexString))
+        return pkcs8EncodedKeySpec
     }
 
+    PrivateKey loadPrivateKeyFromHexString(String hexString) {
+        return KeyFactory.getInstance(SignatureAlgorithm.RS512.getFamilyName()).generatePrivate(loadSpecFromHexString(hexString))
+    }
 
-    PublicKey loadPublicKeyFromEnv(String keyName) {
-        X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(Hex.decode(System.getenv(keyName)))
-        return KeyFactory.getInstance(SignatureAlgorithm.RS512.getFamilyName()).generatePublic(x509EncodedKeySpec)
+    PublicKey loadPublicKeyFromHexString(String hexString) {
+        return KeyFactory.getInstance(SignatureAlgorithm.RS512.getFamilyName()).generatePublic(loadSpecFromHexString(hexString))
     }
 
     String privateKeyToString(PrivateKey privateKey) {

@@ -12,6 +12,12 @@ plugins {
     id "enterprise.groovy.plugin" version "1.0.4"
 }
 
+repositories {//todo: add HTTP to jcenter
+    maven {
+        url  "https://dl.bintray.com/infinite-technology/io.i-t"
+    }
+}
+
 apply plugin: 'com.jfrog.bintray'
 bootJar {
     baseName = 'ascend-cli'
@@ -50,6 +56,7 @@ dependencies {
     compile group: 'org.apache.shiro', name: 'shiro-core', version: '1.4.1'
     compile 'io.i-t:blackbox:1.0.21'
     compile 'io.i-t:http:1.0.0'
+    compile 'info.picocli:picocli:4.2.0'
 }
 
 task sourceJar(type: Jar) {

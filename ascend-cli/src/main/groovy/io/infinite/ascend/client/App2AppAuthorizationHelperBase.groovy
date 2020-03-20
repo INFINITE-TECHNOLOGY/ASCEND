@@ -13,14 +13,20 @@ import io.infinite.http.HttpRequest
 import io.infinite.http.HttpResponse
 import io.infinite.http.SenderDefaultHttps
 
+import java.security.PrivateKey
+
 @Slf4j
 @BlackBox(level = CarburetorLevel.METHOD)
-class App2AppAuthorizationHelper {
+abstract class App2AppAuthorizationHelperBase {
+
+    abstract PrivateKey loadPrivateKey(JwtManager jwtManager, String clientAppName)
+
+    abstract String getAscendGrantingUrl()
 
     @CompileDynamic
-    Authorization createApp2AppAuthorization(String clientAppName, String serverAppName, String scopeName) {
+    Authorization createApp2AppAuthorization(String clientAppName, String scopeName) {
         JwtManager jwtManager = new JwtManager()
-        jwtManager.jwtAccessKeyPrivate = jwtManager.loadPrivateKeyFromEnv("PRIVATE_KEY_FOR_$serverAppName")//todo: have only 1 private key for app allowing access to all servers
+        jwtManager.jwtAccessKeyPrivate = loadPrivateKey(jwtManager, clientAppName)
         Authorization selfIssuedAuthorization = new Authorization()
         selfIssuedAuthorization.creationDate = new Date()
         use(TimeCategory) {
@@ -31,7 +37,7 @@ class App2AppAuthorizationHelper {
         jwtManager.setJwt(selfIssuedAuthorization)
         log.debug(selfIssuedAuthorization.jwt)
         HttpRequest ascendRequest = new HttpRequest(
-                url: System.getenv("GRANTING_URL"),
+                url: ascendGrantingUrl,
                 headers: ["content-type": "text/yaml"],
                 method: "POST",
                 body: """---

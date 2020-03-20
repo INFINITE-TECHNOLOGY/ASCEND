@@ -8,10 +8,12 @@ import io.infinite.ascend.granting.model.Authorization
 import io.infinite.blackbox.BlackBox
 import picocli.CommandLine
 
+import java.util.concurrent.Callable
+
 @BlackBox
 @Slf4j
 @CommandLine.Command(name = "ASCEND-CLI", mixinStandardHelpOptions = true, description = "App to app authorization command line client.", version = "1.0.0")
-class AscendCliApp {
+class AscendCliApp implements Callable<Integer> {
 
     @CommandLine.Parameters(index = "0", description = "Ascend Client Application Name, as trusted in Ascend Granting Server.")
     String ascendClientAppName

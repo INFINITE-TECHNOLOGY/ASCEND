@@ -7,22 +7,18 @@ plugins {
     id "groovy"
     id "maven-publish"
     id "idea"
-    id "org.springframework.boot" version "2.1.1.RELEASE"
     id "io.spring.dependency-management" version "1.0.6.RELEASE"
     id "enterprise.groovy.plugin" version "1.0.4"
 }
 
-repositories {//todo: add HTTP to jcenter
+repositories {
+    jcenter()
     maven {
-        url  "https://dl.bintray.com/infinite-technology/io.i-t"
+        url "https://dl.bintray.com/infinite-technology/io.i-t"
     }
 }
 
 apply plugin: 'com.jfrog.bintray'
-bootJar {
-    baseName = 'ascend-cli'
-    version = '0.2.0-SNAPSHOT'
-}
 
 jar {
     enabled = true
@@ -46,8 +42,17 @@ sourceSets {
 }
 
 dependencies {
-    compile project(':ascend-sdk')
-    compile 'info.picocli:picocli:4.2.0'
+    compileOnly 'org.codehaus.groovy:groovy-all:2.5.4'
+    compile 'org.springframework.boot:spring-boot-starter-data-rest'
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compile 'org.springframework.boot:spring-boot-starter-security'
+    compile "io.i-t:bobbin:3.0.0"
+    compile 'io.i-t:blackbox:1.0.21'
+    compile 'io.i-t:http:1.0.1'
+    compile group: 'org.apache.shiro', name: 'shiro-core', version: '1.4.1'
+    compile 'io.jsonwebtoken:jjwt-api:0.10.7'
+    compile 'io.jsonwebtoken:jjwt-impl:0.10.7'
+    compile 'io.jsonwebtoken:jjwt-jackson:0.10.7'
 }
 
 task sourceJar(type: Jar) {
@@ -93,7 +98,7 @@ bintray {
     pkg {
         userOrg = "infinite-technology"
         repo = "io.i-t"
-        name = "ascend-cli"
+        name = "ascend-granting-client"
         desc = "Web Service Access Management"
         issueTrackerUrl = "https://github.com/INFINITE-TECHNOLOGY/ASCEND/issues"
         vcsUrl = "https://github.com/INFINITE-TECHNOLOGY/ASCEND.git"

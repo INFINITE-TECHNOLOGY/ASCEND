@@ -7,6 +7,7 @@ plugins {
     id "groovy"
     id "maven-publish"
     id "idea"
+    id "jacoco"
     id "org.springframework.boot" version "2.1.1.RELEASE"
     id "io.spring.dependency-management" version "1.0.6.RELEASE"
     id "enterprise.groovy.plugin" version "1.0.4"
@@ -20,12 +21,8 @@ repositories {//todo: add HTTP to jcenter
 
 apply plugin: 'com.jfrog.bintray'
 bootJar {
-    baseName = 'ascend-cli'
+    baseName = 'ascend-web'
     version = '0.2.0-SNAPSHOT'
-}
-
-jar {
-    enabled = true
 }
 
 ext['groovy.version'] = '2.5.4'
@@ -47,7 +44,7 @@ sourceSets {
 
 dependencies {
     compile project(':ascend-sdk')
-    compile 'info.picocli:picocli:4.2.0'
+    compile 'org.springframework.boot:spring-boot-starter-security'
 }
 
 task sourceJar(type: Jar) {
@@ -93,7 +90,7 @@ bintray {
     pkg {
         userOrg = "infinite-technology"
         repo = "io.i-t"
-        name = "ascend-cli"
+        name = "ascend-web"
         desc = "Web Service Access Management"
         issueTrackerUrl = "https://github.com/INFINITE-TECHNOLOGY/ASCEND/issues"
         vcsUrl = "https://github.com/INFINITE-TECHNOLOGY/ASCEND.git"
@@ -105,10 +102,6 @@ bintray {
 configurations {
     providedRuntime
     compile.exclude(group: 'ch.qos.logback')
-}
-
-dependencyManagement {
-    imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
 }
 
 task stage(dependsOn: ['build', 'clean'])

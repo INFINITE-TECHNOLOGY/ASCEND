@@ -1,5 +1,5 @@
 rootProject.name = 'ascend'
 
-include 'ascend-lib'
+include 'ascend-sdk'
 include 'ascend-cli'
-include 'ascend-app'
+include 'ascend-web'

@@ -56,7 +56,7 @@ class AscendCliApp implements Callable<Integer>, CommandLineRunner {
 
     @Override
     void run(String... args) throws Exception {
-        int exitCode = new CommandLine(new AscendCliApp()).execute(args)
+        int exitCode = new CommandLine(this).execute(args)
         System.exit(exitCode)
     }
 

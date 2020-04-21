@@ -7,7 +7,6 @@ plugins {
     id "groovy"
     id "maven-publish"
     id "idea"
-    id "jacoco"
     id "org.springframework.boot" version "2.1.1.RELEASE"
     id "io.spring.dependency-management" version "1.0.6.RELEASE"
     id "enterprise.groovy.plugin" version "1.0.4"
@@ -22,7 +21,7 @@ repositories {//todo: add HTTP to jcenter
 apply plugin: 'com.jfrog.bintray'
 bootJar {
     baseName = 'ascend-web'
-    version = '0.2.0-SNAPSHOT'
+    version = '0.2.0'
 }
 
 ext['groovy.version'] = '2.5.4'
@@ -30,7 +29,7 @@ ext['springBootVersion'] = '2.1.1.RELEASE'
 
 sourceCompatibility = 1.8
 group = "io.i-t"
-version = "0.2.0-SNAPSHOT"
+version = "0.2.0"
 description = "Web Service Access Management"
 
 repositories {
@@ -45,6 +44,7 @@ sourceSets {
 dependencies {
     compile project(':ascend-sdk')
     compile 'org.springframework.boot:spring-boot-starter-security'
+    compile 'org.springframework.boot:spring-boot-loader'
 }
 
 task sourceJar(type: Jar) {

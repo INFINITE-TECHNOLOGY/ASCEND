@@ -21,11 +21,7 @@ repositories {//todo: add HTTP to jcenter
 apply plugin: 'com.jfrog.bintray'
 bootJar {
     baseName = 'ascend-cli'
-    version = '0.2.0-SNAPSHOT'
-}
-
-jar {
-    enabled = true
+    version = '0.2.0'
 }
 
 ext['groovy.version'] = '2.5.4'
@@ -33,7 +29,7 @@ ext['springBootVersion'] = '2.1.1.RELEASE'
 
 sourceCompatibility = 1.8
 group = "io.i-t"
-version = "0.2.0-SNAPSHOT"
+version = "0.2.0"
 description = "Web Service Access Management"
 
 repositories {
@@ -105,10 +101,6 @@ bintray {
 configurations {
     providedRuntime
     compile.exclude(group: 'ch.qos.logback')
-}
-
-dependencyManagement {
-    imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
 }
 
 task stage(dependsOn: ['build', 'clean'])

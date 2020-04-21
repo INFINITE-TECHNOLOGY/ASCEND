@@ -29,7 +29,7 @@ ext['springBootVersion'] = '2.1.1.RELEASE'
 
 sourceCompatibility = 1.8
 group = "io.i-t"
-version = "0.2.0"
+version = "0.2.1"
 description = "Web Service Access Management"
 
 repositories {
@@ -99,7 +99,7 @@ bintray {
     pkg {
         userOrg = "infinite-technology"
         repo = "io.i-t"
-        name = "ascend-granting-client"
+        name = "ascend-sdk"
         desc = "Web Service Access Management"
         issueTrackerUrl = "https://github.com/INFINITE-TECHNOLOGY/ASCEND/issues"
         vcsUrl = "https://github.com/INFINITE-TECHNOLOGY/ASCEND.git"

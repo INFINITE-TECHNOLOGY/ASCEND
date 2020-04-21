@@ -25,7 +25,7 @@ class ValidationController {
     @Autowired
     ServerAuthorizationValidationService serverAuthorizationValidationService
 
-    @PostMapping(value = "/ascend/validation")
+    @PostMapping(value = "/ascend/public/validation")
     @ResponseBody
     @CompileDynamic
     @BlackBox(level = CarburetorLevel.METHOD)

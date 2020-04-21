@@ -18,7 +18,7 @@ class InquireController {
     @Autowired
     PrototypeAuthorizationRepository prototypeAuthorizationRepository
 
-    @GetMapping(value = "/ascend/granting/inquire")
+    @GetMapping(value = "/ascend/public/granting/inquire")
     @ResponseBody
     Set<PrototypeAuthorization> inquire(
             @RequestParam("scopeName") String scopeName,

@@ -80,7 +80,7 @@ class ClientAuthorizationGrantingService {
         return objectMapper.readValue(
                 new SenderDefaultHttps().expectStatus(
                         new HttpRequest(
-                                url: "$ascendUrl/ascend/granting/inquire?scopeName=${scopeName}&namespace=${authorizationNamespace}",
+                                url: "$ascendUrl/ascend/public/granting/inquire?scopeName=${scopeName}&namespace=${authorizationNamespace}",
                                 method: "GET"
                         ), 200
                 ).body, PrototypeAuthorization[].class)
@@ -90,7 +90,7 @@ class ClientAuthorizationGrantingService {
         return objectMapper.readValue(
                 new SenderDefaultHttps().expectStatus(
                         new HttpRequest(
-                                url: "$ascendUrl/ascend/granting",
+                                url: "$ascendUrl/ascend/public/granting",
                                 method: "POST",
                                 body: objectMapper.writeValueAsString(authorization)
                         ), 200

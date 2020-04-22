@@ -22,7 +22,8 @@ class LocalAuthorizationValidationService extends ClientAuthorizationValidationS
     @Autowired
     ServerAuthorizationValidationService serverAuthorizationValidationService
 
-    Integer validateAscendHttpRequest(String jwt, Claim claim) {
+    @Override
+    Integer validateAscendHttpRequest(String ascendValidationUrl, String jwt, Claim claim) {
         try {
             serverAuthorizationValidationService.validateJwtClaim(jwt, claim)
             return 200

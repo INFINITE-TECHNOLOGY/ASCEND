@@ -43,7 +43,7 @@ class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
         // authorization requests config
                 .authorizeRequests()
                 .antMatchers("/public/**").permitAll()
-                .antMatchers("/orbit/public/**").permitAll()
+                .antMatchers("/ascend/public/**").permitAll()
                 .anyRequest().authenticated()
     }
 

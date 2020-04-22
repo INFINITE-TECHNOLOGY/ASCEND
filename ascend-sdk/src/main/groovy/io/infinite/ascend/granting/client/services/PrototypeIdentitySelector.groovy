@@ -6,4 +6,6 @@ interface PrototypeIdentitySelector {
 
     PrototypeIdentity select(Set<PrototypeIdentity> prototypeIdentities)
 
+    PrototypeIdentity selectPrerequisite(Set<PrototypeIdentity> prototypeIdentities)
+
 }

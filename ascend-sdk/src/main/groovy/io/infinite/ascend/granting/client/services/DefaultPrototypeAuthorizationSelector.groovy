@@ -13,4 +13,9 @@ class DefaultPrototypeAuthorizationSelector implements PrototypeAuthorizationSel
         return prototypeAuthorizations.first()
     }
 
+    @Override
+    PrototypeAuthorization selectPrerequisite(Set<PrototypeAuthorization> prototypeAuthorizations) {
+        return prototypeAuthorizations.first()
+    }
+
 }

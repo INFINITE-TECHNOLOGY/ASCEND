@@ -1,6 +1,7 @@
 package io.infinite.ascend.granting.server.entities
 
 import groovy.transform.ToString
+import org.hibernate.annotations.Type
 
 import javax.persistence.*
 
@@ -15,6 +16,8 @@ class TrustedApp {
 
     String appName
 
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
     String publicKey
 
 }

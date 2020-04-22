@@ -42,7 +42,7 @@ class ClientAuthorizationGrantingService {
     AuthorizationSelector authorizationSelector
 
     @Transactional
-    Authorization clientAuthorization(String scopeName, String ascendUrl, String authorizationNamespace) {
+    Authorization scopedAuthorization(String scopeName, String ascendUrl, String authorizationNamespace) {
         Authorization authorization
         Set<PrototypeAuthorization> prototypeAuthorizations = inquire(scopeName, ascendUrl, authorizationNamespace)
         if (prototypeAuthorizations.isEmpty()) {
@@ -50,11 +50,23 @@ class ClientAuthorizationGrantingService {
         }
         PrototypeAuthorization prototypeAuthorization = prototypeAuthorizationSelector.select(prototypeAuthorizations)
         PrototypeIdentity prototypeIdentity = prototypeIdentitySelector.select(prototypeAuthorization.identities)
+        authorization = produce(prototypeAuthorization, authorizationNamespace, prototypeIdentity, ascendUrl)
+        return authorization
+    }
+
+    Authorization produce(PrototypeAuthorization prototypeAuthorization, String authorizationNamespace, PrototypeIdentity prototypeIdentity, String ascendUrl) {
+        Authorization authorization
         Set<Authorization> existingAuthorizations = authorizationRepository.findValidForClient(authorizationNamespace, prototypeAuthorization.name)
         if (!existingAuthorizations.isEmpty()) {
             authorization = authorizationSelector.select(existingAuthorizations)
         } else {
             authorization = prototypeConverter.convertAuthorization(prototypeAuthorization, authorizationNamespace)
+            if (!prototypeAuthorization.prerequisites.empty) {
+                PrototypeAuthorization prototypeAuthorizationPrerequisite = prototypeAuthorizationSelector.selectPrerequisite(prototypeAuthorization.prerequisites)
+                PrototypeIdentity prototypeIdentityPrerequisite = prototypeIdentitySelector.selectPrerequisite(prototypeAuthorizationPrerequisite.identities)
+                authorization.prerequisiteJwt = produce(prototypeAuthorizationPrerequisite, authorizationNamespace, prototypeIdentityPrerequisite, ascendUrl).jwt
+                //<<<<<<<<Recursive call
+            }
             authorization.identity = prototypeConverter.convertIdentity(prototypeIdentity)
             authorization.identity.authentications = []
             prototypeIdentity.authentications.each { prototypeAuthentication ->
@@ -67,12 +79,14 @@ class ClientAuthorizationGrantingService {
                 throw new AscendException("Authorization failed: $authorization")
             }
         }
-        consume(authorization)
+        authorizationRepository.saveAndFlush(authorization)
         return authorization
     }
 
-    void consume(Authorization authorization) {
-        authorization.claims.add(new Claim())
+    //todo: securedHttpRequest(...)
+
+    void consume(Authorization authorization, Claim claim) {
+        authorization.claims.add(claim)
         authorizationRepository.saveAndFlush(authorization)
     }
 
@@ -83,7 +97,7 @@ class ClientAuthorizationGrantingService {
                                 url: "$ascendUrl/ascend/public/granting/inquire?scopeName=${scopeName}&namespace=${authorizationNamespace}",
                                 method: "GET"
                         ), 200
-                ).body, PrototypeAuthorization[].class)
+                ).body, PrototypeAuthorization[].class) as Set<PrototypeAuthorization>
     }
 
     Authorization sendToAuthorizationServer(Authorization authorization, String ascendUrl) {

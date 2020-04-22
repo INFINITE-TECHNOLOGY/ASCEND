@@ -7,7 +7,6 @@ import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.granting.client.services.ClientAuthorizationGrantingService
 import io.infinite.blackbox.BlackBox
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -50,7 +49,7 @@ class AscendCliApp implements Callable<Integer>, CommandLineRunner {
     }
 
     Integer call() throws Exception {
-        Authorization orbitAuthorization = clientAuthorizationGrantingService.clientAuthorization(scopeName, ascendGrantingUrl, authorizationNamespace)
+        Authorization orbitAuthorization = clientAuthorizationGrantingService.scopedAuthorization(scopeName, ascendGrantingUrl, authorizationNamespace)
         new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT).writeValue(System.out, orbitAuthorization)
         return 0
     }

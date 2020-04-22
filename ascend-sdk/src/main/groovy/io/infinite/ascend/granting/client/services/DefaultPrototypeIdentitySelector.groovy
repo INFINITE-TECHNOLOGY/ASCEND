@@ -13,4 +13,9 @@ class DefaultPrototypeIdentitySelector implements PrototypeIdentitySelector {
         return identities.first()
     }
 
+    @Override
+    PrototypeIdentity selectPrerequisite(Set<PrototypeIdentity> identities) {
+        return identities.first()
+    }
+
 }

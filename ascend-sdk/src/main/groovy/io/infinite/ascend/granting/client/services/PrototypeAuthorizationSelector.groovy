@@ -7,4 +7,6 @@ interface PrototypeAuthorizationSelector {
 
     PrototypeAuthorization select(Set<PrototypeAuthorization> prototypeAuthorizations)
 
+    PrototypeAuthorization selectPrerequisite(Set<PrototypeAuthorization> prototypeAuthorizations)
+
 }

@@ -69,6 +69,7 @@ class ClientAuthorizationValidationService {
         catch (Exception e) {
             log.error("Exception", e)
             SecurityContextHolder.clearContext()
+            response.sendError(500)
         }
     }
 

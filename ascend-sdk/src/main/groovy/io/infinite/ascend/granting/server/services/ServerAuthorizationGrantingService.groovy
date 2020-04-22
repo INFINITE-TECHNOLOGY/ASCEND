@@ -174,9 +174,9 @@ class ServerAuthorizationGrantingService {
         authorization.creationDate = creationDate.toDate()
         authorization.expiryDate = (creationDate + Duration.ofSeconds(prototypeAuthorization.durationSeconds)).toDate()
         if (authorization.isRefresh) {
-            authorization.jwt = jwtService.authorization2Jwt(authorization, jwtService.loadPrivateKeyFromHexString(jwtAccessKeyPrivate))
-        } else {
             authorization.jwt = jwtService.authorization2Jwt(authorization, jwtService.loadPrivateKeyFromHexString(jwtRefreshKeyPrivate))
+        } else {
+            authorization.jwt = jwtService.authorization2Jwt(authorization, jwtService.loadPrivateKeyFromHexString(jwtAccessKeyPrivate))
         }
     }
 

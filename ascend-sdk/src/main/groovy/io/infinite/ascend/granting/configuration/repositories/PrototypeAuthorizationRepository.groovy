@@ -11,8 +11,8 @@ interface PrototypeAuthorizationRepository extends JpaRepository<PrototypeAuthor
 
     @Query("""select a from PrototypeNamespace n 
         join n.authorizations a
-        join a.scopes scopes
-        where scopes.name = :scopeName
+        join a.scopes s
+        where s.name = :scopeName
         and n.name = :namespace""")
     Set<PrototypeAuthorization> inquire(
             @Param("scopeName") String scopeName,
@@ -21,11 +21,11 @@ interface PrototypeAuthorizationRepository extends JpaRepository<PrototypeAuthor
 
     @Query("""select a from  PrototypeNamespace n
         join n.authorizations a
-        join a.identities identityTypes
-        join a.scopes scopes
+        join a.identities i
+        join a.scopes s
         where a.name = :authorizationName
-        and scopes.name = :scopeName
-        and identityTypes.name = :identityTypeName
+        and s.name = :scopeName
+        and i.name = :identityTypeName
         and n.name = :authorizationNamespace
         and a.isRefresh = :isRefresh""")
     Set<PrototypeAuthorization> findForGranting(

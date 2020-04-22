@@ -13,8 +13,6 @@ class PrototypeGrant {
     @Column(nullable = false)
     Long id
 
-    String bodyRegex
-
     String urlRegex
 
     String httpMethod

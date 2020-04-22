@@ -67,6 +67,7 @@ class ClientAuthorizationGrantingService {
                 authorization.prerequisiteJwt = produce(prototypeAuthorizationPrerequisite, authorizationNamespace, prototypeIdentityPrerequisite, ascendUrl).jwt
                 //<<<<<<<<Recursive call
             }
+            authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
             authorization.identity = prototypeConverter.convertIdentity(prototypeIdentity)
             authorization.identity.authentications = []
             prototypeIdentity.authentications.each { prototypeAuthentication ->

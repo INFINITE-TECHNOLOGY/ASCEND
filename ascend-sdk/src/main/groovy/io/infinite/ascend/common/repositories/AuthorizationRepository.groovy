@@ -14,7 +14,6 @@ interface AuthorizationRepository extends JpaRepository<Authorization, Long> {
 
     Optional<Authorization> findByGuid(UUID guid)
 
-    @Lock(LockModeType.PESSIMISTIC_READ)
     @Query("""select a from Authorization a
         join a.scope s
         left join a.claims c

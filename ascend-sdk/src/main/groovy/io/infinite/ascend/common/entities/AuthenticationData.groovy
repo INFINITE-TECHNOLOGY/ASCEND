@@ -19,7 +19,6 @@ class AuthenticationData {
     Map<String, String> publicCredentials = new HashMap<String, String>()
 
     @Transient
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Map<String, String> privateCredentials = new HashMap<String, String>()
 
 }

@@ -19,6 +19,7 @@ import java.security.KeyFactory
 import java.security.PrivateKey
 import java.security.PublicKey
 import java.security.spec.PKCS8EncodedKeySpec
+import java.security.spec.X509EncodedKeySpec
 
 @Service
 @Slf4j
@@ -57,18 +58,24 @@ class JwtService {
     }
 
     @BlackBox(level = CarburetorLevel.NONE)
-    PKCS8EncodedKeySpec loadSpecFromHexString(String hexString) {
+    PKCS8EncodedKeySpec loadSpecFromHexStringPrivate(String hexString) {
         PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(Hex.decode(hexString))
         return pkcs8EncodedKeySpec
     }
 
     @BlackBox(level = CarburetorLevel.NONE)
+    X509EncodedKeySpec loadSpecFromHexStringPublic(String hexString) {
+        X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(Hex.decode(hexString))
+        return x509EncodedKeySpec
+    }
+
+    @BlackBox(level = CarburetorLevel.NONE)
     PrivateKey loadPrivateKeyFromHexString(String hexString) {
-        return KeyFactory.getInstance(SignatureAlgorithm.RS512.getFamilyName()).generatePrivate(loadSpecFromHexString(hexString))
+        return KeyFactory.getInstance(SignatureAlgorithm.RS512.getFamilyName()).generatePrivate(loadSpecFromHexStringPrivate(hexString))
     }
 
     PublicKey loadPublicKeyFromHexString(String hexString) {
-        return KeyFactory.getInstance(SignatureAlgorithm.RS512.getFamilyName()).generatePublic(loadSpecFromHexString(hexString))
+        return KeyFactory.getInstance(SignatureAlgorithm.RS512.getFamilyName()).generatePublic(loadSpecFromHexStringPublic(hexString))
     }
 
     @BlackBox(level = CarburetorLevel.NONE)

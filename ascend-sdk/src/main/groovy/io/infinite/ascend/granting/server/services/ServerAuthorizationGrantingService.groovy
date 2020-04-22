@@ -168,6 +168,7 @@ class ServerAuthorizationGrantingService {
         )
         authorization.isSuccessful = true
         authorization.guid = UUID.randomUUID()
+        authorization = authorizationRepository.saveAndFlush(authorization)
         log.debug(authorization.id.toString())
         Instant creationDate = Instant.now()
         authorization.creationDate = creationDate.toDate()
@@ -177,7 +178,6 @@ class ServerAuthorizationGrantingService {
         } else {
             authorization.jwt = jwtService.authorization2Jwt(authorization, jwtService.loadPrivateKeyFromHexString(jwtRefreshKeyPrivate))
         }
-        authorizationRepository.saveAndFlush(authorization)
     }
 
     Map<String, String> commonAuthenticationValidation(Authentication authentication, Authorization authorization) {

@@ -5,6 +5,7 @@ import groovy.util.logging.Slf4j
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
@@ -23,10 +24,13 @@ class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     LocalAuthorizationValidationService localAuthorizationValidationService
 
+    @Value('${ascendValidationUrl}')
+    String ascendValidationUrl
+
     @Override
     @BlackBox(level = CarburetorLevel.METHOD)
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
-        localAuthorizationValidationService.validateServletRequest(request, response, chain)
+        localAuthorizationValidationService.validateServletRequest(ascendValidationUrl, request, response, chain)
     }
 
 }

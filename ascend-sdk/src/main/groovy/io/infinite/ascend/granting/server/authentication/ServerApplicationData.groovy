@@ -16,8 +16,7 @@ import org.springframework.stereotype.Service
 @BlackBox(level = CarburetorLevel.METHOD)
 @Slf4j
 @Service
-@Qualifier("ApplicationData")
-class ApplicationData implements ServerAuthenticationModule {
+class ServerApplicationData implements ServerAuthenticationModule {
 
     @Autowired
     JwtService jwtService

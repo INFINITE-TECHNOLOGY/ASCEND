@@ -11,9 +11,10 @@ import org.springframework.stereotype.Service
 @Service
 class PrototypeConverter {
 
-    Authorization convertAuthorization(PrototypeAuthorization prototypeAuthorization) {
+    Authorization convertAuthorization(PrototypeAuthorization prototypeAuthorization, String authorizationNamespace) {
         return new Authorization(
                 name: prototypeAuthorization.name,
+                namespace: authorizationNamespace,
                 isRefresh: prototypeAuthorization.isRefresh
         )
     }

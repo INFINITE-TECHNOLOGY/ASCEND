@@ -24,7 +24,7 @@ class ServerAuthorizationValidationService {
     @Autowired
     AuthorizationRepository authorizationRepository
 
-    @Value("jwtAccessKeyPublic")
+    @Value('${jwtAccessKeyPublic}')
     String jwtAccessKeyPublic
 
     void validateJwtClaim(String jwt, Claim claim) {

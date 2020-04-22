@@ -24,8 +24,8 @@ class GrantingController {
     @ResponseBody
     @CompileDynamic
     @BlackBox(level = CarburetorLevel.METHOD)
-    Authorization postAuthorization(@RequestBody Authorization iAuthorization) {
-        return serverAuthorizationGrantingService.authorize(iAuthorization)
+    Authorization postAuthorization(@RequestBody Authorization authorization) {
+        return serverAuthorizationGrantingService.grant(authorization)
     }
 
 }

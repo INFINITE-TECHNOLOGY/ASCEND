@@ -26,12 +26,14 @@ interface PrototypeAuthorizationRepository extends JpaRepository<PrototypeAuthor
         where a.name = :authorizationName
         and scopes.name = :scopeName
         and identityTypes.name = :identityTypeName
-        and n.name = :authorizationNamespace""")
+        and n.name = :authorizationNamespace
+        and a.isRefresh = :isRefresh""")
     Set<PrototypeAuthorization> findForGranting(
             @Param("authorizationNamespace") String authorizationNamespace
             , @Param("authorizationName") String authorizationName
             , @Param("scopeName") String scopeName
             , @Param("identityTypeName") String identityTypeName
+            , @Param("isRefresh") Boolean isRefresh
     )
 
 }

@@ -7,6 +7,7 @@ import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.granting.client.services.ClientAuthorizationGrantingService
 import io.infinite.blackbox.BlackBox
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -32,9 +33,6 @@ class AscendCliApp implements Callable<Integer>, CommandLineRunner {
     @CommandLine.Option(names = ["--authorizationNamespace"], paramLabel = "ORBIT", description = "Resource Server Group Name.", required = true)
     String authorizationNamespace
 
-    @CommandLine.Option(names = ["--ascendClientAppPrivateKeyFile"], paramLabel = "FILE", description = "File containing HEX string with the private key.", required = true)
-    File ascendClientAppPrivateKeyFile
-
     @Autowired
     ClientAuthorizationGrantingService clientAuthorizationGrantingService
 
@@ -43,12 +41,15 @@ class AscendCliApp implements Callable<Integer>, CommandLineRunner {
         log.info("This is Open Source software, free for usage and modification.")
         log.info("By using this software you accept License and User Agreement.")
         log.info("Visit our web site: https://i-t.io/Ascend")
+        System.setProperty("jwtAccessKeyPublic", "")
+        System.setProperty("jwtAccessKeyPrivate", "")
+        System.setProperty("jwtRefreshKeyPublic", "")
+        System.setProperty("jwtRefreshKeyPrivate", "")
+        System.setProperty("ascendValidationUrl", "")
         SpringApplication.run(AscendCliApp.class, args)
     }
 
     Integer call() throws Exception {
-        System.setProperty("ascendClientAppName", ascendClientAppName)
-        System.setProperty("ascendClientAppPrivateKey", ascendClientAppPrivateKeyFile.getText())
         Authorization orbitAuthorization = clientAuthorizationGrantingService.clientAuthorization(scopeName, ascendGrantingUrl, authorizationNamespace)
         new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT).writeValue(System.out, orbitAuthorization)
         return 0

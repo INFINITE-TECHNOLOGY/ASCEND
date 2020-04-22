@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.infinite.ascend.common.entities.Authentication
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.entities.Claim
-import io.infinite.ascend.granting.common.other.AscendException
 import io.infinite.ascend.common.repositories.AuthorizationRepository
+import io.infinite.ascend.granting.common.other.AscendException
 import io.infinite.ascend.granting.configuration.entities.PrototypeAuthorization
 import io.infinite.ascend.granting.configuration.entities.PrototypeIdentity
 import io.infinite.blackbox.BlackBox
@@ -54,7 +54,7 @@ class ClientAuthorizationGrantingService {
         if (!existingAuthorizations.isEmpty()) {
             authorization = authorizationSelector.select(existingAuthorizations)
         } else {
-            authorization = prototypeConverter.convertAuthorization(prototypeAuthorization)
+            authorization = prototypeConverter.convertAuthorization(prototypeAuthorization, authorizationNamespace)
             authorization.identity = prototypeConverter.convertIdentity(prototypeIdentity)
             authorization.identity.authentications = []
             prototypeIdentity.authentications.each { prototypeAuthentication ->
@@ -91,6 +91,7 @@ class ClientAuthorizationGrantingService {
                 new SenderDefaultHttps().expectStatus(
                         new HttpRequest(
                                 url: "$ascendUrl/ascend/public/granting",
+                                headers: ["Content-Type": "application/json;charset=UTF-8"],
                                 method: "POST",
                                 body: objectMapper.writeValueAsString(authorization)
                         ), 200

@@ -18,7 +18,7 @@ class ServerAuthenticationService {
     ApplicationContext applicationContext
 
     Map<String, String> authenticate(Authentication authentication, Authorization authorization) {
-        ServerAuthenticationModule serverAuthentication = applicationContext.getBean(authentication.name) as ServerAuthenticationModule
+        ServerAuthenticationModule serverAuthentication = applicationContext.getBean("server" + authentication.name, ServerAuthenticationModule.class)
         return serverAuthentication.authenticate(authentication, authorization)
     }
 

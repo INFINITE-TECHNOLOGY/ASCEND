@@ -16,7 +16,7 @@ class ClientAuthenticationService {
     ApplicationContext applicationContext
 
     void authenticate(Authentication authentication) {
-        ClientAuthenticationModule clientAuthentication = applicationContext.getBean(authentication.name) as ClientAuthenticationModule
+        ClientAuthenticationModule clientAuthentication = applicationContext.getBean("client" + authentication.name, ClientAuthenticationModule.class)
         authentication.authenticationData = clientAuthentication.authenticate()
     }
 

@@ -6,6 +6,7 @@ import io.infinite.ascend.common.entities.Authentication
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.entities.Grant
 import io.infinite.ascend.common.entities.Scope
+import io.infinite.ascend.common.repositories.AuthorizationRepository
 import io.infinite.ascend.common.services.JwtService
 import io.infinite.ascend.granting.configuration.entities.PrototypeAuthentication
 import io.infinite.ascend.granting.configuration.entities.PrototypeAuthorization
@@ -33,11 +34,20 @@ class ServerAuthorizationGrantingService {
     @Autowired
     ServerAuthenticationService serverAuthenticationService
 
-    @Value("jwtAccessKeyPublic")
+    @Value('${jwtAccessKeyPublic}')
     String jwtAccessKeyPublic
 
-    @Value("jwtAccessKeyPrivate")
+    @Value('${jwtAccessKeyPrivate}')
     String jwtAccessKeyPrivate
+
+    @Value('${jwtRefreshKeyPublic}')
+    String jwtRefreshKeyPublic
+
+    @Value('${jwtRefreshKeyPrivate}')
+    String jwtRefreshKeyPrivate
+
+    @Autowired
+    AuthorizationRepository authorizationRepository
 
     Authorization authorize(Authorization authorization) {
         try {
@@ -45,7 +55,8 @@ class ServerAuthorizationGrantingService {
                     authorization.namespace,
                     authorization.name,
                     authorization.scope?.name,
-                    authorization.identity?.name
+                    authorization.identity?.name,
+                    authorization.isRefresh
             )
             if (authorizationTypes.size() == 0) {
                 log.debug("No authorization types found")
@@ -155,14 +166,18 @@ class ServerAuthorizationGrantingService {
                     )
                 }.toSet()
         )
-        authorization.isRefresh = false
         authorization.isSuccessful = true
         authorization.guid = UUID.randomUUID()
         log.debug(authorization.id.toString())
         Instant creationDate = Instant.now()
         authorization.creationDate = creationDate.toDate()
         authorization.expiryDate = (creationDate + Duration.ofSeconds(prototypeAuthorization.durationSeconds)).toDate()
-        jwtService.authorization2Jwt(authorization, jwtService.loadPrivateKeyFromHexString(jwtAccessKeyPrivate))
+        if (authorization.isRefresh) {
+            authorization.jwt = jwtService.authorization2Jwt(authorization, jwtService.loadPrivateKeyFromHexString(jwtAccessKeyPrivate))
+        } else {
+            authorization.jwt = jwtService.authorization2Jwt(authorization, jwtService.loadPrivateKeyFromHexString(jwtRefreshKeyPrivate))
+        }
+        authorizationRepository.saveAndFlush(authorization)
     }
 
     Map<String, String> commonAuthenticationValidation(Authentication authentication, Authorization authorization) {

@@ -7,7 +7,6 @@ import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import io.infinite.http.HttpRequest
 import io.infinite.http.SenderDefaultHttps
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
 import org.springframework.stereotype.Service
@@ -21,24 +20,21 @@ import javax.servlet.http.HttpServletResponse
 @Service
 class ClientAuthorizationValidationService {
 
-    @Value("ascendTrustedUrl")
-    String ascendTrustedUrl
-
     ObjectMapper objectMapper = new ObjectMapper()
 
-    Integer validateAscendHttpRequest(String jwt, Claim claim) {
+    Integer validateAscendHttpRequest(String ascendValidationUrl, String jwt, Claim claim) {
         return new SenderDefaultHttps().sendHttpMessage(new HttpRequest(
-                url: ascendTrustedUrl,
+                url: ascendValidationUrl,
                 headers: [
                         "Authorization": jwt,
-                        "content-type": "application/json"
+                        "content-type" : "application/json"
                 ],
                 method: "POST",
                 body: objectMapper.writeValueAsString(claim)
         )).status
     }
 
-    void validateServletRequest(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
+    void validateServletRequest(String ascendValidationUrl, HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
         try {
             String authorizationHeader = request.getHeader("Authorization")
             if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
@@ -58,7 +54,7 @@ class ClientAuthorizationValidationService {
                     incomingUrl: incomingUrl,
                     method: request.method
             )
-            Integer ascendHttpResponseStatus = validateAscendHttpRequest(authorizationHeader, ascendHttpRequest)
+            Integer ascendHttpResponseStatus = validateAscendHttpRequest(ascendValidationUrl, authorizationHeader, ascendHttpRequest)
             if (ascendHttpResponseStatus != 200) {
                 SecurityContextHolder.clearContext()
                 response.sendError(ascendHttpResponseStatus, "Unauthorized.")

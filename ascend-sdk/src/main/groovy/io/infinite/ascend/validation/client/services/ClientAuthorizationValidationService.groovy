@@ -26,7 +26,7 @@ class ClientAuthorizationValidationService {
 
     ObjectMapper objectMapper = new ObjectMapper()
 
-    Integer validateAscendHttpRequest(String jwt, Claim ascendHttpRequest) {
+    Integer validateAscendHttpRequest(String jwt, Claim claim) {
         return new SenderDefaultHttps().sendHttpMessage(new HttpRequest(
                 url: ascendTrustedUrl,
                 headers: [
@@ -34,7 +34,7 @@ class ClientAuthorizationValidationService {
                         "content-type": "application/json"
                 ],
                 method: "POST",
-                body: objectMapper.writeValueAsString(ascendHttpRequest)
+                body: objectMapper.writeValueAsString(claim)
         )).status
     }
 

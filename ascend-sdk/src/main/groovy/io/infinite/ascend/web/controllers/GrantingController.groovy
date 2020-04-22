@@ -1,4 +1,4 @@
-package io.infinite.ascend.controllers
+package io.infinite.ascend.web.controllers
 
 import groovy.transform.CompileDynamic
 import groovy.util.logging.Slf4j

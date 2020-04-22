@@ -1,4 +1,4 @@
-package io.infinite.ascend.controllers
+package io.infinite.ascend.web.controllers
 
 import groovy.util.logging.Slf4j
 import io.infinite.ascend.granting.configuration.entities.PrototypeAuthorization

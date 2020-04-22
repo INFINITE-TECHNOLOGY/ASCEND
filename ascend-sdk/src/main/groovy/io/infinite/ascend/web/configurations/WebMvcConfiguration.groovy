@@ -1,4 +1,4 @@
-package io.infinite.ascend.configurations
+package io.infinite.ascend.web.configurations
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired

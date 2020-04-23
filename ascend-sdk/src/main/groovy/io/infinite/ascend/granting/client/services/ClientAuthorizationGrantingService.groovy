@@ -60,7 +60,7 @@ class ClientAuthorizationGrantingService {
         if (!existingAuthorizations.isEmpty()) {
             authorization = authorizationSelector.select(existingAuthorizations)
         } else {
-            authorization = prototypeConverter.convertAuthorization(prototypeAuthorization, authorizationServerNamespace)
+            authorization = prototypeConverter.convertAuthorization(prototypeAuthorization, authorizationClientNamespace, authorizationServerNamespace)
             if (!prototypeAuthorization.prerequisites.empty) {
                 PrototypeAuthorization prototypeAuthorizationPrerequisite = prototypeAuthorizationSelector.selectPrerequisite(prototypeAuthorization.prerequisites)
                 PrototypeIdentity prototypeIdentityPrerequisite = prototypeIdentitySelector.selectPrerequisite(prototypeAuthorizationPrerequisite.identities)

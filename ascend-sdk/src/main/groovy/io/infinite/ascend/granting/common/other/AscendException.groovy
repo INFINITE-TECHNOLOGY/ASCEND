@@ -6,4 +6,8 @@ class AscendException extends Exception {
         super(message)
     }
 
+    AscendException(String message, Throwable throwable) {
+        super(message, throwable)
+    }
+
 }

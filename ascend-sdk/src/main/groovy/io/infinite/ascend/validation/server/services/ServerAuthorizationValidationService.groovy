@@ -4,6 +4,7 @@ import groovy.util.logging.Slf4j
 import io.infinite.ascend.common.entities.Claim
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.repositories.AuthorizationRepository
+import io.infinite.ascend.common.repositories.ClaimRepository
 import io.infinite.ascend.common.services.JwtService
 import io.infinite.ascend.validation.other.AscendForbiddenException
 import io.infinite.ascend.validation.other.AscendUnauthorizedException
@@ -24,11 +25,14 @@ class ServerAuthorizationValidationService {
     @Autowired
     AuthorizationRepository authorizationRepository
 
+    @Autowired
+    ClaimRepository claimRepository
+
     @Value('${jwtAccessKeyPublic}')
     String jwtAccessKeyPublic
 
     void validateJwtClaim(Claim claim) {
-        Authorization authorization = jwtService.jwt2Authorization(claim.jwt.replace("Bearer ", ""), jwtService.loadPublicKeyFromHexString(jwtAccessKeyPublic))
+        Authorization authorization = jwtService.jwt2Authorization(claim.jwt, jwtService.loadPublicKeyFromHexString(jwtAccessKeyPublic))
         validateAuthorizationClaim(authorization, claim)
     }
 
@@ -58,12 +62,11 @@ class ServerAuthorizationValidationService {
                             if (authorization.maxUsageCount > 0 && existingAuthorization.get().claims.size() >= authorization.maxUsageCount) {
                                 throw new AscendUnauthorizedException("Exceeded maximum usage count")
                             }
-                            existingAuthorization.get().claims.add(claim)
-                            authorizationRepository.saveAndFlush(existingAuthorization.get())
-                        } else {
-                            authorization.claims.add(claim)
-                            authorizationRepository.saveAndFlush(authorization)
+                            authorization = existingAuthorization.get()
                         }
+                        claim = claimRepository.saveAndFlush(claim)
+                        authorization.claims.add(claim)
+                        authorizationRepository.saveAndFlush(authorization)
                         log.debug("Authorized")
                         return
                     }

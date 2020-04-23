@@ -51,7 +51,7 @@ class ClientAuthorizationValidationService {
             }
             Claim claim = new Claim(
                     url: incomingUrl,
-                    jwt: authorizationHeader,
+                    jwt: authorizationHeader.replace("Bearer ", ""),
                     method: request.method
             )
             Integer ascendHttpResponseStatus = validateAscendHttpRequest(ascendValidationUrl, claim)

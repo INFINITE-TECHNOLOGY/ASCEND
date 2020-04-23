@@ -7,6 +7,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource
 @RepositoryRestResource(exported = false)
 interface TrustedPublicKeyRepository extends JpaRepository<TrustedPublicKey, Long> {
 
-    Optional<TrustedPublicKey> findByKeyName(String keyName)
+    Optional<TrustedPublicKey> findByName(String name)
 
 }

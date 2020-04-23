@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 @BlackBox(level = CarburetorLevel.METHOD)
 @Slf4j
 @Service
-class TrustedDataValidator implements AuthenticationValidator {
+class ClientJwtValidator implements AuthenticationValidator {
 
     @Autowired
     JwtService jwtService
@@ -25,29 +25,29 @@ class TrustedDataValidator implements AuthenticationValidator {
 
     @Override
     Map<String, String> authenticate(Authentication authentication, Authorization authorization) {
-        String keyName = authentication.authenticationData.publicCredentials.get("keyName")
-        String selfIssuedJwt = authentication.authenticationData.privateCredentials.get("selfIssuedJwt")
-        if (keyName == null || selfIssuedJwt == null) {
-            log.warn("Missing keyName or selfIssuedJwt")
+        String clientPublicKeyName = authentication.authenticationData.publicCredentials.get("clientPublicKeyName")
+        String clientJwt = authentication.authenticationData.privateCredentials.get("clientJwt")
+        if (clientPublicKeyName == null || clientJwt == null) {
+            log.warn("Missing clientPublicKeyName or clientJwt")
             authentication.isSuccessful = false
             return null
         }
-        Optional<TrustedPublicKey> trustedAppOptional = trustedAppRepository.findByKeyName(keyName)
+        Optional<TrustedPublicKey> trustedAppOptional = trustedAppRepository.findByName(clientPublicKeyName)
         if (!trustedAppOptional.present) {
-            log.warn("Application $keyName is not trusted.")
+            log.warn("Key $clientPublicKeyName is not trusted.")
             authentication.isSuccessful = false
             return null
         }
-        Authorization selfIssuedAuthorization = jwtService.jwt2Authorization(selfIssuedJwt, jwtService.loadPublicKeyFromHexString(trustedAppOptional.get().publicKey))
+        Authorization selfIssuedAuthorization = jwtService.jwt2Authorization(clientJwt, jwtService.loadPublicKeyFromHexString(trustedAppOptional.get().publicKey))
         log.debug(FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS").format(new Date()))
         log.debug(FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS").format(selfIssuedAuthorization.expiryDate))
         if (selfIssuedAuthorization.expiryDate.before(new Date())) {
-            log.warn("Expired selfIssuedJwt")
+            log.warn("Expired clientJwt")
             authentication.isSuccessful = false
             return null
         }
         authentication.isSuccessful = true
-        return ["keyName": authentication.authenticationData.publicCredentials.get("keyName")]
+        return ["clientPublicKeyName": authentication.authenticationData.publicCredentials.get("clientPublicKeyName")]
     }
 
 }

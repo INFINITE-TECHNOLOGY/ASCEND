@@ -14,7 +14,7 @@ class TrustedPublicKey {
     @Column(nullable = false)
     Long id
 
-    String keyName
+    String name
 
     @Lob
     @Type(type = "org.hibernate.type.TextType")

@@ -14,10 +14,10 @@ import java.time.Instant
 
 @BlackBox(level = CarburetorLevel.METHOD)
 @Service
-class TrustedDataPreparator implements AuthenticationPreparator {
+class ClientJwtPreparator implements AuthenticationPreparator {
 
-    @Value('${ascendClientAppName}')
-    String ascendClientAppName
+    @Value('${clientPublicKeyName}')
+    String clientPublicKeyName
 
     @Value('${ascendClientAppPrivateKey}')
     String ascendClientAppPrivateKey
@@ -31,8 +31,8 @@ class TrustedDataPreparator implements AuthenticationPreparator {
         selfIssuedAuthorization.durationSeconds = 60
         JwtService jwtService = new JwtService()
         return new AuthenticationData(
-                publicCredentials: ["appName": ascendClientAppName],
-                privateCredentials: ["selfIssuedJwt": jwtService.authorization2Jwt(
+                publicCredentials: ["clientPublicKeyName": clientPublicKeyName],
+                privateCredentials: ["clientJwt": jwtService.authorization2Jwt(
                         selfIssuedAuthorization,
                         jwtService.loadPrivateKeyFromHexString(ascendClientAppPrivateKey)
                 )]

@@ -21,8 +21,9 @@ class ServerAuthenticationService {
     ApplicationContext applicationContext
 
     Map<String, String> authenticate(Authentication authentication, Authorization authorization) {
+        AuthenticationValidator serverAuthentication
         try {
-            AuthenticationValidator serverAuthentication = applicationContext.getBean(authentication.name + "Validator", AuthenticationValidator.class)
+            serverAuthentication = applicationContext.getBean(authentication.name + "Validator", AuthenticationValidator.class)
         } catch (NoSuchBeanDefinitionException noSuchBeanDefinitionException) {
             throw new AscendException("Authentication validator not found: ${authentication.name + "Validator"}", noSuchBeanDefinitionException)
         }

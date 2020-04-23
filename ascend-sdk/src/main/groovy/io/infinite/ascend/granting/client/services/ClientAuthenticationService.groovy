@@ -18,8 +18,9 @@ class ClientAuthenticationService {
     ApplicationContext applicationContext
 
     void authenticate(Authentication authentication) {
+        AuthenticationPreparator clientAuthentication
         try {
-            AuthenticationPreparator clientAuthentication = applicationContext.getBean(authentication.name + "Preparator", AuthenticationPreparator.class)
+            clientAuthentication = applicationContext.getBean(authentication.name + "Preparator", AuthenticationPreparator.class)
         } catch (NoSuchBeanDefinitionException noSuchBeanDefinitionException) {
             throw new AscendException("Authentication Preparator not found: ${authentication.name + "Validator"}", noSuchBeanDefinitionException)
         }

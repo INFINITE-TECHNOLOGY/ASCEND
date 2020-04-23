@@ -23,9 +23,9 @@ class LocalAuthorizationValidationService extends ClientAuthorizationValidationS
     ServerAuthorizationValidationService serverAuthorizationValidationService
 
     @Override
-    Integer validateAscendHttpRequest(String ascendValidationUrl, String jwt, Claim claim) {
+    Integer validateAscendHttpRequest(String ascendValidationUrl, Claim claim) {
         try {
-            serverAuthorizationValidationService.validateJwtClaim(jwt, claim)
+            serverAuthorizationValidationService.validateJwtClaim(claim)
             return 200
         } catch (AscendUnauthorizedException ascendException) {
             log.warn("Unauthorized access attempt", ascendException)

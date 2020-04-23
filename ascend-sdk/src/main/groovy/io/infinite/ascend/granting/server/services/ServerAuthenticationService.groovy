@@ -3,7 +3,7 @@ package io.infinite.ascend.granting.server.services
 
 import io.infinite.ascend.common.entities.Authentication
 import io.infinite.ascend.common.entities.Authorization
-import io.infinite.ascend.granting.server.authentication.ServerAuthenticationModule
+import io.infinite.ascend.granting.server.authentication.AuthenticationValidator
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +18,7 @@ class ServerAuthenticationService {
     ApplicationContext applicationContext
 
     Map<String, String> authenticate(Authentication authentication, Authorization authorization) {
-        ServerAuthenticationModule serverAuthentication = applicationContext.getBean("server" + authentication.name, ServerAuthenticationModule.class)
+        AuthenticationValidator serverAuthentication = applicationContext.getBean(authentication.name + "Validator", AuthenticationValidator.class)
         return serverAuthentication.authenticate(authentication, authorization)
     }
 

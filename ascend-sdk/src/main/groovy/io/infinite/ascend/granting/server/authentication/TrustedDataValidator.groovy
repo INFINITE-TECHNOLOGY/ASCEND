@@ -4,38 +4,37 @@ import groovy.util.logging.Slf4j
 import io.infinite.ascend.common.entities.Authentication
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.services.JwtService
-import io.infinite.ascend.granting.server.entities.TrustedApp
-import io.infinite.ascend.granting.server.repositories.TrustedAppRepository
+import io.infinite.ascend.granting.server.entities.TrustedPublicKey
+import io.infinite.ascend.granting.server.repositories.TrustedPublicKeyRepository
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import org.apache.commons.lang3.time.FastDateFormat
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 
 @BlackBox(level = CarburetorLevel.METHOD)
 @Slf4j
 @Service
-class ServerApplicationData implements ServerAuthenticationModule {
+class TrustedDataValidator implements AuthenticationValidator {
 
     @Autowired
     JwtService jwtService
 
     @Autowired
-    TrustedAppRepository trustedAppRepository
+    TrustedPublicKeyRepository trustedAppRepository
 
     @Override
     Map<String, String> authenticate(Authentication authentication, Authorization authorization) {
-        String appName = authentication.authenticationData.publicCredentials.get("appName")
+        String keyName = authentication.authenticationData.publicCredentials.get("keyName")
         String selfIssuedJwt = authentication.authenticationData.privateCredentials.get("selfIssuedJwt")
-        if (appName == null || selfIssuedJwt == null) {
-            log.warn("Missing appName or selfIssuedJwt")
+        if (keyName == null || selfIssuedJwt == null) {
+            log.warn("Missing keyName or selfIssuedJwt")
             authentication.isSuccessful = false
             return null
         }
-        Optional<TrustedApp> trustedAppOptional = trustedAppRepository.findByAppName(appName)
+        Optional<TrustedPublicKey> trustedAppOptional = trustedAppRepository.findByKeyName(keyName)
         if (!trustedAppOptional.present) {
-            log.warn("Application $appName is not trusted.")
+            log.warn("Application $keyName is not trusted.")
             authentication.isSuccessful = false
             return null
         }
@@ -48,7 +47,7 @@ class ServerApplicationData implements ServerAuthenticationModule {
             return null
         }
         authentication.isSuccessful = true
-        return ["appName": authentication.authenticationData.publicCredentials.get("appName")]
+        return ["keyName": authentication.authenticationData.publicCredentials.get("keyName")]
     }
 
 }

@@ -31,11 +31,10 @@ class ValidationController {
     @BlackBox(level = CarburetorLevel.METHOD)
     void validateClaim(
             @RequestBody Claim claim
-            , @RequestHeader("Authorization") String authorizationHeader
             , HttpServletResponse response
     ) {
         try {
-            serverAuthorizationValidationService.validateJwtClaim(authorizationHeader, claim)
+            serverAuthorizationValidationService.validateJwtClaim(claim)
         } catch (AscendUnauthorizedException ascendException) {
             log.warn("Unauthorized access attempt", ascendException)
             response.sendError(401)

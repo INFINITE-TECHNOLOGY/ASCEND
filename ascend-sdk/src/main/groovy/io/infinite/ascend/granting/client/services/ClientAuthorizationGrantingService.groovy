@@ -42,32 +42,36 @@ class ClientAuthorizationGrantingService {
     AuthorizationSelector authorizationSelector
 
     @Transactional
-    Authorization scopedAuthorization(String scopeName, String ascendUrl, String authorizationNamespace) {
+    Authorization scopedAuthorization(String scopeName, String ascendUrl, String authorizationClientNamespace, String authorizationServerNamespace) {
         Authorization authorization
-        Set<PrototypeAuthorization> prototypeAuthorizations = inquire(scopeName, ascendUrl, authorizationNamespace)
+        Set<PrototypeAuthorization> prototypeAuthorizations = inquire(scopeName, ascendUrl, authorizationServerNamespace)
         if (prototypeAuthorizations.isEmpty()) {
-            throw new AscendException("No suitable authorizations found for scope name '$scopeName' with authorization namespace '$authorizationNamespace' (Ascend URL $ascendUrl)")
+            throw new AscendException("No suitable authorizations found for scope name '$scopeName' with authorization serverNamespace '$authorizationServerNamespace' (Ascend URL $ascendUrl)")
         }
         PrototypeAuthorization prototypeAuthorization = prototypeAuthorizationSelector.select(prototypeAuthorizations)
         PrototypeIdentity prototypeIdentity = prototypeIdentitySelector.select(prototypeAuthorization.identities)
-        authorization = produce(prototypeAuthorization, authorizationNamespace, prototypeIdentity, ascendUrl)
+        authorization = produce(prototypeAuthorization, authorizationClientNamespace, authorizationServerNamespace, prototypeIdentity, ascendUrl)
         return authorization
     }
 
-    Authorization produce(PrototypeAuthorization prototypeAuthorization, String authorizationNamespace, PrototypeIdentity prototypeIdentity, String ascendUrl) {
+    Authorization produce(PrototypeAuthorization prototypeAuthorization, String authorizationClientNamespace, String authorizationServerNamespace, PrototypeIdentity prototypeIdentity, String ascendUrl) {
         Authorization authorization
-        Set<Authorization> existingAuthorizations = authorizationRepository.findValidForClient(authorizationNamespace, prototypeAuthorization.name)
+        Set<Authorization> existingAuthorizations = authorizationRepository.findReceived(authorizationClientNamespace, authorizationServerNamespace, prototypeAuthorization.name)
         if (!existingAuthorizations.isEmpty()) {
             authorization = authorizationSelector.select(existingAuthorizations)
         } else {
-            authorization = prototypeConverter.convertAuthorization(prototypeAuthorization, authorizationNamespace)
+            authorization = prototypeConverter.convertAuthorization(prototypeAuthorization, authorizationServerNamespace)
             if (!prototypeAuthorization.prerequisites.empty) {
                 PrototypeAuthorization prototypeAuthorizationPrerequisite = prototypeAuthorizationSelector.selectPrerequisite(prototypeAuthorization.prerequisites)
                 PrototypeIdentity prototypeIdentityPrerequisite = prototypeIdentitySelector.selectPrerequisite(prototypeAuthorizationPrerequisite.identities)
-                authorization.prerequisiteJwt = produce(prototypeAuthorizationPrerequisite, authorizationNamespace, prototypeIdentityPrerequisite, ascendUrl).jwt
+                authorization.prerequisiteJwt = produce(prototypeAuthorizationPrerequisite, authorizationClientNamespace, authorizationServerNamespace, prototypeIdentityPrerequisite, ascendUrl).jwt
                 //<<<<<<<<Recursive call
             }
             authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
+            authorization.scope.grants = []
+            prototypeAuthorization.scopes.first().grants.each { prototypeGrant ->
+                authorization.scope.grants.add(prototypeConverter.convertGrant(prototypeGrant))
+            }
             authorization.identity = prototypeConverter.convertIdentity(prototypeIdentity)
             authorization.identity.authentications = []
             prototypeIdentity.authentications.each { prototypeAuthentication ->
@@ -91,11 +95,11 @@ class ClientAuthorizationGrantingService {
         authorizationRepository.saveAndFlush(authorization)
     }
 
-    Set<PrototypeAuthorization> inquire(String scopeName, String ascendUrl, String authorizationNamespace) {
+    Set<PrototypeAuthorization> inquire(String scopeName, String ascendUrl, String authorizationServerNamespace) {
         return objectMapper.readValue(
                 new SenderDefaultHttps().expectStatus(
                         new HttpRequest(
-                                url: "$ascendUrl/ascend/public/granting/inquire?scopeName=${scopeName}&namespace=${authorizationNamespace}",
+                                url: "$ascendUrl/ascend/public/granting/inquire?scopeName=${scopeName}&serverNamespace=${authorizationServerNamespace}",
                                 method: "GET"
                         ), 200
                 ).body, PrototypeAuthorization[].class) as Set<PrototypeAuthorization>

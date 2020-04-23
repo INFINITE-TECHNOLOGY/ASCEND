@@ -52,7 +52,7 @@ class ServerAuthorizationGrantingService {
     Authorization authorize(Authorization authorization) {
         try {
             Set<PrototypeAuthorization> authorizationTypes = authorizationTypeRepository.findForGranting(
-                    authorization.namespace,
+                    authorization.serverNamespace,
                     authorization.name,
                     authorization.scope?.name,
                     authorization.identity?.name,

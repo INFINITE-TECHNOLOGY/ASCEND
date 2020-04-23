@@ -27,8 +27,8 @@ class ServerAuthorizationValidationService {
     @Value('${jwtAccessKeyPublic}')
     String jwtAccessKeyPublic
 
-    void validateJwtClaim(String jwt, Claim claim) {
-        Authorization authorization = jwtService.jwt2Authorization(jwt.replace("Bearer ", ""), jwtService.loadPublicKeyFromHexString(jwtAccessKeyPublic))
+    void validateJwtClaim(Claim claim) {
+        Authorization authorization = jwtService.jwt2Authorization(claim.jwt.replace("Bearer ", ""), jwtService.loadPublicKeyFromHexString(jwtAccessKeyPublic))
         validateAuthorizationClaim(authorization, claim)
     }
 
@@ -41,8 +41,18 @@ class ServerAuthorizationValidationService {
                 if (grant.urlRegex != null) {
                     String processedUrlRegex = replaceSubstitutes(grant.urlRegex, authorization)
                     log.debug("Processed URL regex", processedUrlRegex)
-                    if (claim.incomingUrl.matches(processedUrlRegex)) {
+                    if (claim.url.matches(processedUrlRegex)) {
                         log.debug("URL matched regex.")
+                        if (grant.bodyRegex != null) {
+                            //todo: check for DDOS (never ending input stream)
+                            String processedBodyRegex = replaceSubstitutes(grant.bodyRegex, authorization)
+                            log.debug("Body", claim.body)
+                            log.debug("Processed body regex", processedUrlRegex)
+                            if (!claim.body.matches(processedBodyRegex)) {
+                                log.debug("Body does not match regex")
+                                throw new AscendUnauthorizedException("Unauthorized")
+                            }
+                        }
                         Optional<Authorization> existingAuthorization = authorizationRepository.findByGuid(authorization.guid)
                         if (existingAuthorization.isPresent()) {
                             if (authorization.maxUsageCount > 0 && existingAuthorization.get().claims.size() >= authorization.maxUsageCount) {

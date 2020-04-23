@@ -19,7 +19,9 @@ class Authorization {
 
     String name
 
-    String namespace
+    String serverNamespace
+
+    String clientNamespace
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     Identity identity

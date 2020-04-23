@@ -22,9 +22,9 @@ class InquireController {
     @ResponseBody
     Set<PrototypeAuthorization> inquire(
             @RequestParam("scopeName") String scopeName,
-            @RequestParam("namespace") String namespace
+            @RequestParam("serverNamespace") String serverNamespace
     ) {
-        Set<PrototypeAuthorization> persistentAuthorizations = prototypeAuthorizationRepository.inquire(scopeName, namespace)
+        Set<PrototypeAuthorization> persistentAuthorizations = prototypeAuthorizationRepository.inquire(scopeName, serverNamespace)
         return persistentAuthorizations
     }
 

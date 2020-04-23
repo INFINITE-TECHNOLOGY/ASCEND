@@ -1,6 +1,6 @@
 package io.infinite.ascend.granting.client.services
 
-import io.infinite.ascend.granting.client.authentication.ClientAuthenticationModule
+import io.infinite.ascend.granting.client.authentication.AuthenticationPreparator
 import io.infinite.ascend.common.entities.Authentication
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
@@ -16,7 +16,7 @@ class ClientAuthenticationService {
     ApplicationContext applicationContext
 
     void authenticate(Authentication authentication) {
-        ClientAuthenticationModule clientAuthentication = applicationContext.getBean("client" + authentication.name, ClientAuthenticationModule.class)
+        AuthenticationPreparator clientAuthentication = applicationContext.getBean(authentication.name + "Preparator", AuthenticationPreparator.class)
         authentication.authenticationData = clientAuthentication.authenticate()
     }
 

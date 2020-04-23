@@ -15,10 +15,10 @@ import org.springframework.stereotype.Service
 @Service
 class PrototypeConverter {
 
-    Authorization convertAuthorization(PrototypeAuthorization prototypeAuthorization, String authorizationNamespace) {
+    Authorization convertAuthorization(PrototypeAuthorization prototypeAuthorization, String authorizationServerNamespace) {
         return new Authorization(
                 name: prototypeAuthorization.name,
-                namespace: authorizationNamespace,
+                serverNamespace: authorizationServerNamespace,
                 isRefresh: prototypeAuthorization.isRefresh
         )
     }
@@ -41,4 +41,11 @@ class PrototypeConverter {
         )
     }
 
+    Grant convertGrant(PrototypeGrant prototypeGrant) {
+        return new Grant(
+                urlRegex: prototypeGrant.urlRegex,
+                bodyRegex: prototypeGrant.bodyRegex,
+                httpMethod: prototypeGrant.httpMethod
+        )
+    }
 }

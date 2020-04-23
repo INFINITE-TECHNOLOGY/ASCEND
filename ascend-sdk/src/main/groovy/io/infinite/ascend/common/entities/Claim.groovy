@@ -19,8 +19,15 @@ class Claim {
 
     @Lob
     @Type(type = "org.hibernate.type.TextType")
-    String incomingUrl
+    String url
+
+    @Transient
+    String jwt
 
     String method
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    String body
 
 }

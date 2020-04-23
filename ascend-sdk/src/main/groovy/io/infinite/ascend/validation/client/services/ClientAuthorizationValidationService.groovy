@@ -22,11 +22,10 @@ class ClientAuthorizationValidationService {
 
     ObjectMapper objectMapper = new ObjectMapper()
 
-    Integer validateAscendHttpRequest(String ascendValidationUrl, String jwt, Claim claim) {
+    Integer validateAscendHttpRequest(String ascendValidationUrl, Claim claim) {
         return new SenderDefaultHttps().sendHttpMessage(new HttpRequest(
                 url: ascendValidationUrl,
                 headers: [
-                        "Authorization": jwt,
                         "content-type" : "application/json"
                 ],
                 method: "POST",
@@ -50,18 +49,19 @@ class ClientAuthorizationValidationService {
             } else {
                 incomingUrl = request.requestURL
             }
-            Claim ascendHttpRequest = new Claim(
-                    incomingUrl: incomingUrl,
+            Claim claim = new Claim(
+                    url: incomingUrl,
+                    jwt: authorizationHeader,
                     method: request.method
             )
-            Integer ascendHttpResponseStatus = validateAscendHttpRequest(ascendValidationUrl, authorizationHeader, ascendHttpRequest)
+            Integer ascendHttpResponseStatus = validateAscendHttpRequest(ascendValidationUrl, claim)
             if (ascendHttpResponseStatus != 200) {
                 SecurityContextHolder.clearContext()
                 response.sendError(ascendHttpResponseStatus, "Unauthorized.")
                 return
             }
             PreAuthenticatedAuthenticationToken preAuthenticatedAuthenticationToken =
-                    new PreAuthenticatedAuthenticationToken(ascendHttpRequest, authorizationHeader)
+                    new PreAuthenticatedAuthenticationToken(claim, authorizationHeader)
             preAuthenticatedAuthenticationToken.setAuthenticated(true)
             SecurityContextHolder.getContext().setAuthentication(preAuthenticatedAuthenticationToken)
             chain.doFilter(request, response)

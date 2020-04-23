@@ -1,6 +1,7 @@
 package io.infinite.ascend.granting.configuration.entities
 
 import groovy.transform.ToString
+import org.hibernate.annotations.Type
 
 import javax.persistence.*
 
@@ -13,7 +14,13 @@ class PrototypeGrant {
     @Column(nullable = false)
     Long id
 
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
     String urlRegex
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    String bodyRegex
 
     String httpMethod
 

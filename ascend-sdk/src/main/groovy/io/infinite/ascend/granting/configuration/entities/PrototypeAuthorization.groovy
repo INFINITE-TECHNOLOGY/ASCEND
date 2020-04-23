@@ -15,6 +15,8 @@ class PrototypeAuthorization {
 
     String name
 
+    String serverNamespace
+
     @ManyToMany(fetch = FetchType.EAGER)
     @OrderColumn
     @JoinTable

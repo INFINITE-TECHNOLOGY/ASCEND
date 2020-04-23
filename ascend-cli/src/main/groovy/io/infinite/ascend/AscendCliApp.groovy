@@ -29,8 +29,11 @@ class AscendCliApp implements Callable<Integer>, CommandLineRunner {
     @CommandLine.Option(names = ["--scopeName"], paramLabel = "e.g. READ_WRITE", description = "Desired authorization scope name.", required = true)
     String scopeName
 
-    @CommandLine.Option(names = ["--authorizationNamespace"], paramLabel = "ORBIT", description = "Resource Server Group Name.", required = true)
-    String authorizationNamespace
+    @CommandLine.Option(names = ["--authorizationServerNamespace"], paramLabel = "ORBIT", description = "Resource Server Group Name.", required = true)
+    String authorizationServerNamespace
+
+    @CommandLine.Option(names = ["--authorizationClientNamespace"], paramLabel = "ORBIT", description = "Application Name.", required = true)
+    String authorizationClientNamespace
 
     @Autowired
     ClientAuthorizationGrantingService clientAuthorizationGrantingService
@@ -49,7 +52,7 @@ class AscendCliApp implements Callable<Integer>, CommandLineRunner {
     }
 
     Integer call() throws Exception {
-        Authorization orbitAuthorization = clientAuthorizationGrantingService.scopedAuthorization(scopeName, ascendGrantingUrl, authorizationNamespace)
+        Authorization orbitAuthorization = clientAuthorizationGrantingService.scopedAuthorization(scopeName, ascendGrantingUrl, authorizationClientNamespace, authorizationServerNamespace)
         new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT).writeValue(System.out, orbitAuthorization)
         return 0
     }

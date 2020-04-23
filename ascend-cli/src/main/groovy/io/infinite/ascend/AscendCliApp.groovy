@@ -20,8 +20,8 @@ import java.util.concurrent.Callable
 @CommandLine.Command(name = "ASCEND-CLI", mixinStandardHelpOptions = true, description = "App to app authorization command line client.", version = "1.0.0")
 class AscendCliApp implements Callable<Integer>, CommandLineRunner {
 
-    @CommandLine.Option(names = ["--clientPublicKeyName"], paramLabel = "YOUR_APP", description = "Ascend Client Application Key Name, as trusted in Ascend Granting Server.", required = true)
-    String clientPublicKeyName
+    @CommandLine.Option(names = ["--ascendClientPublicKeyName"], paramLabel = "YOUR_APP", description = "Ascend Client Application Key Name, as trusted in Ascend Granting Server.", required = true)
+    String ascendClientPublicKeyName
 
     @CommandLine.Option(names = ["--ascendGrantingUrl"], paramLabel = "URL", description = "Ascend Granting Server URL", required = true)
     String ascendGrantingUrl

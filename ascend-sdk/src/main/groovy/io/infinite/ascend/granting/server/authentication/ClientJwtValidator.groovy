@@ -25,16 +25,16 @@ class ClientJwtValidator implements AuthenticationValidator {
 
     @Override
     Map<String, String> authenticate(Authentication authentication, Authorization authorization) {
-        String clientPublicKeyName = authentication.authenticationData.publicCredentials.get("clientPublicKeyName")
+        String ascendClientPublicKeyName = authentication.authenticationData.publicCredentials.get("ascendClientPublicKeyName")
         String clientJwt = authentication.authenticationData.privateCredentials.get("clientJwt")
-        if (clientPublicKeyName == null || clientJwt == null) {
-            log.warn("Missing clientPublicKeyName or clientJwt")
+        if (ascendClientPublicKeyName == null || clientJwt == null) {
+            log.warn("Missing ascendClientPublicKeyName or clientJwt")
             authentication.isSuccessful = false
             return null
         }
-        Optional<TrustedPublicKey> trustedAppOptional = trustedAppRepository.findByName(clientPublicKeyName)
+        Optional<TrustedPublicKey> trustedAppOptional = trustedAppRepository.findByName(ascendClientPublicKeyName)
         if (!trustedAppOptional.present) {
-            log.warn("Key $clientPublicKeyName is not trusted.")
+            log.warn("Key $ascendClientPublicKeyName is not trusted.")
             authentication.isSuccessful = false
             return null
         }
@@ -47,7 +47,7 @@ class ClientJwtValidator implements AuthenticationValidator {
             return null
         }
         authentication.isSuccessful = true
-        return ["clientPublicKeyName": authentication.authenticationData.publicCredentials.get("clientPublicKeyName")]
+        return ["ascendClientPublicKeyName": authentication.authenticationData.publicCredentials.get("ascendClientPublicKeyName")]
     }
 
 }

@@ -16,11 +16,11 @@ import java.time.Instant
 @Service
 class ClientJwtPreparator implements AuthenticationPreparator {
 
-    @Value('${clientPublicKeyName}')
-    String clientPublicKeyName
+    @Value('${ascendClientPublicKeyName}')
+    String ascendClientPublicKeyName
 
-    @Value('${ascendClientAppPrivateKey}')
-    String ascendClientAppPrivateKey
+    @Value('${ascendClientPrivateKey}')
+    String ascendClientPrivateKey
 
     @Override
     AuthenticationData authenticate() {
@@ -31,10 +31,10 @@ class ClientJwtPreparator implements AuthenticationPreparator {
         selfIssuedAuthorization.durationSeconds = 60
         JwtService jwtService = new JwtService()
         return new AuthenticationData(
-                publicCredentials: ["clientPublicKeyName": clientPublicKeyName],
+                publicCredentials: ["ascendClientPublicKeyName": ascendClientPublicKeyName],
                 privateCredentials: ["clientJwt": jwtService.authorization2Jwt(
                         selfIssuedAuthorization,
-                        jwtService.loadPrivateKeyFromHexString(ascendClientAppPrivateKey)
+                        jwtService.loadPrivateKeyFromHexString(ascendClientPrivateKey)
                 )]
         )
     }

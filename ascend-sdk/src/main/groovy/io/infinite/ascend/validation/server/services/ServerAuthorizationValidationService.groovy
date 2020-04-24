@@ -31,12 +31,13 @@ class ServerAuthorizationValidationService {
     @Value('${jwtAccessKeyPublic}')
     String jwtAccessKeyPublic
 
-    void validateJwtClaim(Claim claim) {
+    Authorization authorizeClaim(Claim claim) {
         Authorization authorization = jwtService.jwt2Authorization(claim.jwt, jwtService.loadPublicKeyFromHexString(jwtAccessKeyPublic))
         validateAuthorizationClaim(authorization, claim)
+        return authorization
     }
 
-    void validateAuthorizationClaim(Authorization authorization, Claim claim) {
+    Authorization validateAuthorizationClaim(Authorization authorization, Claim claim) {
         if (authorization.expiryDate.before(new Date())) {
             throw new AscendForbiddenException("Expired Authorization")
         }
@@ -66,9 +67,9 @@ class ServerAuthorizationValidationService {
                         }
                         claim = claimRepository.saveAndFlush(claim)
                         authorization.claims.add(claim)
-                        authorizationRepository.saveAndFlush(authorization)
+                        authorization = authorizationRepository.saveAndFlush(authorization)
                         log.debug("Authorized")
-                        return
+                        return authorization
                     }
                 }
             }

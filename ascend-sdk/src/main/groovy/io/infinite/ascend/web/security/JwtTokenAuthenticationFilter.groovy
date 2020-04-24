@@ -24,13 +24,10 @@ class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     LocalAuthorizationValidationService localAuthorizationValidationService
 
-    @Value('${ascendValidationUrl}')
-    String ascendValidationUrl
-
     @Override
     @BlackBox(level = CarburetorLevel.METHOD)
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
-        localAuthorizationValidationService.validateServletRequest(ascendValidationUrl, request, response, chain)
+        localAuthorizationValidationService.validateServletRequest(request, response, chain)
     }
 
 }

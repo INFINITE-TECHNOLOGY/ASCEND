@@ -50,10 +50,10 @@ class JwtService {
 
     @PostConstruct
     void initKeys() {
-        jwtAccessKeyPublic = loadPublicKeyFromHexString(jwtAccessKeyPublicString)
-        jwtAccessKeyPrivate = loadPrivateKeyFromHexString(jwtAccessKeyPrivateString)
-        jwtRefreshKeyPublic = loadPublicKeyFromHexString(jwtRefreshKeyPublicString)
-        jwtRefreshKeyPrivate = loadPrivateKeyFromHexString(jwtRefreshKeyPrivateString)
+        if (jwtAccessKeyPublicString != "") jwtAccessKeyPublic = loadPublicKeyFromHexString(jwtAccessKeyPublicString)
+        if (jwtAccessKeyPrivateString != "") jwtAccessKeyPrivate = loadPrivateKeyFromHexString(jwtAccessKeyPrivateString)
+        if (jwtRefreshKeyPublicString != "") jwtRefreshKeyPublic = loadPublicKeyFromHexString(jwtRefreshKeyPublicString)
+        if (jwtRefreshKeyPrivateString != "") jwtRefreshKeyPrivate = loadPrivateKeyFromHexString(jwtRefreshKeyPrivateString)
     }
 
     ObjectMapper objectMapper = new ObjectMapper(

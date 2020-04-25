@@ -1,0 +1,1 @@
+web: java -Dserver.port=$PORT -Dloader.path="ascend-web/build/libs" -Dspring.config.location="ascend-web/build/conf/application.properties" $JAVA_OPTS -cp "ascend-web/build/libs/ascend-secaas-1.0.0.jar" org.springframework.boot.loader.PropertiesLauncher

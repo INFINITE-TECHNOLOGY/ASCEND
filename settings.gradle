@@ -2,3 +2,4 @@ rootProject.name = 'ascend'
 
 include 'ascend-sdk'
 include 'ascend-cli'
+include 'ascend-web'

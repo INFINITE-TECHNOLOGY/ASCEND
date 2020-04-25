@@ -3,6 +3,7 @@ package io.infinite.ascend.common.entities
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
 import groovy.transform.ToString
+import org.hibernate.annotations.Type
 
 import javax.persistence.*
 
@@ -39,6 +40,8 @@ class Authorization {
     @JsonFormat(timezone = "UTC", pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     Date expiryDate
 
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
     String jwt
 
     @ManyToOne(cascade = CascadeType.PERSIST)

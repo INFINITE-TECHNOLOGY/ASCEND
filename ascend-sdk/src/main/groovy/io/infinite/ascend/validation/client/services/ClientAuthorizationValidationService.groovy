@@ -12,7 +12,7 @@ import io.infinite.carburetor.CarburetorLevel
 import io.infinite.http.HttpRequest
 import io.infinite.http.HttpResponse
 import io.infinite.http.SenderDefaultHttps
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
@@ -30,7 +30,7 @@ class ClientAuthorizationValidationService {
 
     ObjectMapper objectMapper = new ObjectMapper()
 
-    @Autowired
+    @Value('${ascendValidationUrl}')
     String ascendValidationUrl
 
     Authorization authorizeClaim(Claim claim) {
@@ -46,7 +46,7 @@ class ClientAuthorizationValidationService {
         )
         switch (httpResponse.status) {
             case 200:
-                return objectMapper.readValue(httpResponse.body , Authorization.class)
+                return objectMapper.readValue(httpResponse.body, Authorization.class)
                 break
             case 403:
                 throw new AscendForbiddenException(httpResponse.body)

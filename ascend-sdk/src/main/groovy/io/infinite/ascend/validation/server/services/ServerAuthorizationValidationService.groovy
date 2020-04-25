@@ -1,8 +1,8 @@
 package io.infinite.ascend.validation.server.services
 
 import groovy.util.logging.Slf4j
-import io.infinite.ascend.common.entities.Claim
 import io.infinite.ascend.common.entities.Authorization
+import io.infinite.ascend.common.entities.Claim
 import io.infinite.ascend.common.repositories.AuthorizationRepository
 import io.infinite.ascend.common.repositories.ClaimRepository
 import io.infinite.ascend.common.services.JwtService
@@ -11,7 +11,6 @@ import io.infinite.ascend.validation.other.AscendUnauthorizedException
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @BlackBox(level = CarburetorLevel.METHOD)

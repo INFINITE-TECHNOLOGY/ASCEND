@@ -3,8 +3,8 @@ package io.infinite.ascend.granting.server.services
 import groovy.util.logging.Slf4j
 import io.infinite.ascend.common.entities.Authentication
 import io.infinite.ascend.common.entities.Authorization
-import io.infinite.ascend.granting.common.other.AscendException
 import io.infinite.ascend.granting.server.authentication.AuthenticationValidator
+import io.infinite.ascend.validation.other.AscendUnauthorizedException
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import org.springframework.beans.factory.NoSuchBeanDefinitionException
@@ -15,19 +15,19 @@ import org.springframework.stereotype.Service
 @Service
 @BlackBox(level = CarburetorLevel.METHOD)
 @Slf4j
-class ServerAuthenticationService {
+class ServerAuthenticationValidationService {
 
     @Autowired
     ApplicationContext applicationContext
 
-    Map<String, String> authenticate(Authentication authentication, Authorization authorization) {
-        AuthenticationValidator serverAuthentication
+    Map<String, String> validateAuthentication(Authentication authentication) {
+        AuthenticationValidator authenticationValidator
         try {
-            serverAuthentication = applicationContext.getBean(authentication.name + "Validator", AuthenticationValidator.class)
+            authenticationValidator = applicationContext.getBean(authentication.name + "Validator", AuthenticationValidator.class)
         } catch (NoSuchBeanDefinitionException noSuchBeanDefinitionException) {
-            throw new AscendException("Authentication validator not found: ${authentication.name + "Validator"}", noSuchBeanDefinitionException)
+            throw new AscendUnauthorizedException("Authentication validator not found: ${authentication.name + "Validator"}", noSuchBeanDefinitionException)
         }
-        return serverAuthentication.authenticate(authentication, authorization)
+        return authenticationValidator.validateAuthentication(authentication)
     }
 
 }

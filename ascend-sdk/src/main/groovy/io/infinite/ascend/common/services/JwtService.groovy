@@ -13,8 +13,10 @@ import io.jsonwebtoken.Jwt
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.apache.shiro.codec.Hex
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
+import javax.annotation.PostConstruct
 import java.security.KeyFactory
 import java.security.PrivateKey
 import java.security.PublicKey
@@ -25,6 +27,34 @@ import java.security.spec.X509EncodedKeySpec
 @Slf4j
 @BlackBox(level = CarburetorLevel.METHOD)
 class JwtService {
+
+    @Value('${jwtAccessKeyPublic}')
+    String jwtAccessKeyPublicString
+
+    @Value('${jwtAccessKeyPrivate}')
+    String jwtAccessKeyPrivateString
+
+    @Value('${jwtRefreshKeyPublic}')
+    String jwtRefreshKeyPublicString
+
+    @Value('${jwtRefreshKeyPrivate}')
+    String jwtRefreshKeyPrivateString
+
+    PublicKey jwtAccessKeyPublic
+
+    PrivateKey jwtAccessKeyPrivate
+
+    PublicKey jwtRefreshKeyPublic
+
+    PrivateKey jwtRefreshKeyPrivate
+
+    @PostConstruct
+    void initKeys() {
+        jwtAccessKeyPublic = loadPublicKeyFromHexString(jwtAccessKeyPublicString)
+        jwtAccessKeyPrivate = loadPrivateKeyFromHexString(jwtAccessKeyPrivateString)
+        jwtRefreshKeyPublic = loadPublicKeyFromHexString(jwtRefreshKeyPublicString)
+        jwtRefreshKeyPrivate = loadPrivateKeyFromHexString(jwtRefreshKeyPrivateString)
+    }
 
     ObjectMapper objectMapper = new ObjectMapper(
             new YAMLFactory()

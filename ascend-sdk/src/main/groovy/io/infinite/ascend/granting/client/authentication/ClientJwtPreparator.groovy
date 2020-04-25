@@ -23,7 +23,7 @@ class ClientJwtPreparator implements AuthenticationPreparator {
     String ascendClientPrivateKey
 
     @Override
-    AuthenticationData authenticate() {
+    AuthenticationData prepareAuthentication() {
         Authorization selfIssuedAuthorization = new Authorization()
         Instant creationDate = Instant.now()
         selfIssuedAuthorization.creationDate = creationDate.toDate()

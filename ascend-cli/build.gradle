@@ -21,7 +21,7 @@ repositories {//todo: add HTTP to jcenter
 apply plugin: 'com.jfrog.bintray'
 bootJar {
     baseName = 'ascend-cli'
-    version = '0.2.18'
+    version = '0.3.0'
 }
 
 ext['groovy.version'] = '2.5.4'

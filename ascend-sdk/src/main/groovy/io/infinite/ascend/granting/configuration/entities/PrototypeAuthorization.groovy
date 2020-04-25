@@ -31,11 +31,12 @@ class PrototypeAuthorization {
 
     Integer maxUsageCount
 
-    Boolean isRefresh
-
     @ManyToMany(fetch = FetchType.EAGER)
     @OrderColumn
     @JoinTable
     Set<PrototypeAuthorization> prerequisites = new HashSet<PrototypeAuthorization>()
+
+    @OneToOne(fetch = FetchType.EAGER)
+    PrototypeAuthorization refresh
 
 }

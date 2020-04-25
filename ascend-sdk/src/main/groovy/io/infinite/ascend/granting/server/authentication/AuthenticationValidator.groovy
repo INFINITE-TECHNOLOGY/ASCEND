@@ -5,6 +5,6 @@ import io.infinite.ascend.common.entities.Authorization
 
 interface AuthenticationValidator {
 
-    Map<String, String> authenticate(Authentication authentication, Authorization authorization)
+    Map<String, String> validateAuthentication(Authentication authentication)
 
 }

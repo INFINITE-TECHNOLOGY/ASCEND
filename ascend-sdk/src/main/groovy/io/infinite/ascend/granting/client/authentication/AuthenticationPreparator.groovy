@@ -4,6 +4,6 @@ import io.infinite.ascend.common.entities.AuthenticationData
 
 interface AuthenticationPreparator {
 
-    AuthenticationData authenticate()
+    AuthenticationData prepareAuthentication()
 
 }

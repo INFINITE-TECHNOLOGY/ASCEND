@@ -16,7 +16,7 @@ class Scope {
 
     String name
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable
     Set<Grant> grants = new HashSet<Grant>()
 

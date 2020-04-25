@@ -52,7 +52,7 @@ class AscendCliApp implements Callable<Integer>, CommandLineRunner {
     }
 
     Integer call() throws Exception {
-        Authorization orbitAuthorization = clientAuthorizationGrantingService.scopedAuthorization(scopeName, ascendGrantingUrl, authorizationClientNamespace, authorizationServerNamespace)
+        Authorization orbitAuthorization = clientAuthorizationGrantingService.grantByScope(scopeName, ascendGrantingUrl, authorizationClientNamespace, authorizationServerNamespace)
         new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT).writeValue(System.out, orbitAuthorization)
         return 0
     }

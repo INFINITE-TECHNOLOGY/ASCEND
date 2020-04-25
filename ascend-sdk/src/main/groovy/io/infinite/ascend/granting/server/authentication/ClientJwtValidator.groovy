@@ -6,6 +6,7 @@ import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.services.JwtService
 import io.infinite.ascend.granting.server.entities.TrustedPublicKey
 import io.infinite.ascend.granting.server.repositories.TrustedPublicKeyRepository
+import io.infinite.ascend.validation.other.AscendUnauthorizedException
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import org.apache.commons.lang3.time.FastDateFormat
@@ -24,29 +25,22 @@ class ClientJwtValidator implements AuthenticationValidator {
     TrustedPublicKeyRepository trustedAppRepository
 
     @Override
-    Map<String, String> authenticate(Authentication authentication, Authorization authorization) {
+    Map<String, String> validateAuthentication(Authentication authentication) {
         String ascendClientPublicKeyName = authentication.authenticationData.publicCredentials.get("ascendClientPublicKeyName")
         String clientJwt = authentication.authenticationData.privateCredentials.get("clientJwt")
         if (ascendClientPublicKeyName == null || clientJwt == null) {
-            log.warn("Missing ascendClientPublicKeyName or clientJwt")
-            authentication.isSuccessful = false
-            return null
+            throw new AscendUnauthorizedException("Missing ascendClientPublicKeyName or clientJwt")
         }
         Optional<TrustedPublicKey> trustedAppOptional = trustedAppRepository.findByName(ascendClientPublicKeyName)
         if (!trustedAppOptional.present) {
-            log.warn("Key $ascendClientPublicKeyName is not trusted.")
-            authentication.isSuccessful = false
-            return null
+            throw new AscendUnauthorizedException("Key $ascendClientPublicKeyName is not trusted.")
         }
         Authorization selfIssuedAuthorization = jwtService.jwt2Authorization(clientJwt, jwtService.loadPublicKeyFromHexString(trustedAppOptional.get().publicKey))
         log.debug(FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS").format(new Date()))
         log.debug(FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS").format(selfIssuedAuthorization.expiryDate))
         if (selfIssuedAuthorization.expiryDate.before(new Date())) {
-            log.warn("Expired clientJwt")
-            authentication.isSuccessful = false
-            return null
+            throw new AscendUnauthorizedException("Expired clientJwt")
         }
-        authentication.isSuccessful = true
         return ["ascendClientPublicKeyName": authentication.authenticationData.publicCredentials.get("ascendClientPublicKeyName")]
     }
 

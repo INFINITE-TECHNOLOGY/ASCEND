@@ -2,7 +2,7 @@ package io.infinite.ascend.granting.client.services
 
 import io.infinite.ascend.common.entities.Authentication
 import io.infinite.ascend.granting.client.authentication.AuthenticationPreparator
-import io.infinite.ascend.granting.common.other.AscendException
+import io.infinite.ascend.validation.other.AscendUnauthorizedException
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import org.springframework.beans.factory.NoSuchBeanDefinitionException
@@ -12,19 +12,19 @@ import org.springframework.stereotype.Service
 
 @Service
 @BlackBox(level = CarburetorLevel.METHOD)
-class ClientAuthenticationService {
+class ClientAuthenticationPreparationService {
 
     @Autowired
     ApplicationContext applicationContext
 
-    void authenticate(Authentication authentication) {
+    void prepareAuthentication(Authentication authentication) {
         AuthenticationPreparator clientAuthentication
         try {
             clientAuthentication = applicationContext.getBean(authentication.name + "Preparator", AuthenticationPreparator.class)
         } catch (NoSuchBeanDefinitionException noSuchBeanDefinitionException) {
-            throw new AscendException("Authentication Preparator not found: ${authentication.name + "Validator"}", noSuchBeanDefinitionException)
+            throw new AscendUnauthorizedException("Authentication Preparator not found: ${authentication.name + "Validator"}", noSuchBeanDefinitionException)
         }
-        authentication.authenticationData = clientAuthentication.authenticate()
+        authentication.authenticationData = clientAuthentication.prepareAuthentication()
     }
 
 }

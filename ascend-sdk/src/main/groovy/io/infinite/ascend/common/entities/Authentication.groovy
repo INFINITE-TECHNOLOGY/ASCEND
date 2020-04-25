@@ -16,9 +16,7 @@ class Authentication {
 
     String name
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     AuthenticationData authenticationData
-
-    Boolean isSuccessful
 
 }

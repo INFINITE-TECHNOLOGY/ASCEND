@@ -28,11 +28,8 @@ class ServerAuthorizationValidationService {
     @Autowired
     ClaimRepository claimRepository
 
-    @Value('${jwtAccessKeyPublic}')
-    String jwtAccessKeyPublic
-
     Authorization authorizeClaim(Claim claim) {
-        Authorization authorization = jwtService.jwt2Authorization(claim.jwt, jwtService.loadPublicKeyFromHexString(jwtAccessKeyPublic))
+        Authorization authorization = jwtService.jwt2Authorization(claim.jwt, jwtService.jwtAccessKeyPublic)
         validateAuthorizationClaim(authorization, claim)
         return authorization
     }

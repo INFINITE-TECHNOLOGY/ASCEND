@@ -1,4 +1,4 @@
-package io.infinite.ascend.granting.client.services
+package io.infinite.ascend.granting.client.services.selectors
 
 import io.infinite.ascend.granting.configuration.entities.PrototypeAuthorization
 import org.springframework.stereotype.Service

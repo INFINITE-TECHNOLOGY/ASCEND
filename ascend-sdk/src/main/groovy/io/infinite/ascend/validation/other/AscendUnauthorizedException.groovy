@@ -6,4 +6,8 @@ class AscendUnauthorizedException extends Exception {
         super(message)
     }
 
+    AscendUnauthorizedException(String message, Throwable throwable) {
+        super(message, throwable)
+    }
+
 }

@@ -17,15 +17,28 @@ interface AuthorizationRepository extends JpaRepository<Authorization, Long> {
         where a.serverNamespace = :serverNamespace
         and a.clientNamespace = :clientNamespace
         and a.name = :name
-        and a.isSuccessful = true
         and a.expiryDate < CURRENT_DATE
         group by a.id, a.creationDate, a.maxUsageCount
         having (a.maxUsageCount > count(c) or a.maxUsageCount is null)
         order by a.creationDate""")
-    Set<Authorization> findReceived(
+    Set<Authorization> findReceivedAccess(
             @Param("clientNamespace") String clientNamespace,
             @Param("serverNamespace") String serverNamespace,
             @Param("name") String name
+    )
+
+    @Query("""select r from Authorization a
+        join a.refresh r
+        where a.serverNamespace = :serverNamespace
+        and a.clientNamespace = :clientNamespace
+        and a.name = :accessAuthorizationName
+        and r.serverNamespace = :serverNamespace
+        and r.clientNamespace = :clientNamespace
+        and r.expiryDate < CURRENT_DATE""")
+    Set<Authorization> findRefreshByAccess(
+            @Param("clientNamespace") String clientNamespace,
+            @Param("serverNamespace") String serverNamespace,
+            @Param("accessAuthorizationName") String accessAuthorizationName
     )
 
 }

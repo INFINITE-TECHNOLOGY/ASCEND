@@ -15,17 +15,17 @@ import org.springframework.web.bind.annotation.ResponseBody
 @Controller
 @BlackBox
 @Slf4j
-class GrantingController {
+class GrantingAccessController {
 
     @Autowired
     ServerAuthorizationGrantingService serverAuthorizationGrantingService
 
-    @PostMapping(value = "/ascend/public/granting")
+    @PostMapping(value = "/ascend/public/granting/access")
     @ResponseBody
     @CompileDynamic
     @BlackBox(level = CarburetorLevel.METHOD)
     Authorization postAuthorization(@RequestBody Authorization authorization) {
-        return serverAuthorizationGrantingService.authorize(authorization)
+        return serverAuthorizationGrantingService.grantAccessAuthorization(authorization)
     }
 
 }

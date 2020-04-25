@@ -82,12 +82,8 @@ class ClientAuthorizationValidationService {
                     method: request.method
             )
             Authorization authorization = authorizeClaim(claim)
-            if (!authorization.isSuccessful) {
-                log.warn("Inconsistent server validation results: 200 response code, but Authorization not successful.")
-                throw new AscendUnauthorizedException("Unauthorized")
-            }
             PreAuthenticatedAuthenticationToken preAuthenticatedAuthenticationToken =
-                    new PreAuthenticatedAuthenticationToken(claim, authorizationHeader)
+                    new PreAuthenticatedAuthenticationToken(authorization, claim)
             preAuthenticatedAuthenticationToken.setAuthenticated(true)
             SecurityContextHolder.getContext().setAuthentication(preAuthenticatedAuthenticationToken)
             chain.doFilter(request, response)

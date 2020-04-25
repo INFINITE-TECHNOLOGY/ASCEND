@@ -7,7 +7,7 @@ import groovy.transform.ToString
 import javax.persistence.*
 
 @Entity
-@ToString(includeNames = true, includeFields = true, excludes = ["jwt", "prerequisiteJwt"])
+@ToString(includeNames = true, includeFields = true, excludes = ["jwt"])
 class Authorization {
 
     @Id
@@ -23,10 +23,10 @@ class Authorization {
 
     String clientNamespace
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER)
     Identity identity
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER)
     Scope scope
 
     Integer durationSeconds
@@ -39,19 +39,15 @@ class Authorization {
     @JsonFormat(timezone = "UTC", pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     Date expiryDate
 
-    Boolean isSuccessful
-
-    Boolean isAuthenticationFailed
-
-    @Transient
     String jwt
 
-    @Transient
-    String prerequisiteJwt
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    Authorization prerequisite
 
-    Boolean isRefresh
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    Authorization refresh
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     Set<Claim> claims = new HashSet<Claim>()
 
 }

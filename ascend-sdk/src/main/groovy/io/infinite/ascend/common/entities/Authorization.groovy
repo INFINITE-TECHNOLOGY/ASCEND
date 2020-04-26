@@ -8,6 +8,7 @@ import org.hibernate.annotations.Type
 import javax.persistence.*
 
 @Entity
+@Table(name = "authorizations")
 @ToString(includeNames = true, includeFields = true, excludes = ["jwt"])
 class Authorization {
 

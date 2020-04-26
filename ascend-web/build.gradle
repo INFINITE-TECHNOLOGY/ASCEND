@@ -24,7 +24,7 @@ bootJar {
 }
 
 ext['groovy.version'] = '2.5.4'
-ext['springBootVersion'] = '2.1.1.RELEASE'
+ext['springBootVersion'] = '2.2.6.RELEASE'
 
 sourceCompatibility = 1.8
 group = "io.i-t"

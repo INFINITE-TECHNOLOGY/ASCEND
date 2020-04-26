@@ -7,6 +7,7 @@ import io.infinite.ascend.granting.configuration.repositories.*
 import io.infinite.ascend.granting.server.entities.TrustedPublicKey
 import io.infinite.ascend.granting.server.repositories.TrustedPublicKeyRepository
 import io.infinite.blackbox.BlackBox
+import io.infinite.carburetor.CarburetorLevel
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -14,7 +15,7 @@ import javax.annotation.PostConstruct
 
 @Service
 @Slf4j
-@BlackBox
+@BlackBox(level = CarburetorLevel.METHOD)
 @CompileStatic
 class ConfigInitService {
 
@@ -37,8 +38,7 @@ class ConfigInitService {
     @Autowired
     TrustedPublicKeyRepository trustedPublicKeyRepository
 
-    @BlackBox
-    @PostConstruct
+    //@PostConstruct
     void initConfig() {
         if (!authorizationTypeRepository.findAll().empty) {
             return

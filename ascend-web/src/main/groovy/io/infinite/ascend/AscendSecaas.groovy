@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.hateoas.config.EnableHypermediaSupport
 
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = ["io.infinite.ascend"])
 @Slf4j
 class AscendSecaas implements CommandLineRunner {
 

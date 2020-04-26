@@ -38,7 +38,7 @@ class ConfigInitService {
     TrustedPublicKeyRepository trustedPublicKeyRepository
 
     @BlackBox
-    @PostConstruct
+    //@PostConstruct
     void initConfig() {
         if (!authorizationTypeRepository.findAll().empty) {
             return

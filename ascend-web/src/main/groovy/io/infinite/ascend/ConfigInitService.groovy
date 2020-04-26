@@ -10,6 +10,8 @@ import io.infinite.blackbox.BlackBox
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
+import javax.annotation.PostConstruct
+
 @Service
 @Slf4j
 @BlackBox
@@ -36,6 +38,7 @@ class ConfigInitService {
     TrustedPublicKeyRepository trustedPublicKeyRepository
 
     @BlackBox
+    @PostConstruct
     void initConfig() {
         if (!authorizationTypeRepository.findAll().empty) {
             return

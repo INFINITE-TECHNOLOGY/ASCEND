@@ -31,7 +31,6 @@ class AscendSecaas implements CommandLineRunner {
     @BlackBox
     void runWithLogging() {
         log.info("Starting Ascend...")
-        configInitService.initConfig()
     }
 
 }

@@ -34,11 +34,10 @@ class ConfigInitService {
     @Autowired
     PrototypeAuthorizationRepository authorizationTypeRepository
 
-
     @Autowired
     TrustedPublicKeyRepository trustedPublicKeyRepository
 
-    //@PostConstruct
+    @PostConstruct
     void initConfig() {
         if (!authorizationTypeRepository.findAll().empty) {
             return

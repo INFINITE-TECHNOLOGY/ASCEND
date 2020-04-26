@@ -6,7 +6,7 @@ has been used as basis for this file.
 plugins {
     id "groovy"
     id "idea"
-    id "org.springframework.boot" version "2.1.1.RELEASE"
+    id "org.springframework.boot" version "2.2.6.RELEASE"
     id "io.spring.dependency-management" version "1.0.6.RELEASE"
     id "enterprise.groovy.plugin" version "1.0.4"
 }

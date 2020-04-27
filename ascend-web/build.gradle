@@ -20,7 +20,7 @@ repositories {
 
 bootJar {
     baseName = 'ascend-secaas'
-    version = '1.0.0'
+    version = '3.0.1'
 }
 
 ext['groovy.version'] = '2.5.4'
@@ -28,7 +28,7 @@ ext['springBootVersion'] = '2.2.6.RELEASE'
 
 sourceCompatibility = 1.8
 group = "io.i-t"
-version = "1.0.0"
+version = "3.0.1"
 description = "Web Service Access Management"
 
 sourceSets {

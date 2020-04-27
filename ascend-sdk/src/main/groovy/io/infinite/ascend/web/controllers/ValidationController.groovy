@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.ResponseBody
 
 @Controller
-@BlackBox
+@BlackBox(level = CarburetorLevel.METHOD)
 @Slf4j
 class ValidationController {
 

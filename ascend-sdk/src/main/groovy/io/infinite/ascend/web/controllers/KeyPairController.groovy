@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import java.security.KeyPair
 
 @Controller
+@BlackBox(level = CarburetorLevel.METHOD)
 @Slf4j
 class KeyPairController {
 

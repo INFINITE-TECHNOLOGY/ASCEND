@@ -1,7 +1,6 @@
 package io.infinite.ascend.granting.client.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.infinite.ascend.common.entities.Authentication
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.entities.Claim
 import io.infinite.ascend.common.repositories.AuthorizationRepository
@@ -15,7 +14,6 @@ import io.infinite.ascend.validation.other.AscendUnauthorizedException
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import io.infinite.http.HttpRequest
-import io.infinite.http.SenderDefaultHttps
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -44,6 +42,9 @@ class ClientAuthorizationGrantingService {
 
     @Autowired
     AuthorizationSelector authorizationSelector
+    
+    @Autowired
+    SenderAscendHttps senderAscendHttps
 
     @Transactional
     Authorization grantByScope(String scopeName, String ascendUrl, String authorizationClientNamespace, String authorizationServerNamespace) {
@@ -95,35 +96,35 @@ class ClientAuthorizationGrantingService {
 
     Set<PrototypeAuthorization> inquire(String scopeName, String ascendUrl, String authorizationServerNamespace) {
         return objectMapper.readValue(
-                new SenderDefaultHttps().expectStatus(
+                senderAscendHttps.sendAuthorizedHttpMessage(
                         new HttpRequest(
                                 url: "$ascendUrl/ascend/public/granting/inquire?scopeName=${scopeName}&serverNamespace=${authorizationServerNamespace}",
                                 method: "GET"
-                        ), 200
+                        )
                 ).body, PrototypeAuthorization[].class) as Set<PrototypeAuthorization>
     }
 
     Authorization serverRefreshGranting(Authorization refreshAuthorization, String ascendUrl) {
         return authorizationRepository.saveAndFlush(objectMapper.readValue(
-                new SenderDefaultHttps().expectStatus(
+                senderAscendHttps.sendAuthorizedHttpMessage(
                         new HttpRequest(
                                 url: "$ascendUrl/ascend/public/granting/refresh",
                                 headers: ["Content-Type": "application/json;charset=UTF-8"],
                                 method: "POST",
                                 body: objectMapper.writeValueAsString(refreshAuthorization)
-                        ), 200
+                        )
                 ).body, Authorization.class))
     }
 
     Authorization serverAccessGranting(Authorization authorization, String ascendUrl) {
         return authorizationRepository.saveAndFlush(objectMapper.readValue(
-                new SenderDefaultHttps().expectStatus(
+                senderAscendHttps.sendAuthorizedHttpMessage(
                         new HttpRequest(
                                 url: "$ascendUrl/ascend/public/granting/access",
                                 headers: ["Content-Type": "application/json;charset=UTF-8"],
                                 method: "POST",
                                 body: objectMapper.writeValueAsString(authorization)
-                        ), 200
+                        )
                 ).body, Authorization.class))
     }
 

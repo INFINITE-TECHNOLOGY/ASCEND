@@ -9,8 +9,8 @@ import io.infinite.ascend.granting.common.services.PrototypeConverter
 import io.infinite.ascend.granting.configuration.entities.PrototypeAuthentication
 import io.infinite.ascend.granting.configuration.entities.PrototypeAuthorization
 import io.infinite.ascend.granting.configuration.repositories.PrototypeAuthorizationRepository
-import io.infinite.ascend.validation.other.AscendForbiddenException
-import io.infinite.ascend.validation.other.AscendUnauthorizedException
+import io.infinite.ascend.common.exceptions.AscendForbiddenException
+import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import org.springframework.beans.factory.annotation.Autowired

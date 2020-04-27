@@ -2,7 +2,7 @@ package io.infinite.ascend.granting.client.services
 
 import io.infinite.ascend.common.entities.Authentication
 import io.infinite.ascend.granting.client.authentication.AuthenticationPreparator
-import io.infinite.ascend.validation.other.AscendUnauthorizedException
+import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import org.springframework.beans.factory.NoSuchBeanDefinitionException

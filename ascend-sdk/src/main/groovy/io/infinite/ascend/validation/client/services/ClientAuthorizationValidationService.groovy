@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.util.logging.Slf4j
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.entities.Claim
-import io.infinite.ascend.granting.common.other.AscendException
-import io.infinite.ascend.validation.other.AscendForbiddenException
-import io.infinite.ascend.validation.other.AscendUnauthorizedException
+import io.infinite.ascend.common.exceptions.AscendException
+import io.infinite.ascend.common.exceptions.AscendForbiddenException
+import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import io.infinite.http.HttpRequest

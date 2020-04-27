@@ -6,7 +6,7 @@ import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.services.JwtService
 import io.infinite.ascend.granting.server.entities.TrustedPublicKey
 import io.infinite.ascend.granting.server.repositories.TrustedPublicKeyRepository
-import io.infinite.ascend.validation.other.AscendUnauthorizedException
+import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import org.apache.commons.lang3.time.FastDateFormat

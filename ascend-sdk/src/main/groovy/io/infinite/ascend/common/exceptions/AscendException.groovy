@@ -1,6 +1,8 @@
-package io.infinite.ascend.granting.common.other
+package io.infinite.ascend.common.exceptions
 
-class AscendException extends Exception {
+import org.springframework.core.NestedRuntimeException
+
+class AscendException extends NestedRuntimeException {
 
     AscendException(String message) {
         super(message)

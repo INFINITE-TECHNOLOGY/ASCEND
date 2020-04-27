@@ -1,6 +1,8 @@
-package io.infinite.ascend.validation.other
+package io.infinite.ascend.common.exceptions
 
-class AscendUnauthorizedException extends Exception {
+import org.springframework.core.NestedRuntimeException
+
+class AscendUnauthorizedException extends NestedRuntimeException {
 
     AscendUnauthorizedException(String message) {
         super(message)

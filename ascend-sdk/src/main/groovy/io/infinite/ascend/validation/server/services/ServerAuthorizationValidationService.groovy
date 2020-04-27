@@ -6,8 +6,8 @@ import io.infinite.ascend.common.entities.Claim
 import io.infinite.ascend.common.repositories.AuthorizationRepository
 import io.infinite.ascend.common.repositories.ClaimRepository
 import io.infinite.ascend.common.services.JwtService
-import io.infinite.ascend.validation.other.AscendForbiddenException
-import io.infinite.ascend.validation.other.AscendUnauthorizedException
+import io.infinite.ascend.common.exceptions.AscendForbiddenException
+import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import org.springframework.beans.factory.annotation.Autowired

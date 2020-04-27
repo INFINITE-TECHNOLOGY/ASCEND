@@ -5,8 +5,8 @@ import groovy.util.logging.Slf4j
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.entities.Claim
 import io.infinite.ascend.validation.client.services.ClientAuthorizationValidationService
-import io.infinite.ascend.validation.other.AscendForbiddenException
-import io.infinite.ascend.validation.other.AscendUnauthorizedException
+import io.infinite.ascend.common.exceptions.AscendForbiddenException
+import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
 import io.infinite.ascend.validation.server.services.ServerAuthorizationValidationService
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel

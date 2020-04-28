@@ -28,7 +28,7 @@ class SmsOtpValidator implements AuthenticationValidator {
     TrustedPublicKeyRepository trustedAppRepository
 
     SenderDefaultHttps senderDefaultHttps = new SenderDefaultHttps()
-    
+
     @Override
     Map<String, String> validateAuthentication(Authentication authentication) {
         senderDefaultHttps.expectStatus(

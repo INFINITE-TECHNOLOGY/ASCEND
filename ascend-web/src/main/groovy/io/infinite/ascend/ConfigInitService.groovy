@@ -66,10 +66,7 @@ class ConfigInitService {
         )
         PrototypeScope userServices = scopeRepository.saveAndFlush(
                 new PrototypeScope(
-                        name: "userServices",
-                        grants: [
-
-                        ]
+                        name: "userServices"
                 )
         )
         PrototypeAuthentication clientJwt = authenticationTypeRepository.saveAndFlush(

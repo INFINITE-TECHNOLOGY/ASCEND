@@ -49,16 +49,18 @@ class ConfigInitService {
         log.info("Initializing config")
         PrototypeGrant managedEmail = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/managedEmail"))
         PrototypeGrant managedSms = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/managedSms"))
-        PrototypeGrant findByAppName = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/templates\\/search\\/findByAppName\\?appName=%ascendClientPublicKeyName%"))
         PrototypeGrant templates = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/templates"))
+        PrototypeGrant otpSms = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/sendOtpSms"))
+        PrototypeGrant otp = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/validateOtp"))
         PrototypeScope managedNotifications = scopeRepository.saveAndFlush(
                 new PrototypeScope(
                         name: "managedNotifications",
                         grants: [
                                 managedEmail,
                                 managedSms,
-                                findByAppName,
-                                templates
+                                templates,
+                                otpSms,
+                                otp
                         ].toSet()
                 )
         )

@@ -122,7 +122,6 @@ class ConfigInitService {
                 ),
                 new PrototypeAuthorization(name: "read",
                         identities: [
-                                emailOwner,
                                 phoneNumberOwner
                         ].toSet(),
                         scopes: [

@@ -52,7 +52,6 @@ class ConfigInitService {
         PrototypeGrant templates = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/templates"))
         PrototypeGrant otpSms = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/sendOtpSms"))
         PrototypeGrant otp = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/validateOtp"))
-        PrototypeGrant namespace = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%"))
         PrototypeScope managedNotifications = scopeRepository.saveAndFlush(
                 new PrototypeScope(
                         name: "managedNotifications",

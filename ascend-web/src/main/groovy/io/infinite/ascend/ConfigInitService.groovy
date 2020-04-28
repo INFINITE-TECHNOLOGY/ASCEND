@@ -119,8 +119,7 @@ class ConfigInitService {
                         scopes: [
                                 managedNotifications
                         ].toSet(),
-                        durationSeconds: 30,
-                        maxUsageCount: 3,
+                        durationSeconds: 30*24*60*60,
                         serverNamespace: "OrbitSaaS"
                 ),
                 new PrototypeAuthorization(name: "read",

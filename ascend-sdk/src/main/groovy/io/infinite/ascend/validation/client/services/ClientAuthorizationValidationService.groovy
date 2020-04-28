@@ -38,7 +38,8 @@ class ClientAuthorizationValidationService {
                 new HttpRequest(
                         url: ascendValidationUrl,
                         headers: [
-                                "content-type": "application/json"
+                                "Content-Type": "application/json",
+                                "Accept" : "application/json"
                         ],
                         method: "POST",
                         body: objectMapper.writeValueAsString(claim)

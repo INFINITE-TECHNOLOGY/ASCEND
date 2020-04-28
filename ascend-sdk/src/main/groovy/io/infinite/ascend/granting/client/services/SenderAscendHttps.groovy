@@ -30,7 +30,7 @@ class SenderAscendHttps {
                 throw new AscendUnauthorizedException(httpResponse.body)
                 break
             default:
-                throw new AscendException("Unexpected Ascend Granting Server HTTP status: " + httpResponse.toString())
+                throw new AscendException("Unexpected HTTP status: " + httpResponse.toString())
                 break
         }
     }

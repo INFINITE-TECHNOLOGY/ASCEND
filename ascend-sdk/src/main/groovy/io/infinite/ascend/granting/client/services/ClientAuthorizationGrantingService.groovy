@@ -99,6 +99,10 @@ class ClientAuthorizationGrantingService {
                 senderAscendHttps.sendAuthorizedHttpMessage(
                         new HttpRequest(
                                 url: "$ascendUrl/ascend/public/granting/inquire?scopeName=${scopeName}&serverNamespace=${authorizationServerNamespace}",
+                                headers: [
+                                        "Content-Type": "application/json",
+                                        "Accept" : "application/json"
+                                ],
                                 method: "GET"
                         )
                 ).body, PrototypeAuthorization[].class) as Set<PrototypeAuthorization>
@@ -109,7 +113,10 @@ class ClientAuthorizationGrantingService {
                 senderAscendHttps.sendAuthorizedHttpMessage(
                         new HttpRequest(
                                 url: "$ascendUrl/ascend/public/granting/refresh",
-                                headers: ["Content-Type": "application/json;charset=UTF-8"],
+                                headers: [
+                                        "Content-Type": "application/json;charset=UTF-8",
+                                        "Accept" : "application/json"
+                                ],
                                 method: "POST",
                                 body: objectMapper.writeValueAsString(refreshAuthorization)
                         )
@@ -121,7 +128,10 @@ class ClientAuthorizationGrantingService {
                 senderAscendHttps.sendAuthorizedHttpMessage(
                         new HttpRequest(
                                 url: "$ascendUrl/ascend/public/granting/access",
-                                headers: ["Content-Type": "application/json;charset=UTF-8"],
+                                headers: [
+                                        "Content-Type": "application/json;charset=UTF-8",
+                                        "Accept" : "application/json"
+                                ],
                                 method: "POST",
                                 body: objectMapper.writeValueAsString(authorization)
                         )

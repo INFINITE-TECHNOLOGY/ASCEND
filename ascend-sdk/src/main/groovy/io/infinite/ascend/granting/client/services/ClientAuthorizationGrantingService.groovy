@@ -1,8 +1,12 @@
 package io.infinite.ascend.granting.client.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import groovy.transform.CompileStatic
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.entities.Claim
+import io.infinite.ascend.common.exceptions.AscendException
+import io.infinite.ascend.common.exceptions.AscendForbiddenException
+import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
 import io.infinite.ascend.common.repositories.AuthorizationRepository
 import io.infinite.ascend.granting.client.services.selectors.AuthorizationSelector
 import io.infinite.ascend.granting.client.services.selectors.PrototypeAuthorizationSelector
@@ -10,10 +14,11 @@ import io.infinite.ascend.granting.client.services.selectors.PrototypeIdentitySe
 import io.infinite.ascend.granting.common.services.PrototypeConverter
 import io.infinite.ascend.granting.configuration.entities.PrototypeAuthorization
 import io.infinite.ascend.granting.configuration.entities.PrototypeIdentity
-import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import io.infinite.http.HttpRequest
+import io.infinite.http.HttpResponse
+import io.infinite.http.SenderDefaultHttps
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -42,9 +47,42 @@ class ClientAuthorizationGrantingService {
 
     @Autowired
     AuthorizationSelector authorizationSelector
-    
-    @Autowired
-    SenderAscendHttps senderAscendHttps
+
+    SenderDefaultHttps senderDefaultHttps = new SenderDefaultHttps()
+
+    HttpResponse sendAuthorizedHttpMessage(AuthorizedHttpRequest authorizedHttpRequest) {
+        Authorization authorization = grantByScope(
+                authorizedHttpRequest.scopeName,
+                authorizedHttpRequest.ascendUrl,
+                authorizedHttpRequest.authorizationClientNamespace,
+                authorizedHttpRequest.authorizationServerNamespace
+        )
+        authorizedHttpRequest.headers.put("Authorization", "Bearer " + authorization.jwt)
+        consume(authorization, new Claim(
+                url: authorizedHttpRequest.url,
+                method: authorizedHttpRequest.method,
+                body: authorizedHttpRequest.body
+        ))
+        return sendHttpMessage(authorizedHttpRequest)
+    }
+
+    HttpResponse sendHttpMessage(HttpRequest httpRequest) {
+        HttpResponse httpResponse = senderDefaultHttps.sendHttpMessage(httpRequest)
+        switch (httpResponse.status) {
+            case 200:
+                return httpResponse
+                break
+            case 403:
+                throw new AscendForbiddenException(httpResponse.body)
+                break
+            case 401:
+                throw new AscendUnauthorizedException(httpResponse.body)
+                break
+            default:
+                throw new AscendException("Unexpected HTTP status: " + httpResponse.toString())
+                break
+        }
+    }
 
     @Transactional
     Authorization grantByScope(String scopeName, String ascendUrl, String authorizationClientNamespace, String authorizationServerNamespace) {
@@ -87,8 +125,6 @@ class ClientAuthorizationGrantingService {
         return authorization
     }
 
-    //todo: securedHttpRequest(...)
-
     void consume(Authorization authorization, Claim claim) {
         authorization.claims.add(claim)
         authorizationRepository.saveAndFlush(authorization)
@@ -96,12 +132,12 @@ class ClientAuthorizationGrantingService {
 
     Set<PrototypeAuthorization> inquire(String scopeName, String ascendUrl, String authorizationServerNamespace) {
         return objectMapper.readValue(
-                senderAscendHttps.sendAuthorizedHttpMessage(
+                sendHttpMessage(
                         new HttpRequest(
                                 url: "$ascendUrl/ascend/public/granting/inquire?scopeName=${scopeName}&serverNamespace=${authorizationServerNamespace}",
                                 headers: [
                                         "Content-Type": "application/json",
-                                        "Accept" : "application/json"
+                                        "Accept"      : "application/json"
                                 ],
                                 method: "GET"
                         )
@@ -110,12 +146,12 @@ class ClientAuthorizationGrantingService {
 
     Authorization serverRefreshGranting(Authorization refreshAuthorization, String ascendUrl) {
         return authorizationRepository.saveAndFlush(objectMapper.readValue(
-                senderAscendHttps.sendAuthorizedHttpMessage(
+                sendHttpMessage(
                         new HttpRequest(
                                 url: "$ascendUrl/ascend/public/granting/refresh",
                                 headers: [
                                         "Content-Type": "application/json;charset=UTF-8",
-                                        "Accept" : "application/json"
+                                        "Accept"      : "application/json"
                                 ],
                                 method: "POST",
                                 body: objectMapper.writeValueAsString(refreshAuthorization)
@@ -125,12 +161,12 @@ class ClientAuthorizationGrantingService {
 
     Authorization serverAccessGranting(Authorization authorization, String ascendUrl) {
         return authorizationRepository.saveAndFlush(objectMapper.readValue(
-                senderAscendHttps.sendAuthorizedHttpMessage(
+                sendHttpMessage(
                         new HttpRequest(
                                 url: "$ascendUrl/ascend/public/granting/access",
                                 headers: [
                                         "Content-Type": "application/json;charset=UTF-8",
-                                        "Accept" : "application/json"
+                                        "Accept"      : "application/json"
                                 ],
                                 method: "POST",
                                 body: objectMapper.writeValueAsString(authorization)

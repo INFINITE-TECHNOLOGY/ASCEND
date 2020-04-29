@@ -51,6 +51,7 @@ class Authorization {
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     Authorization refresh
 
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.PERSIST)
     Set<Claim> claims = new HashSet<Claim>()
 

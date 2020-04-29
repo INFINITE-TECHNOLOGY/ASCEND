@@ -41,4 +41,6 @@ interface AuthorizationRepository extends JpaRepository<Authorization, Long> {
             @Param("accessAuthorizationName") String accessAuthorizationName
     )
 
+    Set<Authorization> findByClientNamespace(String clientNamespace)
+
 }

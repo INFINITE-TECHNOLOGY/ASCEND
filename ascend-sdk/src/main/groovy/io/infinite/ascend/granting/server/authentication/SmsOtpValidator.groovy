@@ -40,8 +40,8 @@ class SmsOtpValidator implements AuthenticationValidator {
                                 "Accept"       : "application/json"
                         ],
                         body: """{
-	"guid": ${authentication.authenticationData.publicCredentials.get("otpGuid")},
-	"otp": ${authentication.authenticationData.publicCredentials.get("otp")}
+	"guid": "${authentication.authenticationData.publicCredentials.get("otpGuid")}",
+	"otp": "${authentication.authenticationData.privateCredentials.get("otp")}"
 }"""
                 ), 200
         )

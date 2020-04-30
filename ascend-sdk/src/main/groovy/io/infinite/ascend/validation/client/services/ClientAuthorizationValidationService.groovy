@@ -29,7 +29,7 @@ class ClientAuthorizationValidationService {
 
     ObjectMapper objectMapper = new ObjectMapper()
 
-    Authorization authorizeClaim(String ascendValidationUrl, Claim claim) {
+    Authorization validateClaim(String ascendValidationUrl, Claim claim) {
         HttpResponse httpResponse = new SenderDefaultHttps().sendHttpMessage(
                 new HttpRequest(
                         url: ascendValidationUrl,
@@ -78,7 +78,7 @@ class ClientAuthorizationValidationService {
                     jwt: authorizationHeader.replace("Bearer ", ""),
                     method: request.method
             )
-            Authorization authorization = authorizeClaim(ascendValidationUrl, claim)
+            Authorization authorization = validateClaim(ascendValidationUrl, claim)
             PreAuthenticatedAuthenticationToken preAuthenticatedAuthenticationToken =
                     new PreAuthenticatedAuthenticationToken(authorization, claim)
             preAuthenticatedAuthenticationToken.setAuthenticated(true)

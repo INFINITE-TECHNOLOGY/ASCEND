@@ -15,7 +15,7 @@ class PrototypeScope {
 
     String name
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @OrderColumn
     @JoinTable
     Set<PrototypeGrant> grants = new HashSet<PrototypeGrant>()

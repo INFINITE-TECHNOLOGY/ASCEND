@@ -15,7 +15,7 @@ class PrototypeIdentity {
 
     String name
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @OrderColumn
     @JoinTable
     Set<PrototypeAuthentication> authentications = new HashSet<PrototypeAuthentication>()

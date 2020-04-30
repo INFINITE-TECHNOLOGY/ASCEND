@@ -81,11 +81,13 @@ class ServerAuthorizationGrantingService {
             accessAuthorization.identity.authenticatedCredentials = refreshAuthorization.identity.authenticatedCredentials
             accessAuthorization.jwt = jwtService.authorization2Jwt(accessAuthorization, jwtService.jwtAccessKeyPrivate)
             if (Optional.ofNullable(prototypeAccess.refresh).present) {
-                accessAuthorization.refresh = prototypeConverter.convertAuthorization(prototypeAccess.refresh, refreshAuthorization.clientNamespace)
-                accessAuthorization.refresh.scope = prototypeConverter.convertScope(prototypeAccess.scopes.first())
-                accessAuthorization.refresh.identity = prototypeConverter.convertIdentity(prototypeAccess.identities.first())
-                accessAuthorization.refresh.identity.authenticatedCredentials = refreshAuthorization.identity.authenticatedCredentials
-                accessAuthorization.refresh.jwt = jwtService.authorization2Jwt(accessAuthorization.refresh, jwtService.jwtRefreshKeyPrivate)
+                if (Optional.ofNullable(prototypeAccess.refresh.refresh).present) {
+                    accessAuthorization.refresh = prototypeConverter.convertAuthorization(prototypeAccess.refresh.refresh, refreshAuthorization.clientNamespace)
+                    accessAuthorization.refresh.scope = prototypeConverter.convertScope(prototypeAccess.scopes.first())
+                    accessAuthorization.refresh.identity = prototypeConverter.convertIdentity(prototypeAccess.identities.first())
+                    accessAuthorization.refresh.identity.authenticatedCredentials = refreshAuthorization.identity.authenticatedCredentials
+                    accessAuthorization.refresh.jwt = jwtService.authorization2Jwt(accessAuthorization.refresh, jwtService.jwtRefreshKeyPrivate)
+                }
             }
             authorizationRepository.saveAndFlush(accessAuthorization)
             return accessAuthorization

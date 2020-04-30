@@ -17,12 +17,12 @@ class PrototypeAuthorization {
 
     String serverNamespace
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @OrderColumn
     @JoinTable
     Set<PrototypeIdentity> identities = new HashSet<PrototypeIdentity>()
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @OrderColumn
     @JoinTable
     Set<PrototypeScope> scopes = new HashSet<PrototypeScope>()
@@ -31,12 +31,12 @@ class PrototypeAuthorization {
 
     Integer maxUsageCount
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @OrderColumn
     @JoinTable
     Set<PrototypeAuthorization> prerequisites = new HashSet<PrototypeAuthorization>()
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     PrototypeAuthorization refresh
 
     @Column(nullable = false)

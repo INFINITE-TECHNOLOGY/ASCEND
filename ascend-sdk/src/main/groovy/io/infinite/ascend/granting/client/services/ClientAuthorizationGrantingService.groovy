@@ -154,7 +154,7 @@ class ClientAuthorizationGrantingService {
                                         "Accept"      : "application/json"
                                 ],
                                 method: "POST",
-                                body: objectMapper.writeValueAsString(refreshAuthorization)
+                                body: refreshAuthorization.jwt
                         )
                 ).body, Authorization.class))
     }

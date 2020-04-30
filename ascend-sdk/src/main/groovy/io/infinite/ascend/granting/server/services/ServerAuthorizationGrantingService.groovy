@@ -105,14 +105,17 @@ class ServerAuthorizationGrantingService {
                 throw new AscendUnauthorizedException("Missing prerequisite")
             }
             Authorization clientPrerequisiteAuthorization = jwtService.jwt2Authorization(clientAuthorization.prerequisite.jwt, jwtService.jwtAccessKeyPublic)
+            if (clientPrerequisiteAuthorization.expiryDate.before(new Date())) {
+                throw new AscendUnauthorizedException("Expired prerequisite")
+            }
+            if (clientPrerequisiteAuthorization.isRefresh) {
+                throw new AscendUnauthorizedException("Not an access prerequisite")
+            }
             Boolean prerequisiteFound = false
             prerequisiteAuthenticatedCredentials = clientPrerequisiteAuthorization?.identity?.authenticatedCredentials
             for (PrototypeAuthorization prerequisiteAuthorizationType in prototypeAuthorization.prerequisites) {
                 if (prerequisiteAuthorizationType.name == clientPrerequisiteAuthorization.name) {
-                    Authorization prerequisiteAuthorization = createNewAccessAuthorization(clientPrerequisiteAuthorization, prerequisiteAuthorizationType)
-                    if (prerequisiteAuthorization.expiryDate.before(new Date())) {
-                        throw new AscendUnauthorizedException("Expired prerequisite")
-                    }
+                    validatePrerequisite(clientPrerequisiteAuthorization, prerequisiteAuthorizationType)
                     prerequisiteFound = true
                     break
                 }
@@ -176,6 +179,18 @@ class ServerAuthorizationGrantingService {
             return authenticatedCredentials
         } finally {
             authentication.authenticationData?.privateCredentials = null
+        }
+    }
+
+    void validatePrerequisite(Authorization authorization, PrototypeAuthorization prototypeAuthorization) {
+        if (authorization.serverNamespace != prototypeAuthorization.serverNamespace) {
+            throw new AscendUnauthorizedException("Wrong prerequisite server namespace")
+        }
+        if (!prototypeAuthorization.identities.collect { it.name }.contains(authorization.identity.name)) {
+            throw new AscendUnauthorizedException("Wrong prerequisite identity")
+        }
+        if (!prototypeAuthorization.scopes.collect { it.name }.contains(authorization.scope.name)) {
+            throw new AscendUnauthorizedException("Wrong prerequisite scope")
         }
     }
 

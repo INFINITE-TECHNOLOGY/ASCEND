@@ -119,7 +119,8 @@ class ConfigInitService {
                 ].toSet(),
                 durationSeconds: Duration.ofDays(30).seconds.toInteger(),
                 maxUsageCount: 3,
-                serverNamespace: "OrbitSaaS"
+                serverNamespace: "OrbitSaaS",
+                isRefresh: true
         ))
         authorizationTypeRepository.saveAll([
                 new PrototypeAuthorization(name: "app2app",
@@ -130,7 +131,8 @@ class ConfigInitService {
                                 managedNotifications
                         ].toSet(),
                         durationSeconds: Duration.ofDays(30).seconds.toInteger(),
-                        serverNamespace: "OrbitSaaS"
+                        serverNamespace: "OrbitSaaS",
+                        isRefresh: false
                 ),
                 new PrototypeAuthorization(name: "read",
                         identities: [
@@ -142,7 +144,8 @@ class ConfigInitService {
                         durationSeconds: 30,
                         maxUsageCount: Duration.ofHours(1).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
-                        refresh: readRefresh
+                        refresh: readRefresh,
+                        isRefresh: false
                 )
         ])
         authorizationTypeRepository.flush()

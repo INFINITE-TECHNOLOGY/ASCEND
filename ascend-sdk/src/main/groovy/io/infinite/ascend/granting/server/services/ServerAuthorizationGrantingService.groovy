@@ -156,14 +156,12 @@ class ServerAuthorizationGrantingService {
         authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
         authorization.identity = prototypeConverter.convertIdentity(prototypeAuthorization.identities.first())
         authorization.identity.authenticatedCredentials = authenticatedCredentials
-        authorization.isRefresh = false
         authorization.jwt = jwtService.authorization2Jwt(authorization, jwtService.jwtAccessKeyPrivate)
         if (Optional.ofNullable(prototypeAuthorization.refresh).present) {
             authorization.refresh = prototypeConverter.convertAuthorization(prototypeAuthorization.refresh, clientAuthorization.clientNamespace)
             authorization.refresh.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
             authorization.refresh.identity = prototypeConverter.convertIdentity(prototypeAuthorization.identities.first())
             authorization.refresh.identity.authenticatedCredentials = authenticatedCredentials
-            authorization.refresh.isRefresh = true
             authorization.refresh.jwt = jwtService.authorization2Jwt(authorization.refresh, jwtService.jwtRefreshKeyPrivate)
         }
         authorizationRepository.saveAndFlush(authorization)

@@ -39,4 +39,7 @@ class PrototypeAuthorization {
     @OneToOne(fetch = FetchType.EAGER)
     PrototypeAuthorization refresh
 
+    @Column(nullable = false)
+    Boolean isRefresh
+
 }

@@ -39,7 +39,8 @@ class PrototypeConverter {
                 durationSeconds: prototypeAuthorization.durationSeconds,
                 maxUsageCount: prototypeAuthorization.maxUsageCount,
                 creationDate: Instant.now().toDate(),
-                expiryDate: (Instant.now() + Duration.ofSeconds(prototypeAuthorization.durationSeconds)).toDate()
+                expiryDate: (Instant.now() + Duration.ofSeconds(prototypeAuthorization.durationSeconds)).toDate(),
+                isRefresh: prototypeAuthorization.isRefresh
         )
     }
 

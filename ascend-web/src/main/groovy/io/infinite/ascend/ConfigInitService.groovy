@@ -166,7 +166,7 @@ class ConfigInitService {
                 )
         )
         PrototypeAuthorization kycReadRefresh = authorizationTypeRepository.saveAndFlush(
-                new PrototypeAuthorization(name: "kycRead",
+                new PrototypeAuthorization(name: "kycReadRefresh",
                         identities: [
                                 knownCustomer
                         ].toSet(),

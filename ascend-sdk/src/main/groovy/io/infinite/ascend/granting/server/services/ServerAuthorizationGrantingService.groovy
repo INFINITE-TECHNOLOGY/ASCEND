@@ -64,6 +64,9 @@ class ServerAuthorizationGrantingService {
     Authorization exchangeRefreshJwt(String refreshJwt) {
         try {
             Authorization refreshAuthorization = jwtService.jwt2Authorization(refreshJwt, jwtService.jwtRefreshKeyPublic)
+            if (!refreshAuthorization.isRefresh) {
+                throw new AscendUnauthorizedException("Not a refresh authorization")
+            }
             Optional<PrototypeAuthorization> prototypeAccessOptional = prototypeAuthorizationRepository.findAccessByRefresh(refreshAuthorization.serverNamespace, refreshAuthorization.name)
             if (!prototypeAccessOptional.present) {
                 throw new AscendUnauthorizedException("No access authorizations associated with this refresh")
@@ -153,12 +156,14 @@ class ServerAuthorizationGrantingService {
         authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
         authorization.identity = prototypeConverter.convertIdentity(prototypeAuthorization.identities.first())
         authorization.identity.authenticatedCredentials = authenticatedCredentials
+        authorization.isRefresh = false
         authorization.jwt = jwtService.authorization2Jwt(authorization, jwtService.jwtAccessKeyPrivate)
         if (Optional.ofNullable(prototypeAuthorization.refresh).present) {
             authorization.refresh = prototypeConverter.convertAuthorization(prototypeAuthorization.refresh, clientAuthorization.clientNamespace)
             authorization.refresh.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
             authorization.refresh.identity = prototypeConverter.convertIdentity(prototypeAuthorization.identities.first())
             authorization.refresh.identity.authenticatedCredentials = authenticatedCredentials
+            authorization.refresh.isRefresh = true
             authorization.refresh.jwt = jwtService.authorization2Jwt(authorization.refresh, jwtService.jwtRefreshKeyPrivate)
         }
         authorizationRepository.saveAndFlush(authorization)

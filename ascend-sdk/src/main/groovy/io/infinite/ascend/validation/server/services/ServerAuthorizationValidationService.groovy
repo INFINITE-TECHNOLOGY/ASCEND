@@ -34,6 +34,9 @@ class ServerAuthorizationValidationService {
     }
 
     Authorization validateAuthorizationClaim(Authorization authorization, Claim claim) {
+        if (authorization.isRefresh) {
+            throw new AscendUnauthorizedException("Not an access authorization")
+        }
         if (authorization.expiryDate.before(new Date())) {
             throw new AscendForbiddenException("Expired Authorization")
         }

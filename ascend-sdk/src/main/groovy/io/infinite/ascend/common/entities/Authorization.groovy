@@ -55,4 +55,6 @@ class Authorization {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     Set<Claim> claims = new HashSet<Claim>()
 
+    Boolean isRefresh
+
 }

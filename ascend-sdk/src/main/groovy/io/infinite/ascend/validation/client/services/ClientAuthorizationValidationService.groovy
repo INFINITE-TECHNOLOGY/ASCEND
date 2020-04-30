@@ -32,7 +32,7 @@ class ClientAuthorizationValidationService {
     Authorization validateClaim(String ascendValidationUrl, Claim claim) {
         HttpResponse httpResponse = new SenderDefaultHttps().sendHttpMessage(
                 new HttpRequest(
-                        url: ascendValidationUrl,
+                        url: "$ascendValidationUrl/ascend/public/validation",
                         headers: [
                                 "Content-Type": "application/json",
                                 "Accept"      : "application/json"

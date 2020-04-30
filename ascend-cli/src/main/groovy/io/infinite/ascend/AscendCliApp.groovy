@@ -48,6 +48,7 @@ class AscendCliApp implements Callable<Integer>, CommandLineRunner {
         System.setProperty("jwtRefreshKeyPublic", "")
         System.setProperty("jwtRefreshKeyPrivate", "")
         System.setProperty("ascendValidationUrl", "")
+        System.setProperty("orbitUrl", "")
         SpringApplication.run(AscendCliApp.class, args)
     }
 

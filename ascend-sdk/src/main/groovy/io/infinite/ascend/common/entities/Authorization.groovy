@@ -45,14 +45,14 @@ class Authorization {
     @Type(type = "org.hibernate.type.TextType")
     String jwt
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     Authorization prerequisite
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     Authorization refresh
 
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     Set<Claim> claims = new HashSet<Claim>()
 
 }

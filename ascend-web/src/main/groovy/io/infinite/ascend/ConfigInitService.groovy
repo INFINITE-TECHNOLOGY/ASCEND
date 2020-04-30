@@ -110,6 +110,17 @@ class ConfigInitService {
                 )
         )
         identityTypeRepository.flush()
+        PrototypeAuthorization readRefresh = authorizationTypeRepository.saveAndFlush(new PrototypeAuthorization(name: "readRefresh",
+                identities: [
+                        phoneNumberOwner
+                ].toSet(),
+                scopes: [
+                        userServices
+                ].toSet(),
+                durationSeconds: Duration.ofDays(30).seconds.toInteger(),
+                maxUsageCount: 3,
+                serverNamespace: "OrbitSaaS"
+        ))
         authorizationTypeRepository.saveAll([
                 new PrototypeAuthorization(name: "app2app",
                         identities: [
@@ -131,17 +142,7 @@ class ConfigInitService {
                         durationSeconds: 30,
                         maxUsageCount: Duration.ofHours(1).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
-                        refresh: new PrototypeAuthorization(name: "readRefresh",
-                                identities: [
-                                        phoneNumberOwner
-                                ].toSet(),
-                                scopes: [
-                                        userServices
-                                ].toSet(),
-                                durationSeconds: Duration.ofDays(30).seconds.toInteger(),
-                                maxUsageCount: 3,
-                                serverNamespace: "OrbitSaaS"
-                        )
+                        refresh: readRefresh
                 )
         ])
         authorizationTypeRepository.flush()

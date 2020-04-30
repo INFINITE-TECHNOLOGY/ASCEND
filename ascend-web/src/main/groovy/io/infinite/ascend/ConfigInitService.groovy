@@ -118,7 +118,6 @@ class ConfigInitService {
                         userServices
                 ].toSet(),
                 durationSeconds: Duration.ofDays(30).seconds.toInteger(),
-                maxUsageCount: 3,
                 serverNamespace: "OrbitSaaS",
                 isRefresh: true
         ))
@@ -141,8 +140,7 @@ class ConfigInitService {
                         scopes: [
                                 userServices
                         ].toSet(),
-                        durationSeconds: 30,
-                        maxUsageCount: Duration.ofHours(1).seconds.toInteger(),
+                        durationSeconds: Duration.ofHours(1).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
                         refresh: readRefresh,
                         isRefresh: false

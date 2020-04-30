@@ -49,7 +49,6 @@ class SmsOtpValidator implements AuthenticationValidator {
                 ), 200
         )
         return [
-                "otpGuid": authentication.authenticationData.publicCredentials.get("otpGuid"),
                 "phone": authentication.authenticationData.publicCredentials.get("phone")
         ]
     }

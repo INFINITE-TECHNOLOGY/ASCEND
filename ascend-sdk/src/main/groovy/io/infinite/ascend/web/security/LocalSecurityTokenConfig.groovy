@@ -18,10 +18,10 @@ import javax.servlet.http.HttpServletResponse
 @EnableWebSecurity
 @Slf4j
 @BlackBox(level = CarburetorLevel.METHOD)
-class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
+class LocalSecurityTokenConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    JwtTokenAuthenticationFilter jwtTokenAuthenticationFilter
+    LocalJwtTokenAuthenticationFilter jwtTokenAuthenticationFilter
 
     @Override
     @BlackBox

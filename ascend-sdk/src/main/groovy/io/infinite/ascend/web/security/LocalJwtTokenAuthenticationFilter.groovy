@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse
 @Slf4j
 @BlackBox(level = CarburetorLevel.METHOD)
 @Component
-class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
+class LocalJwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     LocalAuthorizationValidationService localAuthorizationValidationService
@@ -26,7 +26,7 @@ class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     @BlackBox(level = CarburetorLevel.METHOD)
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
-        localAuthorizationValidationService.validateServletRequest(request, response, chain)
+        localAuthorizationValidationService.validateServletRequest(null, request, response, chain)
     }
 
 }

@@ -29,11 +29,14 @@ class SmsOtpValidator implements AuthenticationValidator {
 
     SenderDefaultHttps senderDefaultHttps = new SenderDefaultHttps()
 
+    @Value('${orbitUrl}')
+    String orbitUrl
+
     @Override
     Map<String, String> validateAuthentication(Authentication authentication) {
         senderDefaultHttps.expectStatus(
                 new HttpRequest(
-                        url: "https://orbit-secured.herokuapp.com/orbit/public/validateOtp",
+                        url: "$orbitUrl/orbit/public/validateOtp",
                         method: "POST",
                         headers: [
                                 "Content-Type" : "application/json",

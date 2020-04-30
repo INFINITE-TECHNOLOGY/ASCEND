@@ -24,7 +24,7 @@ class LocalAuthorizationValidationService extends ClientAuthorizationValidationS
     ServerAuthorizationValidationService serverAuthorizationValidationService
 
     @Override
-    Authorization authorizeClaim(Claim claim) {
+    Authorization authorizeClaim(String ascendValidationUrl, Claim claim) {
         try {
             return serverAuthorizationValidationService.authorizeClaim(claim)
         } catch (AscendUnauthorizedException ascendUnauthorizedException) {

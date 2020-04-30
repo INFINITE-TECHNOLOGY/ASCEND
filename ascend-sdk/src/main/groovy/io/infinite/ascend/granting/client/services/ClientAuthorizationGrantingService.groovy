@@ -130,11 +130,11 @@ class ClientAuthorizationGrantingService {
         authorizationRepository.saveAndFlush(authorization)
     }
 
-    Set<PrototypeAuthorization> inquire(String scopeName, String ascendUrl, String authorizationServerNamespace) {
+    Set<PrototypeAuthorization> inquire(String scopeName, String ascendGrantingUrl, String authorizationServerNamespace) {
         return objectMapper.readValue(
                 sendHttpMessage(
                         new HttpRequest(
-                                url: "$ascendUrl/ascend/public/granting/inquire?scopeName=${scopeName}&serverNamespace=${authorizationServerNamespace}",
+                                url: "$ascendGrantingUrl/ascend/public/granting/inquire?scopeName=${scopeName}&serverNamespace=${authorizationServerNamespace}",
                                 headers: [
                                         "Content-Type": "application/json",
                                         "Accept"      : "application/json"
@@ -144,11 +144,11 @@ class ClientAuthorizationGrantingService {
                 ).body, PrototypeAuthorization[].class) as Set<PrototypeAuthorization>
     }
 
-    Authorization serverRefreshGranting(Authorization refreshAuthorization, String ascendUrl) {
+    Authorization serverRefreshGranting(Authorization refreshAuthorization, String ascendGrantingUrl) {
         return authorizationRepository.saveAndFlush(objectMapper.readValue(
                 sendHttpMessage(
                         new HttpRequest(
-                                url: "$ascendUrl/ascend/public/granting/refresh",
+                                url: "$ascendGrantingUrl/ascend/public/granting/refresh",
                                 headers: [
                                         "Content-Type": "application/json;charset=UTF-8",
                                         "Accept"      : "application/json"
@@ -159,11 +159,11 @@ class ClientAuthorizationGrantingService {
                 ).body, Authorization.class))
     }
 
-    Authorization serverAccessGranting(Authorization authorization, String ascendUrl) {
+    Authorization serverAccessGranting(Authorization authorization, String ascendGrantingUrl) {
         return authorizationRepository.saveAndFlush(objectMapper.readValue(
                 sendHttpMessage(
                         new HttpRequest(
-                                url: "$ascendUrl/ascend/public/granting/access",
+                                url: "$ascendGrantingUrl/ascend/public/granting/access",
                                 headers: [
                                         "Content-Type": "application/json;charset=UTF-8",
                                         "Accept"      : "application/json"

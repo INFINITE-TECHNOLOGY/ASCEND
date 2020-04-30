@@ -12,7 +12,6 @@ import io.infinite.carburetor.CarburetorLevel
 import io.infinite.http.HttpRequest
 import io.infinite.http.HttpResponse
 import io.infinite.http.SenderDefaultHttps
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
@@ -30,16 +29,13 @@ class ClientAuthorizationValidationService {
 
     ObjectMapper objectMapper = new ObjectMapper()
 
-    @Value('${ascendValidationUrl}')
-    String ascendValidationUrl
-
-    Authorization authorizeClaim(Claim claim) {
+    Authorization authorizeClaim(String ascendValidationUrl, Claim claim) {
         HttpResponse httpResponse = new SenderDefaultHttps().sendHttpMessage(
                 new HttpRequest(
                         url: ascendValidationUrl,
                         headers: [
                                 "Content-Type": "application/json",
-                                "Accept" : "application/json"
+                                "Accept"      : "application/json"
                         ],
                         method: "POST",
                         body: objectMapper.writeValueAsString(claim)
@@ -61,28 +57,28 @@ class ClientAuthorizationValidationService {
         }
     }
 
-    void validateServletRequest(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
+    void validateServletRequest(String ascendValidationUrl, HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
         try {
             String authorizationHeader = request.getHeader("Authorization")
             if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
                 chain.doFilter(request, response)
                 return
             }
-            String incomingUrl
+            String clientUrl
             if (request.getQueryString() != null) {
-                incomingUrl = request.requestURL
+                clientUrl = request.requestURL
                         .append('?')
                         .append(request.getQueryString())
                         .toString()
             } else {
-                incomingUrl = request.requestURL
+                clientUrl = request.requestURL
             }
             Claim claim = new Claim(
-                    url: incomingUrl,
+                    url: clientUrl,
                     jwt: authorizationHeader.replace("Bearer ", ""),
                     method: request.method
             )
-            Authorization authorization = authorizeClaim(claim)
+            Authorization authorization = authorizeClaim(ascendValidationUrl, claim)
             PreAuthenticatedAuthenticationToken preAuthenticatedAuthenticationToken =
                     new PreAuthenticatedAuthenticationToken(authorization, claim)
             preAuthenticatedAuthenticationToken.setAuthenticated(true)

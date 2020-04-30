@@ -17,7 +17,7 @@ interface AuthorizationRepository extends JpaRepository<Authorization, Long> {
         where a.serverNamespace = :serverNamespace
         and a.clientNamespace = :clientNamespace
         and a.name = :name
-        and a.expiryDate > CURRENT_DATE
+        and a.expiryDate > CURRENT_TIMESTAMP
         group by a.id, a.creationDate, a.maxUsageCount
         having (a.maxUsageCount > count(c) or a.maxUsageCount is null)
         order by a.creationDate""")
@@ -34,7 +34,7 @@ interface AuthorizationRepository extends JpaRepository<Authorization, Long> {
         and a.name = :accessAuthorizationName
         and r.serverNamespace = :serverNamespace
         and r.clientNamespace = :clientNamespace
-        and r.expiryDate > CURRENT_DATE""")
+        and r.expiryDate > CURRENT_TIMESTAMP""")
     Set<Authorization> findRefreshByAccess(
             @Param("clientNamespace") String clientNamespace,
             @Param("serverNamespace") String serverNamespace,

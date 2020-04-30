@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 import javax.annotation.PostConstruct
+import java.time.Duration
 
 @Service
 @Slf4j
@@ -117,7 +118,7 @@ class ConfigInitService {
                         scopes: [
                                 managedNotifications
                         ].toSet(),
-                        durationSeconds: 30*24*60*60,
+                        durationSeconds: Duration.ofDays(30).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS"
                 ),
                 new PrototypeAuthorization(name: "read",
@@ -128,8 +129,19 @@ class ConfigInitService {
                                 userServices
                         ].toSet(),
                         durationSeconds: 30,
-                        maxUsageCount: 3,
-                        serverNamespace: "OrbitSaaS"
+                        maxUsageCount: Duration.ofHours(1).seconds.toInteger(),
+                        serverNamespace: "OrbitSaaS",
+                        refresh: new PrototypeAuthorization(name: "readRefresh",
+                                identities: [
+                                        phoneNumberOwner
+                                ].toSet(),
+                                scopes: [
+                                        userServices
+                                ].toSet(),
+                                durationSeconds: Duration.ofDays(30).seconds.toInteger(),
+                                maxUsageCount: 3,
+                                serverNamespace: "OrbitSaaS"
+                        )
                 )
         ])
         authorizationTypeRepository.flush()

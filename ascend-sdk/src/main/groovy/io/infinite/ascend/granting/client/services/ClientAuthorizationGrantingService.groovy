@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.transform.CompileStatic
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.entities.Claim
+import io.infinite.ascend.common.entities.Refresh
 import io.infinite.ascend.common.exceptions.AscendException
 import io.infinite.ascend.common.exceptions.AscendForbiddenException
 import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
@@ -92,9 +93,9 @@ class ClientAuthorizationGrantingService {
         if (!existingAuthorizations.isEmpty()) {
             return authorizationSelector.select(existingAuthorizations)
         } else {
-            Set<Authorization> existingRefreshAuthorizations = authorizationRepository.findRefreshByAccess(authorizationClientNamespace, authorizationServerNamespace, scopeName)
-            if (!existingRefreshAuthorizations.isEmpty()) {
-                return  serverRefreshGranting(existingRefreshAuthorizations.first(), ascendUrl)
+            Set<Refresh> existingRefresh = authorizationRepository.findRefreshByAccess(authorizationClientNamespace, authorizationServerNamespace, scopeName)
+            if (!existingRefresh.isEmpty()) {
+                return  serverRefreshGranting(existingRefresh.first(), ascendUrl)
             } else {
                 Set<PrototypeAuthorization> prototypeAuthorizations = inquire(scopeName, ascendUrl, authorizationServerNamespace)
                 if (prototypeAuthorizations.isEmpty()) {
@@ -144,7 +145,7 @@ class ClientAuthorizationGrantingService {
                 ).body, PrototypeAuthorization[].class) as Set<PrototypeAuthorization>
     }
 
-    Authorization serverRefreshGranting(Authorization refreshAuthorization, String ascendGrantingUrl) {
+    Authorization serverRefreshGranting(Refresh refresh, String ascendGrantingUrl) {
         return authorizationRepository.saveAndFlush(objectMapper.readValue(
                 sendHttpMessage(
                         new HttpRequest(
@@ -154,7 +155,7 @@ class ClientAuthorizationGrantingService {
                                         "Accept"      : "application/json"
                                 ],
                                 method: "POST",
-                                body: refreshAuthorization.jwt
+                                body: refresh.jwt
                         )
                 ).body, Authorization.class))
     }

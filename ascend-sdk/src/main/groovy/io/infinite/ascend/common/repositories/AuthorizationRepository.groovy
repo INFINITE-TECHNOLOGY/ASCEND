@@ -16,7 +16,7 @@ interface AuthorizationRepository extends JpaRepository<Authorization, Long> {
         left join a.claims c
         where a.serverNamespace = :serverNamespace
         and a.clientNamespace = :clientNamespace
-        and a.name = :name
+        and s.name = :scopeName
         and a.expiryDate > CURRENT_TIMESTAMP
         group by a.id, a.creationDate, a.maxUsageCount
         having (a.maxUsageCount > count(c) or a.maxUsageCount is null)
@@ -24,21 +24,22 @@ interface AuthorizationRepository extends JpaRepository<Authorization, Long> {
     Set<Authorization> findReceivedAccess(
             @Param("clientNamespace") String clientNamespace,
             @Param("serverNamespace") String serverNamespace,
-            @Param("name") String name
+            @Param("scopeName") String scopeName
     )
 
     @Query("""select r from Authorization a
         join a.refresh r
+        join a.scope s
         where a.serverNamespace = :serverNamespace
         and a.clientNamespace = :clientNamespace
-        and a.name = :accessAuthorizationName
+        and s.name = :scopeName
         and r.serverNamespace = :serverNamespace
         and r.clientNamespace = :clientNamespace
         and r.expiryDate > CURRENT_TIMESTAMP""")
     Set<Authorization> findRefreshByAccess(
             @Param("clientNamespace") String clientNamespace,
             @Param("serverNamespace") String serverNamespace,
-            @Param("accessAuthorizationName") String accessAuthorizationName
+            @Param("scopeName") String scopeName
     )
 
     Set<Authorization> findByClientNamespace(String clientNamespace)

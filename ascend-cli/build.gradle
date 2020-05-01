@@ -12,7 +12,7 @@ plugins {
     id "enterprise.groovy.plugin" version "1.0.4"
 }
 
-repositories {//todo: add HTTP to jcenter
+repositories {
     maven {
         url  "https://dl.bintray.com/infinite-technology/io.i-t"
     }
@@ -21,7 +21,7 @@ repositories {//todo: add HTTP to jcenter
 apply plugin: 'com.jfrog.bintray'
 bootJar {
     baseName = 'ascend-cli'
-    version = '0.3.9'
+    version = '0.4.0'
 }
 
 ext['groovy.version'] = '2.5.4'
@@ -29,7 +29,7 @@ ext['springBootVersion'] = '2.2.6.RELEASE'
 
 sourceCompatibility = 1.8
 group = "io.i-t"
-version = "0.3.9"
+version = "0.4.0"
 description = "Web Service Access Management"
 
 repositories {

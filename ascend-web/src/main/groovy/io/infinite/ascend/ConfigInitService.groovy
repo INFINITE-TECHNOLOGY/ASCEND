@@ -55,9 +55,9 @@ class ConfigInitService {
         PrototypeGrant templates = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/templates"))
         PrototypeGrant prototypeOtp = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/prototypeOtp"))
         PrototypeGrant sendOtpSms = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/sendOtpSms"))
-        PrototypeScope managedNotifications = scopeRepository.saveAndFlush(
+        PrototypeScope notificationScope = scopeRepository.saveAndFlush(
                 new PrototypeScope(
-                        name: "managedNotifications",
+                        name: "notificationScope",
                         grants: [
                                 managedEmail,
                                 managedSms,
@@ -67,14 +67,19 @@ class ConfigInitService {
                         ].toSet()
                 )
         )
-        PrototypeScope userServices = scopeRepository.saveAndFlush(
+        PrototypeScope onboardingScope = scopeRepository.saveAndFlush(
                 new PrototypeScope(
-                        name: "userServices"
+                        name: "onboardingScope"
                 )
         )
-        PrototypeScope kycServices = scopeRepository.saveAndFlush(
+        PrototypeScope registeredUserScope = scopeRepository.saveAndFlush(
                 new PrototypeScope(
-                        name: "kycServices"
+                        name: "registeredUserScope"
+                )
+        )
+        PrototypeScope kycScope = scopeRepository.saveAndFlush(
+                new PrototypeScope(
+                        name: "kycScope"
                 )
         )
         PrototypeAuthentication clientJwt = authenticationTypeRepository.saveAndFlush(
@@ -90,6 +95,11 @@ class ConfigInitService {
         PrototypeAuthentication emailOtp = authenticationTypeRepository.saveAndFlush(
                 new PrototypeAuthentication(
                         name: "emailOtp"
+                )
+        )
+        PrototypeAuthentication login = authenticationTypeRepository.saveAndFlush(
+                new PrototypeAuthentication(
+                        name: "login"
                 )
         )
         PrototypeAuthentication veriffMe = authenticationTypeRepository.saveAndFlush(
@@ -113,11 +123,19 @@ class ConfigInitService {
                         ].toSet()
                 )
         )
-        PrototypeIdentity phoneNumberOwner = identityTypeRepository.saveAndFlush(
+        PrototypeIdentity verifiedPhoneOwner = identityTypeRepository.saveAndFlush(
                 new PrototypeIdentity(
-                        name: "phoneNumberOwner",
+                        name: "verifiedPhoneOwner",
                         authentications: [
                                 smsOtp
+                        ].toSet()
+                )
+        )
+        PrototypeIdentity registeredUser = identityTypeRepository.saveAndFlush(
+                new PrototypeIdentity(
+                        name: "registeredUser",
+                        authentications: [
+                                login
                         ].toSet()
                 )
         )
@@ -130,6 +148,10 @@ class ConfigInitService {
                 )
         )
         identityTypeRepository.flush()
+        PrototypeRefresh refresh1dayNonRenewable = prototypeRefreshRepository.saveAndFlush(new PrototypeRefresh(
+                durationSeconds: Duration.ofDays(1).seconds.toInteger(),
+                isRenewable: false
+        ))
         PrototypeRefresh refresh30daysNonRenewable = prototypeRefreshRepository.saveAndFlush(new PrototypeRefresh(
                 durationSeconds: Duration.ofDays(30).seconds.toInteger(),
                 isRenewable: false
@@ -139,47 +161,64 @@ class ConfigInitService {
                 isRenewable: true
         ))
         authorizationTypeRepository.saveAndFlush(
-                new PrototypeAuthorization(name: "app2app",
+                new PrototypeAuthorization(name: "notificationScopeAuthorization",
                         identities: [
                                 clientPrivateKeyOwner
                         ].toSet(),
                         scopes: [
-                                managedNotifications
+                                notificationScope
                         ].toSet(),
                         durationSeconds: Duration.ofHours(1).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
                         refresh: refresh30daysRenewable
                 )
         )
-        PrototypeAuthorization read = authorizationTypeRepository.saveAndFlush(
-                new PrototypeAuthorization(name: "read",
+        PrototypeAuthorization onboardingScopeAuthorization = authorizationTypeRepository.saveAndFlush(
+                new PrototypeAuthorization(name: "onboardingScopeAuthorization",
                         identities: [
-                                phoneNumberOwner
+                                verifiedPhoneOwner
                         ].toSet(),
                         scopes: [
-                                userServices
+                                onboardingScope
                         ].toSet(),
                         durationSeconds: Duration.ofHours(1).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
-                        refresh: refresh30daysNonRenewable,
+                        refresh: refresh1dayNonRenewable
+                )
+        )
+        PrototypeAuthorization registeredUserScopeAuthorization = authorizationTypeRepository.saveAndFlush(
+                new PrototypeAuthorization(name: "registeredUserScopeAuthorization",
+                        identities: [
+                                registeredUser
+                        ].toSet(),
+                        scopes: [
+                                registeredUserScope
+                        ].toSet(),
+                        durationSeconds: Duration.ofHours(1).seconds.toInteger(),
+                        serverNamespace: "OrbitSaaS",
+                        prerequisites: [
+                                onboardingScopeAuthorization
+                        ].toSet(),
+                        refresh: refresh30daysNonRenewable
                 )
         )
         authorizationTypeRepository.saveAndFlush(
-                new PrototypeAuthorization(name: "kycRead",
+                new PrototypeAuthorization(name: "kycScopeAuthorization",
                         identities: [
                                 knownCustomer
                         ].toSet(),
                         scopes: [
-                                kycServices
+                                kycScope
                         ].toSet(),
                         durationSeconds: Duration.ofHours(1).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
                         refresh: refresh30daysNonRenewable,
                         prerequisites: [
-                                read
+                                registeredUserScopeAuthorization
                         ].toSet()
                 )
         )
         authorizationTypeRepository.flush()
     }
+
 }

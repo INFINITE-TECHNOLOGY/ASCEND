@@ -1,6 +1,7 @@
 package io.infinite.ascend.granting.client.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import groovy.transform.CompileStatic
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.entities.Claim
 import io.infinite.ascend.common.exceptions.AscendException
@@ -82,43 +83,47 @@ class ClientAuthorizationGrantingService {
     }
 
     Authorization grantByScope(String scopeName, String ascendUrl, String authorizationClientNamespace, String authorizationServerNamespace) {
-        Authorization authorization
-        Set<PrototypeAuthorization> prototypeAuthorizations = inquire(scopeName, ascendUrl, authorizationServerNamespace)
-        if (prototypeAuthorizations.isEmpty()) {
-            throw new AscendUnauthorizedException("No suitable authorizations found for scope name '$scopeName' with authorization serverNamespace '$authorizationServerNamespace' (Ascend URL $ascendUrl)")
-        }
-        PrototypeAuthorization prototypeAuthorization = prototypeAuthorizationSelector.select(prototypeAuthorizations)
-        PrototypeIdentity prototypeIdentity = prototypeIdentitySelector.select(prototypeAuthorization.identities)
-        authorization = clientAccessGranting(prototypeAuthorization, authorizationClientNamespace, authorizationServerNamespace, prototypeIdentity, ascendUrl)
-        return authorization
+        return clientAccessGranting(scopeName, authorizationClientNamespace, authorizationServerNamespace, ascendUrl)
     }
 
-    Authorization clientAccessGranting(PrototypeAuthorization prototypeAuthorization, String authorizationClientNamespace, String authorizationServerNamespace, PrototypeIdentity prototypeIdentity, String ascendUrl) {
-        Authorization authorization//here performance issue \/\/\/
-        Set<Authorization> existingAuthorizations = authorizationRepository.findReceivedAccess(authorizationClientNamespace, authorizationServerNamespace, prototypeAuthorization.name)
+    Authorization clientAccessGranting(String scopeName, String authorizationClientNamespace, String authorizationServerNamespace, String ascendUrl) {
+        Authorization authorization
+        Set<Authorization> existingAuthorizations = authorizationRepository.findReceivedAccess(authorizationClientNamespace, authorizationServerNamespace, scopeName)
         if (!existingAuthorizations.isEmpty()) {
             authorization = authorizationSelector.select(existingAuthorizations)
         } else {
-            Set<Authorization> existingRefreshAuthorizations = authorizationRepository.findRefreshByAccess(authorizationClientNamespace, authorizationServerNamespace, prototypeAuthorization.name)
+            Set<Authorization> existingRefreshAuthorizations = authorizationRepository.findRefreshByAccess(authorizationClientNamespace, authorizationServerNamespace, scopeName)
             if (!existingRefreshAuthorizations.isEmpty()) {
                 authorization = serverRefreshGranting(existingRefreshAuthorizations.first(), ascendUrl)
             } else {
-                authorization = prototypeConverter.convertAccessAuthorization(prototypeAuthorization, authorizationClientNamespace)
+                Set<PrototypeAuthorization> prototypeAuthorizations = inquire(scopeName, ascendUrl, authorizationServerNamespace)
+                if (prototypeAuthorizations.isEmpty()) {
+                    throw new AscendUnauthorizedException("No suitable authorizations found for scope name '$scopeName' with authorization serverNamespace '$authorizationServerNamespace' (Ascend URL $ascendUrl)")
+                }
+                PrototypeAuthorization prototypeAuthorization = prototypeAuthorizationSelector.select(prototypeAuthorizations)
+                PrototypeIdentity prototypeIdentity = prototypeIdentitySelector.select(prototypeAuthorization.identities)
+                Authorization prerequisiteAuthorization = null
                 if (!prototypeAuthorization.prerequisites.empty) {
                     PrototypeAuthorization prototypeAuthorizationPrerequisite = prototypeAuthorizationSelector.selectPrerequisite(prototypeAuthorization.prerequisites)
                     PrototypeIdentity prototypeIdentityPrerequisite = prototypeIdentitySelector.selectPrerequisite(prototypeAuthorizationPrerequisite.identities)
-                    authorization.prerequisite = clientAccessGranting(prototypeAuthorizationPrerequisite, authorizationClientNamespace, authorizationServerNamespace, prototypeIdentityPrerequisite, ascendUrl)
-                    //<<<<<<<<Recursive call
+                    prerequisiteAuthorization = authenticateAuthorization(prototypeAuthorizationPrerequisite, authorizationClientNamespace, authorizationServerNamespace, prototypeIdentityPrerequisite, ascendUrl)
                 }
-                authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
-                authorization.identity = prototypeConverter.convertIdentity(prototypeIdentity)
-                authorization.identity.authentications.each { prototypeAuthentication ->
-                    clientAuthenticationService.prepareAuthentication(prototypeAuthentication)
-                }
-                authorization = serverAccessGranting(authorization, ascendUrl)
+                authorization = authenticateAuthorization(prototypeAuthorization, authorizationClientNamespace, authorizationServerNamespace, prototypeIdentity, ascendUrl)
+                authorization.prerequisite = prerequisiteAuthorization
+                return authorization
             }
         }
-        return authorization
+        throw new AscendUnauthorizedException("Authorization could not be completed")
+    }
+
+    Authorization authenticateAuthorization(PrototypeAuthorization prototypeAuthorization, String clientNamespace, String serverNamespace, PrototypeIdentity prototypeIdentity, String ascendUrl) {
+        Authorization authorization = prototypeConverter.convertAccessAuthorization(prototypeAuthorization, clientNamespace)
+        authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
+        authorization.identity = prototypeConverter.convertIdentity(prototypeIdentity)
+        authorization.identity.authentications.each { prototypeAuthentication ->
+            clientAuthenticationService.prepareAuthentication(prototypeAuthentication)
+        }
+        return sendToGrantingServer(authorization, ascendUrl)
     }
 
     void consume(Authorization authorization, Claim claim) {
@@ -155,7 +160,7 @@ class ClientAuthorizationGrantingService {
                 ).body, Authorization.class))
     }
 
-    Authorization serverAccessGranting(Authorization authorization, String ascendGrantingUrl) {
+    Authorization sendToGrantingServer(Authorization authorization, String ascendGrantingUrl) {
         return authorizationRepository.saveAndFlush(objectMapper.readValue(
                 sendHttpMessage(
                         new HttpRequest(

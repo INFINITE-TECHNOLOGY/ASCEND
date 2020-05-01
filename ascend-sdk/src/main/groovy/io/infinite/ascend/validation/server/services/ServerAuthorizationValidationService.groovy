@@ -31,7 +31,7 @@ class ServerAuthorizationValidationService {
 
     Authorization validateClaim(Claim claim) {
         try {
-            Authorization authorization = jwtService.jwt2Authorization(claim.jwt, jwtService.jwtAccessKeyPublic)
+            Authorization authorization = jwtService.jwt2authorization(claim.jwt, jwtService.jwtAccessKeyPublic)
             validateAuthorizationClaim(authorization, claim)
             return authorization
         } catch (AscendUnauthorizedException ascendUnauthorizedException) {
@@ -44,9 +44,6 @@ class ServerAuthorizationValidationService {
     }
 
     Authorization validateAuthorizationClaim(Authorization authorization, Claim claim) {
-        if (authorization.isRefresh) {
-            throw new AscendUnauthorizedException("Not an access authorization")
-        }
         if (authorization.expiryDate.before(new Date())) {
             throw new AscendForbiddenException("Expired Authorization")
         }

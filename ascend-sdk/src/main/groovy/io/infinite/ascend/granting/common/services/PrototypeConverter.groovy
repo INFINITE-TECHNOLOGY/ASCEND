@@ -31,21 +31,19 @@ class PrototypeConverter {
                 durationSeconds: prototypeAuthorization.durationSeconds,
                 maxUsageCount: prototypeAuthorization.maxUsageCount,
                 creationDate: Instant.now().toDate(),
-                expiryDate: (Instant.now() + Duration.ofSeconds(prototypeAuthorization.durationSeconds)).toDate(),
-                isRefresh: false
+                expiryDate: (Instant.now() + Duration.ofSeconds(prototypeAuthorization.durationSeconds)).toDate()
         )
     }
 
-    Authorization convertRefreshAuthorization(PrototypeAuthorization prototypeAuthorization, String clientNamespace) {
-        return new Authorization(
+    Refresh convertRefresh(PrototypeAuthorization prototypeAuthorization, String clientNamespace) {
+        return new Refresh(
                 name: prototypeAuthorization.name,
                 serverNamespace: prototypeAuthorization.serverNamespace,
                 clientNamespace: clientNamespace,
                 durationSeconds: prototypeAuthorization.durationSeconds,
                 maxUsageCount: prototypeAuthorization.refresh.maxUsageCount,
                 creationDate: Instant.now().toDate(),
-                expiryDate: (Instant.now() + Duration.ofSeconds(prototypeAuthorization.refresh.durationSeconds)).toDate(),
-                isRefresh: true
+                expiryDate: (Instant.now() + Duration.ofSeconds(prototypeAuthorization.refresh.durationSeconds)).toDate()
         )
     }
 

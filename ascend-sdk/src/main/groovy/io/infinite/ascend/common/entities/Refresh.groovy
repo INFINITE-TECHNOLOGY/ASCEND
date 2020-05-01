@@ -8,9 +8,8 @@ import org.hibernate.annotations.Type
 import javax.persistence.*
 
 @Entity
-@Table(name = "authorizations")
 @ToString(includeNames = true, includeFields = true, excludes = ["jwt"])
-class Authorization {
+class Refresh {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,12 +24,8 @@ class Authorization {
 
     String clientNamespace
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    Identity identity
-
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    Scope scope
-
+    @ElementCollection
+    Map<String, String> authenticatedCredentials = new HashMap<String, String>()
     Integer durationSeconds
 
     Integer maxUsageCount
@@ -44,15 +39,5 @@ class Authorization {
     @Lob
     @Type(type = "org.hibernate.type.TextType")
     String jwt
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    Authorization prerequisite
-
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    Refresh refresh
-
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    Set<Claim> claims = new HashSet<Claim>()
 
 }

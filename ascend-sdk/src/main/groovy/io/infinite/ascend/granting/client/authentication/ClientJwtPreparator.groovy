@@ -32,7 +32,7 @@ class ClientJwtPreparator implements AuthenticationPreparator {
         JwtService jwtService = new JwtService()
         return new AuthenticationData(
                 publicCredentials: ["ascendClientPublicKeyName": ascendClientPublicKeyName],
-                privateCredentials: ["clientJwt": jwtService.authorization2Jwt(
+                privateCredentials: ["clientJwt": jwtService.authorization2jwt(
                         selfIssuedAuthorization,
                         jwtService.loadPrivateKeyFromHexString(ascendClientPrivateKey)
                 )]

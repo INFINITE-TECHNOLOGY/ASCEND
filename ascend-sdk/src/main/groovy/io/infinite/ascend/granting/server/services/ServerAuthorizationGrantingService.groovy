@@ -3,6 +3,7 @@ package io.infinite.ascend.granting.server.services
 import groovy.util.logging.Slf4j
 import io.infinite.ascend.common.entities.Authentication
 import io.infinite.ascend.common.entities.Authorization
+import io.infinite.ascend.common.entities.Refresh
 import io.infinite.ascend.common.repositories.AuthorizationRepository
 import io.infinite.ascend.common.services.JwtService
 import io.infinite.ascend.granting.common.services.PrototypeConverter
@@ -63,30 +64,24 @@ class ServerAuthorizationGrantingService {
 
     Authorization exchangeRefreshJwt(String refreshJwt) {
         try {
-            Authorization refreshAuthorization = jwtService.jwt2Authorization(refreshJwt, jwtService.jwtRefreshKeyPublic)
-            if (!refreshAuthorization.isRefresh) {
-                throw new AscendUnauthorizedException("Not a refresh authorization")
-            }
-            Optional<PrototypeAuthorization> prototypeAccessOptional = prototypeAuthorizationRepository.findAccessByRefresh(refreshAuthorization.serverNamespace, refreshAuthorization.name)
+            Refresh refresh = jwtService.jwt2refresh(refreshJwt, jwtService.jwtRefreshKeyPublic)
+            Optional<PrototypeAuthorization> prototypeAccessOptional = prototypeAuthorizationRepository.findAccessByRefresh(refresh.serverNamespace, refresh.name)
             if (!prototypeAccessOptional.present) {
                 throw new AscendUnauthorizedException("No access authorizations associated with this refresh")
             }
-            if (refreshAuthorization.expiryDate.before(new Date())) {
+            if (refresh.expiryDate.before(new Date())) {
                 throw new AscendForbiddenException("Expired Refresh Authorization")
             }
             PrototypeAuthorization prototypeAccess = prototypeAccessOptional.get()
-            Authorization accessAuthorization = prototypeConverter.convertAccessAuthorization(prototypeAccess, refreshAuthorization.clientNamespace)
+            Authorization accessAuthorization = prototypeConverter.convertAccessAuthorization(prototypeAccess, refresh.clientNamespace)
             accessAuthorization.scope = prototypeConverter.convertScope(prototypeAccess.scopes.first())
             accessAuthorization.identity = prototypeConverter.convertIdentity(prototypeAccess.identities.first())
-            accessAuthorization.identity.authenticatedCredentials = refreshAuthorization.identity.authenticatedCredentials
-            accessAuthorization.jwt = jwtService.authorization2Jwt(accessAuthorization, jwtService.jwtAccessKeyPrivate)
+            accessAuthorization.identity.authenticatedCredentials = refresh.authenticatedCredentials
+            accessAuthorization.jwt = jwtService.authorization2jwt(accessAuthorization, jwtService.jwtAccessKeyPrivate)
             if (Optional.ofNullable(prototypeAccess.refresh).present) {
                 if (prototypeAccess.refresh.isRenewable) {
-                    accessAuthorization.refresh = prototypeConverter.convertRefreshAuthorization(prototypeAccess, refreshAuthorization.clientNamespace)
-                    accessAuthorization.refresh.scope = prototypeConverter.convertScope(prototypeAccess.scopes.first())
-                    accessAuthorization.refresh.identity = prototypeConverter.convertIdentity(prototypeAccess.identities.first())
-                    accessAuthorization.refresh.identity.authenticatedCredentials = refreshAuthorization.identity.authenticatedCredentials
-                    accessAuthorization.refresh.jwt = jwtService.authorization2Jwt(accessAuthorization.refresh, jwtService.jwtRefreshKeyPrivate)
+                    accessAuthorization.refresh = prototypeConverter.convertRefresh(prototypeAccess, refresh.clientNamespace)
+                    accessAuthorization.refresh.jwt = jwtService.refresh2jwt(accessAuthorization.refresh, jwtService.jwtRefreshKeyPrivate)
                 }
             }
             authorizationRepository.saveAndFlush(accessAuthorization)
@@ -104,12 +99,9 @@ class ServerAuthorizationGrantingService {
             if (clientAuthorization.prerequisite == null) {
                 throw new AscendUnauthorizedException("Missing prerequisite")
             }
-            Authorization clientPrerequisiteAuthorization = jwtService.jwt2Authorization(clientAuthorization.prerequisite.jwt, jwtService.jwtAccessKeyPublic)
+            Authorization clientPrerequisiteAuthorization = jwtService.jwt2authorization(clientAuthorization.prerequisite.jwt, jwtService.jwtAccessKeyPublic)
             if (clientPrerequisiteAuthorization.expiryDate.before(new Date())) {
                 throw new AscendUnauthorizedException("Expired prerequisite")
-            }
-            if (clientPrerequisiteAuthorization.isRefresh) {
-                throw new AscendUnauthorizedException("Not an access prerequisite")
             }
             Boolean prerequisiteFound = false
             prerequisiteAuthenticatedCredentials = clientPrerequisiteAuthorization?.identity?.authenticatedCredentials
@@ -161,13 +153,10 @@ class ServerAuthorizationGrantingService {
         authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
         authorization.identity = prototypeConverter.convertIdentity(prototypeAuthorization.identities.first())
         authorization.identity.authenticatedCredentials = authenticatedCredentials
-        authorization.jwt = jwtService.authorization2Jwt(authorization, jwtService.jwtAccessKeyPrivate)
+        authorization.jwt = jwtService.authorization2jwt(authorization, jwtService.jwtAccessKeyPrivate)
         if (Optional.ofNullable(prototypeAuthorization.refresh).present) {
-            authorization.refresh = prototypeConverter.convertRefreshAuthorization(prototypeAuthorization, clientAuthorization.clientNamespace)
-            authorization.refresh.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
-            authorization.refresh.identity = prototypeConverter.convertIdentity(prototypeAuthorization.identities.first())
-            authorization.refresh.identity.authenticatedCredentials = authenticatedCredentials
-            authorization.refresh.jwt = jwtService.authorization2Jwt(authorization.refresh, jwtService.jwtRefreshKeyPrivate)
+            authorization.refresh = prototypeConverter.convertRefresh(prototypeAuthorization, clientAuthorization.clientNamespace)
+            authorization.refresh.jwt = jwtService.refresh2jwt(authorization.refresh, jwtService.jwtRefreshKeyPrivate)
         }
         authorizationRepository.saveAndFlush(authorization)
         return authorization

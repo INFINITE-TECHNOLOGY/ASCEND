@@ -6,6 +6,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
 import groovy.transform.CompileDynamic
 import groovy.util.logging.Slf4j
 import io.infinite.ascend.common.entities.Authorization
+import io.infinite.ascend.common.entities.Refresh
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import io.jsonwebtoken.CompressionCodecs
@@ -66,17 +67,40 @@ class JwtService {
 
     @CompileDynamic
     @BlackBox(level = CarburetorLevel.ERROR)
-    Authorization jwt2Authorization(String iJwt, PublicKey publicKey) {
-        Jwt jwt = Jwts.parser().setSigningKey(publicKey).parse(iJwt)
+    Authorization jwt2authorization(String jwtString, PublicKey publicKey) {
+        Jwt jwt = Jwts.parser().setSigningKey(publicKey).parse(jwtString)
         Authorization authorization = objectMapper.readValue(jwt.getBody() as String, Authorization.class)
-        authorization.jwt = iJwt
+        authorization.jwt = jwtString
         return authorization
     }
 
     @CompileDynamic
     @BlackBox(level = CarburetorLevel.ERROR)
-    String authorization2Jwt(Authorization authorization, PrivateKey privateKey) {
+    Refresh jwt2refresh(String jwtString, PublicKey publicKey) {
+        Jwt jwt = Jwts.parser().setSigningKey(publicKey).parse(jwtString)
+        Refresh refresh = objectMapper.readValue(jwt.getBody() as String, Refresh.class)
+        refresh.jwt = jwtString
+        return refresh
+    }
+
+    @CompileDynamic
+    @BlackBox(level = CarburetorLevel.ERROR)
+    String authorization2jwt(Authorization authorization, PrivateKey privateKey) {
         String body = objectMapper.writeValueAsString(authorization)
+        log.debug(body)
+        String jwt = Jwts.builder()
+                .setPayload(body)
+                .signWith(privateKey)
+                .compressWith(CompressionCodecs.GZIP)
+                .compact()
+        log.debug(jwt)
+        return jwt
+    }
+
+    @CompileDynamic
+    @BlackBox(level = CarburetorLevel.ERROR)
+    String refresh2jwt(Refresh refresh, PrivateKey privateKey) {
+        String body = objectMapper.writeValueAsString(refresh)
         log.debug(body)
         String jwt = Jwts.builder()
                 .setPayload(body)

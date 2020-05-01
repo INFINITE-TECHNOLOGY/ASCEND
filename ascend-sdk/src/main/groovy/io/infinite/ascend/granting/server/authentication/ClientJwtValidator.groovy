@@ -35,7 +35,7 @@ class ClientJwtValidator implements AuthenticationValidator {
         if (!trustedAppOptional.present) {
             throw new AscendUnauthorizedException("Key $ascendClientPublicKeyName is not trusted.")
         }
-        Authorization selfIssuedAuthorization = jwtService.jwt2Authorization(clientJwt, jwtService.loadPublicKeyFromHexString(trustedAppOptional.get().publicKey))
+        Authorization selfIssuedAuthorization = jwtService.jwt2authorization(clientJwt, jwtService.loadPublicKeyFromHexString(trustedAppOptional.get().publicKey))
         log.debug(FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS").format(new Date()))
         log.debug(FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS").format(selfIssuedAuthorization.expiryDate))
         if (selfIssuedAuthorization.expiryDate.before(new Date())) {

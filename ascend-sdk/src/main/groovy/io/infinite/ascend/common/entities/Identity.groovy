@@ -20,7 +20,7 @@ class Identity {
     @JoinTable
     Set<Authentication> authentications = new HashSet<Authentication>()
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     Map<String, String> authenticatedCredentials = new HashMap<String, String>()
 
 }

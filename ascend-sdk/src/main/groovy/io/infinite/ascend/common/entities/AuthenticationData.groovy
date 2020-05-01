@@ -15,7 +15,7 @@ class AuthenticationData {
     @JsonIgnore
     Long id
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     Map<String, String> publicCredentials = new HashMap<String, String>()
 
     @Transient

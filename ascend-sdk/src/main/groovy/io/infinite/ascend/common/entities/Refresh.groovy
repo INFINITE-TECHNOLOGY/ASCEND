@@ -24,8 +24,9 @@ class Refresh {
 
     String clientNamespace
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     Map<String, String> authenticatedCredentials = new HashMap<String, String>()
+
     Integer durationSeconds
 
     Integer maxUsageCount

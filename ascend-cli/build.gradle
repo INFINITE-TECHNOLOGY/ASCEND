@@ -18,7 +18,7 @@ repositories {
     }
 }
 
-apply plugin: 'com.jfrog.bintray'
+//apply plugin: 'com.jfrog.bintray'
 bootJar {
     baseName = 'ascend-cli'
     version = '0.4.1'
@@ -78,7 +78,7 @@ artifacts {
     archives(jarSrc)
 }
 
-bintray {
+/*bintray {
     user = System.getenv("bintrayuser")
     key = System.getenv("bintraypassword")
     System.out.println(user)
@@ -96,7 +96,7 @@ bintray {
         websiteUrl = "https://i-t.io/Ascend/"
         licenses = ["Apache-2.0"]
     }
-}
+}*/
 
 configurations {
     providedRuntime

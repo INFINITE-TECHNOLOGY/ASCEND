@@ -156,6 +156,7 @@ class ServerAuthorizationGrantingService {
         authorization.jwt = jwtService.authorization2jwt(authorization, jwtService.jwtAccessKeyPrivate)
         if (Optional.ofNullable(prototypeAuthorization.refresh).present) {
             authorization.refresh = prototypeConverter.convertRefresh(prototypeAuthorization, clientAuthorization.clientNamespace)
+            authorization.refresh.authenticatedCredentials = authorization.identity.authenticatedCredentials
             authorization.refresh.jwt = jwtService.refresh2jwt(authorization.refresh, jwtService.jwtRefreshKeyPrivate)
         }
         authorizationRepository.saveAndFlush(authorization)

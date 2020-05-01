@@ -40,7 +40,7 @@ class PrototypeConverter {
                 name: prototypeAuthorization.name,
                 serverNamespace: prototypeAuthorization.serverNamespace,
                 clientNamespace: clientNamespace,
-                durationSeconds: prototypeAuthorization.durationSeconds,
+                durationSeconds: prototypeAuthorization.refresh.durationSeconds,
                 maxUsageCount: prototypeAuthorization.refresh.maxUsageCount,
                 creationDate: Instant.now().toDate(),
                 expiryDate: (Instant.now() + Duration.ofSeconds(prototypeAuthorization.refresh.durationSeconds)).toDate()

@@ -84,7 +84,6 @@ class ClientAuthorizationGrantingService {
         }
     }
 
-    @Transactional
     Authorization grantByScope(String scopeName, String ascendUrl, String authorizationClientNamespace, String authorizationServerNamespace) {
         Authorization authorization
         Set<PrototypeAuthorization> prototypeAuthorizations = inquire(scopeName, ascendUrl, authorizationServerNamespace)

@@ -1,17 +1,9 @@
 package io.infinite.ascend.granting.common.services
 
-import io.infinite.ascend.common.entities.Authentication
-import io.infinite.ascend.common.entities.Authorization
-import io.infinite.ascend.common.entities.Grant
-import io.infinite.ascend.common.entities.Identity
-import io.infinite.ascend.common.entities.Scope
+import io.infinite.ascend.common.entities.*
 import io.infinite.ascend.common.repositories.AuthorizationRepository
 import io.infinite.ascend.common.services.JwtService
-import io.infinite.ascend.granting.configuration.entities.PrototypeAuthentication
-import io.infinite.ascend.granting.configuration.entities.PrototypeAuthorization
-import io.infinite.ascend.granting.configuration.entities.PrototypeGrant
-import io.infinite.ascend.granting.configuration.entities.PrototypeIdentity
-import io.infinite.ascend.granting.configuration.entities.PrototypeScope
+import io.infinite.ascend.granting.configuration.entities.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Service
@@ -31,7 +23,7 @@ class PrototypeConverter {
     @Autowired
     ApplicationContext applicationContext
 
-    Authorization convertAuthorization(PrototypeAuthorization prototypeAuthorization, String clientNamespace) {
+    Authorization convertAccessAuthorization(PrototypeAuthorization prototypeAuthorization, String clientNamespace) {
         return new Authorization(
                 name: prototypeAuthorization.name,
                 serverNamespace: prototypeAuthorization.serverNamespace,
@@ -40,7 +32,20 @@ class PrototypeConverter {
                 maxUsageCount: prototypeAuthorization.maxUsageCount,
                 creationDate: Instant.now().toDate(),
                 expiryDate: (Instant.now() + Duration.ofSeconds(prototypeAuthorization.durationSeconds)).toDate(),
-                isRefresh: prototypeAuthorization.isRefresh
+                isRefresh: false
+        )
+    }
+
+    Authorization convertRefreshAuthorization(PrototypeAuthorization prototypeAuthorization, String clientNamespace) {
+        return new Authorization(
+                name: prototypeAuthorization.name,
+                serverNamespace: prototypeAuthorization.serverNamespace,
+                clientNamespace: clientNamespace,
+                durationSeconds: prototypeAuthorization.durationSeconds,
+                maxUsageCount: prototypeAuthorization.refresh.maxUsageCount,
+                creationDate: Instant.now().toDate(),
+                expiryDate: (Instant.now() + Duration.ofSeconds(prototypeAuthorization.refresh.durationSeconds)).toDate(),
+                isRefresh: true
         )
     }
 

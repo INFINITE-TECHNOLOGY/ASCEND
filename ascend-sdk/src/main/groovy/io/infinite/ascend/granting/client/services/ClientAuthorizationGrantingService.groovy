@@ -1,7 +1,6 @@
 package io.infinite.ascend.granting.client.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import groovy.transform.CompileStatic
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.entities.Claim
 import io.infinite.ascend.common.exceptions.AscendException
@@ -21,8 +20,6 @@ import io.infinite.http.HttpResponse
 import io.infinite.http.SenderDefaultHttps
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-
-import javax.transaction.Transactional
 
 @Service
 @BlackBox(level = CarburetorLevel.METHOD)
@@ -106,7 +103,7 @@ class ClientAuthorizationGrantingService {
             if (!existingRefreshAuthorizations.isEmpty()) {
                 authorization = serverRefreshGranting(existingRefreshAuthorizations.first(), ascendUrl)
             } else {
-                authorization = prototypeConverter.convertAuthorization(prototypeAuthorization, authorizationClientNamespace)
+                authorization = prototypeConverter.convertAccessAuthorization(prototypeAuthorization, authorizationClientNamespace)
                 if (!prototypeAuthorization.prerequisites.empty) {
                     PrototypeAuthorization prototypeAuthorizationPrerequisite = prototypeAuthorizationSelector.selectPrerequisite(prototypeAuthorization.prerequisites)
                     PrototypeIdentity prototypeIdentityPrerequisite = prototypeIdentitySelector.selectPrerequisite(prototypeAuthorizationPrerequisite.identities)

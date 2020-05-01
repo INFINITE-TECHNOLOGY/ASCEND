@@ -37,9 +37,6 @@ class PrototypeAuthorization {
     Set<PrototypeAuthorization> prerequisites = new HashSet<PrototypeAuthorization>()
 
     @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
-    PrototypeAuthorization refresh
-
-    @Column(nullable = false)
-    Boolean isRefresh
+    PrototypeRefresh refresh
 
 }

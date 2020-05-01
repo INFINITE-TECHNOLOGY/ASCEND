@@ -75,14 +75,14 @@ class ServerAuthorizationGrantingService {
                 throw new AscendForbiddenException("Expired Refresh Authorization")
             }
             PrototypeAuthorization prototypeAccess = prototypeAccessOptional.get()
-            Authorization accessAuthorization = prototypeConverter.convertAuthorization(prototypeAccess, refreshAuthorization.clientNamespace)
+            Authorization accessAuthorization = prototypeConverter.convertAccessAuthorization(prototypeAccess, refreshAuthorization.clientNamespace)
             accessAuthorization.scope = prototypeConverter.convertScope(prototypeAccess.scopes.first())
             accessAuthorization.identity = prototypeConverter.convertIdentity(prototypeAccess.identities.first())
             accessAuthorization.identity.authenticatedCredentials = refreshAuthorization.identity.authenticatedCredentials
             accessAuthorization.jwt = jwtService.authorization2Jwt(accessAuthorization, jwtService.jwtAccessKeyPrivate)
             if (Optional.ofNullable(prototypeAccess.refresh).present) {
-                if (Optional.ofNullable(prototypeAccess.refresh.refresh).present) {
-                    accessAuthorization.refresh = prototypeConverter.convertAuthorization(prototypeAccess.refresh.refresh, refreshAuthorization.clientNamespace)
+                if (prototypeAccess.refresh.isRenewable) {
+                    accessAuthorization.refresh = prototypeConverter.convertRefreshAuthorization(prototypeAccess, refreshAuthorization.clientNamespace)
                     accessAuthorization.refresh.scope = prototypeConverter.convertScope(prototypeAccess.scopes.first())
                     accessAuthorization.refresh.identity = prototypeConverter.convertIdentity(prototypeAccess.identities.first())
                     accessAuthorization.refresh.identity.authenticatedCredentials = refreshAuthorization.identity.authenticatedCredentials
@@ -157,13 +157,13 @@ class ServerAuthorizationGrantingService {
                 }
             }
         }
-        Authorization authorization = prototypeConverter.convertAuthorization(prototypeAuthorization, clientAuthorization.clientNamespace)
+        Authorization authorization = prototypeConverter.convertAccessAuthorization(prototypeAuthorization, clientAuthorization.clientNamespace)
         authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
         authorization.identity = prototypeConverter.convertIdentity(prototypeAuthorization.identities.first())
         authorization.identity.authenticatedCredentials = authenticatedCredentials
         authorization.jwt = jwtService.authorization2Jwt(authorization, jwtService.jwtAccessKeyPrivate)
         if (Optional.ofNullable(prototypeAuthorization.refresh).present) {
-            authorization.refresh = prototypeConverter.convertAuthorization(prototypeAuthorization.refresh, clientAuthorization.clientNamespace)
+            authorization.refresh = prototypeConverter.convertRefreshAuthorization(prototypeAuthorization, clientAuthorization.clientNamespace)
             authorization.refresh.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
             authorization.refresh.identity = prototypeConverter.convertIdentity(prototypeAuthorization.identities.first())
             authorization.refresh.identity.authenticatedCredentials = authenticatedCredentials

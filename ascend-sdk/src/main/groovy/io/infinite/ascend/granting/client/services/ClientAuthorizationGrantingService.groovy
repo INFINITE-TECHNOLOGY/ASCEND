@@ -90,11 +90,11 @@ class ClientAuthorizationGrantingService {
         Authorization authorization
         Set<Authorization> existingAuthorizations = authorizationRepository.findReceivedAccess(authorizationClientNamespace, authorizationServerNamespace, scopeName)
         if (!existingAuthorizations.isEmpty()) {
-            authorization = authorizationSelector.select(existingAuthorizations)
+            return authorizationSelector.select(existingAuthorizations)
         } else {
             Set<Authorization> existingRefreshAuthorizations = authorizationRepository.findRefreshByAccess(authorizationClientNamespace, authorizationServerNamespace, scopeName)
             if (!existingRefreshAuthorizations.isEmpty()) {
-                authorization = serverRefreshGranting(existingRefreshAuthorizations.first(), ascendUrl)
+                return  serverRefreshGranting(existingRefreshAuthorizations.first(), ascendUrl)
             } else {
                 Set<PrototypeAuthorization> prototypeAuthorizations = inquire(scopeName, ascendUrl, authorizationServerNamespace)
                 if (prototypeAuthorizations.isEmpty()) {
@@ -113,7 +113,6 @@ class ClientAuthorizationGrantingService {
                 return authorization
             }
         }
-        throw new AscendUnauthorizedException("Authorization could not be completed")
     }
 
     Authorization authenticateAuthorization(PrototypeAuthorization prototypeAuthorization, String clientNamespace, String serverNamespace, PrototypeIdentity prototypeIdentity, String ascendUrl) {

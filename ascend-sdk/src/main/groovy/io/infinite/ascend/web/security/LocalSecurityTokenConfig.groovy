@@ -24,7 +24,6 @@ class LocalSecurityTokenConfig extends WebSecurityConfigurerAdapter {
     LocalJwtTokenAuthenticationFilter jwtTokenAuthenticationFilter
 
     @Override
-    @BlackBox
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf()

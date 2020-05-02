@@ -5,6 +5,7 @@ import io.infinite.ascend.common.entities.Authentication
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.entities.Refresh
 import io.infinite.ascend.common.repositories.AuthorizationRepository
+import io.infinite.ascend.common.repositories.RefreshRepository
 import io.infinite.ascend.common.services.JwtService
 import io.infinite.ascend.granting.common.services.PrototypeConverter
 import io.infinite.ascend.granting.configuration.entities.PrototypeAuthentication
@@ -41,6 +42,9 @@ class ServerAuthorizationGrantingService {
 
     @Autowired
     PrototypeAuthorizationRepository prototypeAuthorizationRepository
+
+    @Autowired
+    RefreshRepository refreshRepository
 
     Authorization grantAccessAuthorization(Authorization clientAuthorization) {
         try {
@@ -83,6 +87,10 @@ class ServerAuthorizationGrantingService {
                     accessAuthorization.refresh = prototypeConverter.convertRefresh(prototypeAccess, refresh.clientNamespace)
                     accessAuthorization.refresh.jwt = jwtService.refresh2jwt(accessAuthorization.refresh, jwtService.jwtRefreshKeyPrivate)
                 }
+            }
+            Optional<Refresh> dbRefresh = refreshRepository.findByGuid(refresh.guid)
+            if (dbRefresh.present) {
+                accessAuthorization.refresh = dbRefresh.get()
             }
             authorizationRepository.saveAndFlush(accessAuthorization)
             return accessAuthorization

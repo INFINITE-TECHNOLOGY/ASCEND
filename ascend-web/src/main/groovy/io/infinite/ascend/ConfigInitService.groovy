@@ -55,6 +55,7 @@ class ConfigInitService {
         PrototypeGrant templates = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/templates"))
         PrototypeGrant prototypeOtp = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/prototypeOtp"))
         PrototypeGrant sendOtpSms = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/sendOtpSms"))
+        PrototypeGrant registration = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/registration\\/%phone%"))
         PrototypeScope notificationScope = scopeRepository.saveAndFlush(
                 new PrototypeScope(
                         name: "notificationScope",
@@ -69,7 +70,10 @@ class ConfigInitService {
         )
         PrototypeScope onboardingScope = scopeRepository.saveAndFlush(
                 new PrototypeScope(
-                        name: "onboardingScope"
+                        name: "onboardingScope",
+                        grants: [
+                                registration
+                        ].toSet()
                 )
         )
         PrototypeScope registeredUserScope = scopeRepository.saveAndFlush(
@@ -77,9 +81,9 @@ class ConfigInitService {
                         name: "registeredUserScope"
                 )
         )
-        PrototypeScope kycScope = scopeRepository.saveAndFlush(
+        PrototypeScope knownCustomerScope = scopeRepository.saveAndFlush(
                 new PrototypeScope(
-                        name: "kycScope"
+                        name: "knownCustomerScope"
                 )
         )
         PrototypeAuthentication clientJwt = authenticationTypeRepository.saveAndFlush(
@@ -208,7 +212,7 @@ class ConfigInitService {
                                 knownCustomer
                         ].toSet(),
                         scopes: [
-                                kycScope
+                                knownCustomerScope
                         ].toSet(),
                         durationSeconds: Duration.ofHours(1).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",

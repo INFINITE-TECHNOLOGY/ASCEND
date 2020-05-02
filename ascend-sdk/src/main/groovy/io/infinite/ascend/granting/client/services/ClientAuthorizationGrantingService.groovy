@@ -88,7 +88,7 @@ class ClientAuthorizationGrantingService {
         }
     }
 
-    Authorization grantByScope(String scopeName, String authorizationClientNamespace, String authorizationServerNamespace, String ascendUrl) {
+    Authorization grantByScope(String scopeName, String ascendUrl, String authorizationClientNamespace, String authorizationServerNamespace) {
         Set<PrototypeAuthorization> prototypeAuthorizations = inquire(scopeName, ascendUrl, authorizationServerNamespace)
         if (prototypeAuthorizations.empty) {
             throw new AscendUnauthorizedException("No suitable prototype authorizations found for scope name '$scopeName' with serverNamespace '$authorizationServerNamespace' (Ascend URL $ascendUrl)")

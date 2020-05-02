@@ -95,7 +95,6 @@ class ClientAuthorizationGrantingService {
         } else {
             PrototypeAuthorization prototypeAuthorization = prototypeAuthorizationSelector.select(prototypeAuthorizations)
             PrototypeIdentity prototypeIdentity = prototypeIdentitySelector.select(prototypeAuthorization.identities)
-            Authorization authorization
             Set<Authorization> existingAuthorizations = authorizationRepository.findAuthorization(authorizationClientNamespace, authorizationServerNamespace, prototypeAuthorization.name)
             if (!existingAuthorizations.empty) {
                 return authorizationSelector.select(existingAuthorizations)
@@ -118,28 +117,29 @@ class ClientAuthorizationGrantingService {
                             if (!existingPrerequisiteRefresh.empty) {
                                 prerequisite = sendRefresh(existingPrerequisiteRefresh.first(), ascendUrl)
                             } else {
-                                prerequisite = authenticateAuthorization(prototypeAuthorizationPrerequisite, authorizationClientNamespace, authorizationServerNamespace, prototypeIdentityPrerequisite, ascendUrl)
+                                prerequisite = clientAuthentication(prototypeAuthorizationPrerequisite, authorizationClientNamespace, prototypeIdentityPrerequisite)
+                                prerequisite = sendAuthorization(prerequisite, ascendUrl)
                             }
                         } else {
                             prerequisite = authorizationSelector.selectPrerequisite(existingPrerequisites)
                         }
                     }
-                    authorization = authenticateAuthorization(prototypeAuthorization, authorizationClientNamespace, authorizationServerNamespace, prototypeIdentity, ascendUrl)
+                    Authorization authorization = clientAuthentication(prototypeAuthorization, authorizationClientNamespace, prototypeIdentity)
                     authorization.prerequisite = prerequisite
-                    return authorization
+                    return sendAuthorization(authorization, ascendUrl)
                 }
             }
         }
     }
 
-    Authorization authenticateAuthorization(PrototypeAuthorization prototypeAuthorization, String clientNamespace, String serverNamespace, PrototypeIdentity prototypeIdentity, String ascendUrl) {
+    Authorization clientAuthentication(PrototypeAuthorization prototypeAuthorization, String clientNamespace, PrototypeIdentity prototypeIdentity) {
         Authorization authorization = prototypeConverter.convertAccessAuthorization(prototypeAuthorization, clientNamespace)
         authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
         authorization.identity = prototypeConverter.convertIdentity(prototypeIdentity)
         authorization.identity.authentications.each { prototypeAuthentication ->
             clientAuthenticationService.prepareAuthentication(prototypeAuthentication)
         }
-        return sendAuthorization(authorization, ascendUrl)
+        return authorization
     }
 
     void consume(Authorization authorization, Claim claim) {

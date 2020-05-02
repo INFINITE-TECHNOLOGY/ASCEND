@@ -11,4 +11,9 @@ class DefaultAuthorizationSelector implements AuthorizationSelector {
         return authorizations.first()
     }
 
+    @Override
+    Authorization selectPrerequisite(Set<Authorization> authorizations) {
+        return authorizations.first()
+    }
+
 }

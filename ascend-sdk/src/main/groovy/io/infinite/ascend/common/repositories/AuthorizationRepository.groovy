@@ -22,25 +22,22 @@ interface AuthorizationRepository extends JpaRepository<Authorization, Long> {
         group by a.id, a.creationDate, a.maxUsageCount
         having (a.maxUsageCount > count(c) or a.maxUsageCount is null)
         order by a.creationDate""")
-    Set<Authorization> findReceivedAccess(
+    Set<Authorization> findAuthorization(
             @Param("clientNamespace") String clientNamespace,
             @Param("serverNamespace") String serverNamespace,
             @Param("scopeName") String scopeName
     )
 
-    @Query("""select r from Authorization a
-        join a.refresh r
-        join a.scope s
+    @Query("""select a from Authorization a
         where a.serverNamespace = :serverNamespace
         and a.clientNamespace = :clientNamespace
-        and s.name = :scopeName
-        and r.serverNamespace = :serverNamespace
-        and r.clientNamespace = :clientNamespace
-        and r.expiryDate > CURRENT_TIMESTAMP""")
-    Set<Refresh> findRefreshByAccess(
+        and a.name in :nameList
+        and a.expiryDate > CURRENT_TIMESTAMP
+        order by a.creationDate""")
+    Set<Authorization> findPrerequisite(
             @Param("clientNamespace") String clientNamespace,
             @Param("serverNamespace") String serverNamespace,
-            @Param("scopeName") String scopeName
+            @Param("nameList") List<String> nameList
     )
 
     Set<Authorization> findByClientNamespace(String clientNamespace)

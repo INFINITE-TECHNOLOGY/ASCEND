@@ -25,10 +25,10 @@ class Authorization {
 
     String clientNamespace
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     Identity identity
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     Scope scope
 
     Integer durationSeconds
@@ -45,14 +45,14 @@ class Authorization {
     @Type(type = "org.hibernate.type.TextType")
     String jwt
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     Authorization prerequisite
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     Refresh refresh
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     Set<Claim> claims = new HashSet<Claim>()
 
 }

@@ -88,10 +88,6 @@ class ServerAuthorizationGrantingService {
                     accessAuthorization.refresh.jwt = jwtService.refresh2jwt(accessAuthorization.refresh, jwtService.jwtRefreshKeyPrivate)
                 }
             }
-            Optional<Refresh> dbRefresh = refreshRepository.findByGuid(refresh.guid)
-            if (dbRefresh.present) {
-                accessAuthorization.refresh = dbRefresh.get()
-            }
             authorizationRepository.saveAndFlush(accessAuthorization)
             return accessAuthorization
         } catch (AscendUnauthorizedException ascendUnauthorizedException) {

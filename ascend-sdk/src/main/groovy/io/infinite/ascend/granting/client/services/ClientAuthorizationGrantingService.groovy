@@ -162,7 +162,7 @@ class ClientAuthorizationGrantingService {
     }
 
     Authorization sendRefresh(Refresh refresh, String ascendGrantingUrl) {
-        Authorization authorization = objectMapper.readValue(
+        return objectMapper.readValue(
                 sendHttpMessage(
                         new HttpRequest(
                                 url: "$ascendGrantingUrl/ascend/public/granting/refresh",
@@ -174,8 +174,6 @@ class ClientAuthorizationGrantingService {
                                 body: refresh.jwt
                         )
                 ).body, Authorization.class)
-        authorization.refresh = refresh
-        return authorizationRepository.saveAndFlush(authorization)
     }
 
     Authorization sendAuthorization(Authorization authorization, String ascendGrantingUrl) {

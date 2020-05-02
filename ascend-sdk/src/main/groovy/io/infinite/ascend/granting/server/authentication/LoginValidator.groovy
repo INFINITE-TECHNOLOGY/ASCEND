@@ -32,7 +32,7 @@ class LoginValidator implements AuthenticationValidator {
     Map<String, String> validateAuthentication(Authentication authentication) {
         senderDefaultHttps.expectStatus(
                 new HttpRequest(
-                        url: "$orbitUrl/orbit/public/registration/${authentication.authenticationData.publicCredentials.get("guid")}",//public by guid
+                        url: "$orbitUrl/orbit/public/validateRegistrationGuid/${authentication.authenticationData.publicCredentials.get("guid")}",
                         method: "POST",
                         headers: [
                                 "Content-Type" : "application/json",

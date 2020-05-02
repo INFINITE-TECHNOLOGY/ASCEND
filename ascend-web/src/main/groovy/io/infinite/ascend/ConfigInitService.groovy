@@ -164,7 +164,7 @@ class ConfigInitService {
                 durationSeconds: Duration.ofDays(30).seconds.toInteger(),
                 isRenewable: true
         ))
-        authorizationTypeRepository.saveAndFlush(
+        PrototypeAuthorization notificationScopeAuthorization = authorizationTypeRepository.saveAndFlush(
                 new PrototypeAuthorization(name: "notificationScopeAuthorization",
                         identities: [
                                 clientPrivateKeyOwner
@@ -187,7 +187,10 @@ class ConfigInitService {
                         ].toSet(),
                         durationSeconds: Duration.ofHours(1).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
-                        refresh: refresh1dayNonRenewable
+                        refresh: refresh1dayNonRenewable,
+                        prerequisites: [
+                                notificationScopeAuthorization
+                        ].toSet()
                 )
         )
         PrototypeAuthorization registeredUserScopeAuthorization = authorizationTypeRepository.saveAndFlush(

@@ -203,7 +203,7 @@ class ConfigInitService {
                         scopes: [
                                 registeredUserScope
                         ].toSet(),
-                        durationSeconds: Duration.ofHours(1).seconds.toInteger(),
+                        durationSeconds: Duration.ofMinutes(5).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
                         prerequisites: [
                                 onboardingScopeAuthorization
@@ -219,7 +219,7 @@ class ConfigInitService {
                         scopes: [
                                 knownCustomerScope
                         ].toSet(),
-                        durationSeconds: Duration.ofHours(1).seconds.toInteger(),
+                        durationSeconds: Duration.ofMinutes(5).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
                         refresh: refresh30daysNonRenewable,
                         prerequisites: [

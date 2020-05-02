@@ -27,18 +27,6 @@ interface AuthorizationRepository extends JpaRepository<Authorization, Long> {
             @Param("name") String name
     )
 
-    @Query("""select a from Authorization a
-        where a.serverNamespace = :serverNamespace
-        and a.clientNamespace = :clientNamespace
-        and a.name = :name
-        and a.expiryDate > CURRENT_TIMESTAMP
-        order by a.creationDate""")
-    Set<Authorization> findPrerequisite(
-            @Param("clientNamespace") String clientNamespace,
-            @Param("serverNamespace") String serverNamespace,
-            @Param("name") String name
-    )
-
     Set<Authorization> findByClientNamespace(String clientNamespace)
 
 }

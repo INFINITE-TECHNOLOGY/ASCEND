@@ -88,46 +88,33 @@ class ClientAuthorizationGrantingService {
         }
     }
 
-    Authorization grantByScope(String scopeName, String ascendUrl, String authorizationClientNamespace, String authorizationServerNamespace) {
-        Set<PrototypeAuthorization> prototypeAuthorizations = inquire(scopeName, ascendUrl, authorizationServerNamespace)
+    Authorization grantByScope(String scopeName, String ascendUrl, String clientNamespace, String serverNamespace) {
+        Set<PrototypeAuthorization> prototypeAuthorizations = inquire(scopeName, ascendUrl, serverNamespace)
         if (prototypeAuthorizations.empty) {
-            throw new AscendUnauthorizedException("No suitable prototype authorizations found for scope name '$scopeName' with serverNamespace '$authorizationServerNamespace' (Ascend URL $ascendUrl)")
+            throw new AscendUnauthorizedException("No suitable prototype authorizations found for scope name '$scopeName' with serverNamespace '$serverNamespace' (Ascend URL $ascendUrl)")
         } else {
-            PrototypeAuthorization prototypeAuthorization = prototypeAuthorizationSelector.select(prototypeAuthorizations)
-            PrototypeIdentity prototypeIdentity = prototypeIdentitySelector.select(prototypeAuthorization.identities)
-            Set<Authorization> existingAuthorizations = authorizationRepository.findAuthorization(authorizationClientNamespace, authorizationServerNamespace, prototypeAuthorization.name)
-            if (!existingAuthorizations.empty) {
-                return authorizationSelector.select(existingAuthorizations)
+            return grantByPrototype(prototypeAuthorizationSelector.select(prototypeAuthorizations), ascendUrl, clientNamespace, serverNamespace)
+        }
+    }
+
+    Authorization grantByPrototype(PrototypeAuthorization prototypeAuthorization, String ascendUrl, String clientNamespace, String serverNamespace) {
+        PrototypeIdentity prototypeIdentity = prototypeIdentitySelector.select(prototypeAuthorization.identities)
+        Set<Authorization> existingAuthorizations = authorizationRepository.findAuthorization(clientNamespace, serverNamespace, prototypeAuthorization.name)
+        if (!existingAuthorizations.empty) {
+            return authorizationSelector.select(existingAuthorizations)
+        } else {
+            Set<Refresh> existingRefresh = refreshRepository.findRefresh(clientNamespace, serverNamespace, prototypeAuthorization.name)
+            if (!existingRefresh.empty) {
+                return sendRefresh(existingRefresh.first(), ascendUrl)
             } else {
-                Set<Refresh> existingRefresh = refreshRepository.findRefresh(authorizationClientNamespace, authorizationServerNamespace, prototypeAuthorization.name)
-                if (!existingRefresh.empty) {
-                    return sendRefresh(existingRefresh.first(), ascendUrl)
-                } else {
-                    Authorization prerequisite = null
-                    if (!prototypeAuthorization.prerequisites.empty) {
-                        PrototypeAuthorization prototypeAuthorizationPrerequisite = prototypeAuthorizationSelector.selectPrerequisite(prototypeAuthorization.prerequisites)
-                        PrototypeIdentity prototypeIdentityPrerequisite = prototypeIdentitySelector.selectPrerequisite(prototypeAuthorizationPrerequisite.identities)
-                        Set<Authorization> existingPrerequisites = authorizationRepository.findPrerequisite(
-                                authorizationClientNamespace,
-                                authorizationServerNamespace,
-                                prototypeAuthorizationPrerequisite.name
-                        )
-                        if (existingPrerequisites.empty) {
-                            Set<Refresh> existingPrerequisiteRefresh = refreshRepository.findRefresh(authorizationClientNamespace, authorizationServerNamespace, prototypeAuthorizationPrerequisite.name)
-                            if (!existingPrerequisiteRefresh.empty) {
-                                prerequisite = sendRefresh(existingPrerequisiteRefresh.first(), ascendUrl)
-                            } else {
-                                prerequisite = clientAuthentication(prototypeAuthorizationPrerequisite, authorizationClientNamespace, prototypeIdentityPrerequisite)
-                                prerequisite = sendAuthorization(prerequisite, ascendUrl)
-                            }
-                        } else {
-                            prerequisite = authorizationSelector.selectPrerequisite(existingPrerequisites)
-                        }
-                    }
-                    Authorization authorization = clientAuthentication(prototypeAuthorization, authorizationClientNamespace, prototypeIdentity)
-                    authorization.prerequisite = prerequisite
-                    return sendAuthorization(authorization, ascendUrl)
+                Authorization prerequisite = null
+                if (!prototypeAuthorization.prerequisites.empty) {
+                    PrototypeAuthorization prototypeAuthorizationPrerequisite = prototypeAuthorizationSelector.selectPrerequisite(prototypeAuthorization.prerequisites)
+                    prerequisite = grantByPrototype(prototypeAuthorizationPrerequisite, ascendUrl, clientNamespace, serverNamespace)//<<<Recursive call here
                 }
+                Authorization authorization = clientAuthentication(prototypeAuthorization, clientNamespace, prototypeIdentity)
+                authorization.prerequisite = prerequisite
+                return sendAuthorization(authorization, ascendUrl)
             }
         }
     }

@@ -4,6 +4,8 @@ import groovy.util.logging.Slf4j
 import io.infinite.ascend.common.entities.Authentication
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.entities.Refresh
+import io.infinite.ascend.common.exceptions.AscendForbiddenException
+import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
 import io.infinite.ascend.common.repositories.AuthorizationRepository
 import io.infinite.ascend.common.repositories.RefreshRepository
 import io.infinite.ascend.common.services.JwtService
@@ -11,8 +13,6 @@ import io.infinite.ascend.granting.common.services.PrototypeConverter
 import io.infinite.ascend.granting.configuration.entities.PrototypeAuthentication
 import io.infinite.ascend.granting.configuration.entities.PrototypeAuthorization
 import io.infinite.ascend.granting.configuration.repositories.PrototypeAuthorizationRepository
-import io.infinite.ascend.common.exceptions.AscendForbiddenException
-import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import org.springframework.beans.factory.annotation.Autowired
@@ -58,7 +58,7 @@ class ServerAuthorizationGrantingService {
                 throw new AscendUnauthorizedException("No authorization types found")
             }
             PrototypeAuthorization prototypeAuthorization = authorizationTypes.get()
-            return  createNewAccessAuthorization(clientAuthorization, prototypeAuthorization)
+            return createNewAccessAuthorization(clientAuthorization, prototypeAuthorization)
         } catch (AscendUnauthorizedException ascendUnauthorizedException) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized", ascendUnauthorizedException)
         } catch (Exception exception) {
@@ -98,20 +98,20 @@ class ServerAuthorizationGrantingService {
     }
 
     Authorization createNewAccessAuthorization(Authorization clientAuthorization, PrototypeAuthorization prototypeAuthorization) {
-        Map<String, String> prerequisiteAuthenticatedCredentials
+        Map<String, String> prerequisiteAuthenticatedCredentials = new HashMap<String, String>()
         if (prototypeAuthorization.prerequisites.size() != 0) {
             if (clientAuthorization.prerequisite == null) {
-                throw new AscendUnauthorizedException("Missing prerequisite")
+                throw new AscendUnauthorizedException("Required prerequisite is missing")
             }
             Authorization clientPrerequisiteAuthorization = jwtService.jwt2authorization(clientAuthorization.prerequisite.jwt, jwtService.jwtAccessKeyPublic)
             if (clientPrerequisiteAuthorization.expiryDate.before(new Date())) {
                 throw new AscendUnauthorizedException("Expired prerequisite")
             }
             Boolean prerequisiteFound = false
-            prerequisiteAuthenticatedCredentials = clientPrerequisiteAuthorization?.identity?.authenticatedCredentials
             for (PrototypeAuthorization prerequisiteAuthorizationType in prototypeAuthorization.prerequisites) {
                 if (prerequisiteAuthorizationType.name == clientPrerequisiteAuthorization.name) {
                     validatePrerequisite(clientPrerequisiteAuthorization, prerequisiteAuthorizationType)
+                    prerequisiteAuthenticatedCredentials = clientPrerequisiteAuthorization.identity.authenticatedCredentials
                     prerequisiteFound = true
                     break
                 }
@@ -127,18 +127,7 @@ class ServerAuthorizationGrantingService {
                 if (authentication.name == authenticationType.name) {
                     authenticationFound = true
                     Map<String, String> additionalAuthenticatedCredentials = commonAuthenticationValidation(authentication)
-                    if (additionalAuthenticatedCredentials != null) {
-                        for (authenticatedCredentialsName in additionalAuthenticatedCredentials.keySet()) {
-                            if (authenticatedCredentials.containsKey(authenticatedCredentialsName)) {
-                                if (authenticatedCredentials.get(authenticatedCredentialsName) !=
-                                        additionalAuthenticatedCredentials.get(authenticatedCredentialsName)) {
-                                    throw new AscendUnauthorizedException("Inconsistent authenticated credentials")
-                                }
-                            } else {
-                                authenticatedCredentials.put(authenticatedCredentialsName, additionalAuthenticatedCredentials.get(authenticatedCredentialsName))
-                            }
-                        }
-                    }
+                    mergeCredentials(additionalAuthenticatedCredentials, authenticatedCredentials)
                     break
                 }
             }
@@ -146,13 +135,7 @@ class ServerAuthorizationGrantingService {
                 throw new AscendUnauthorizedException("Missing authentication")
             }
         }
-        if (prerequisiteAuthenticatedCredentials != null) {
-            authenticatedCredentials.each {
-                if (prerequisiteAuthenticatedCredentials.get(it.key) != it.value) {
-                    throw new AscendUnauthorizedException("Inconsistent prerequisite")
-                }
-            }
-        }
+        mergeCredentials(prerequisiteAuthenticatedCredentials, authenticatedCredentials)
         Authorization authorization = prototypeConverter.convertAccessAuthorization(prototypeAuthorization, clientAuthorization.clientNamespace)
         authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
         authorization.identity = prototypeConverter.convertIdentity(prototypeAuthorization.identities.first())
@@ -188,4 +171,18 @@ class ServerAuthorizationGrantingService {
         }
     }
 
+    void mergeCredentials(Map<String, String> fromCredentials, Map<String, String> toCredentials) {
+        if (fromCredentials != null) {
+            for (authenticatedCredentialsName in fromCredentials.keySet()) {
+                if (toCredentials.containsKey(authenticatedCredentialsName)) {
+                    if (toCredentials.get(authenticatedCredentialsName) !=
+                            fromCredentials.get(authenticatedCredentialsName)) {
+                        throw new AscendUnauthorizedException("Inconsistent authenticated credentials")
+                    }
+                } else {
+                    toCredentials.put(authenticatedCredentialsName, fromCredentials.get(authenticatedCredentialsName))
+                }
+            }
+        }
+    }
 }

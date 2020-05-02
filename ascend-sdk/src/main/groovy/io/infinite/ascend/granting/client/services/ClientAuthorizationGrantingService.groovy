@@ -102,7 +102,7 @@ class ClientAuthorizationGrantingService {
             } else {
                 Set<Refresh> existingRefresh = refreshRepository.findRefresh(authorizationClientNamespace, authorizationServerNamespace, prototypeAuthorization.name)
                 if (!existingRefresh.empty) {
-                    return serverRefreshGranting(existingRefresh.first(), ascendUrl)
+                    return sendRefresh(existingRefresh.first(), ascendUrl)
                 } else {
                     Authorization prerequisite = null
                     if (!prototypeAuthorization.prerequisites.empty) {
@@ -114,7 +114,12 @@ class ClientAuthorizationGrantingService {
                                 prototypeAuthorizationPrerequisite.name
                         )
                         if (existingPrerequisites.empty) {
-                            prerequisite = authenticateAuthorization(prototypeAuthorizationPrerequisite, authorizationClientNamespace, authorizationServerNamespace, prototypeIdentityPrerequisite, ascendUrl)
+                            Set<Refresh> existingPrerequisiteRefresh = refreshRepository.findRefresh(authorizationClientNamespace, authorizationServerNamespace, prototypeAuthorizationPrerequisite.name)
+                            if (!existingPrerequisiteRefresh.empty) {
+                                prerequisite = sendRefresh(existingPrerequisiteRefresh.first(), ascendUrl)
+                            } else {
+                                prerequisite = authenticateAuthorization(prototypeAuthorizationPrerequisite, authorizationClientNamespace, authorizationServerNamespace, prototypeIdentityPrerequisite, ascendUrl)
+                            }
                         } else {
                             prerequisite = authorizationSelector.selectPrerequisite(existingPrerequisites)
                         }
@@ -134,7 +139,7 @@ class ClientAuthorizationGrantingService {
         authorization.identity.authentications.each { prototypeAuthentication ->
             clientAuthenticationService.prepareAuthentication(prototypeAuthentication)
         }
-        return sendToGrantingServer(authorization, ascendUrl)
+        return sendAuthorization(authorization, ascendUrl)
     }
 
     void consume(Authorization authorization, Claim claim) {
@@ -156,7 +161,7 @@ class ClientAuthorizationGrantingService {
                 ).body, PrototypeAuthorization[].class) as Set<PrototypeAuthorization>
     }
 
-    Authorization serverRefreshGranting(Refresh refresh, String ascendGrantingUrl) {
+    Authorization sendRefresh(Refresh refresh, String ascendGrantingUrl) {
         Authorization authorization = objectMapper.readValue(
                 sendHttpMessage(
                         new HttpRequest(
@@ -173,7 +178,7 @@ class ClientAuthorizationGrantingService {
         return authorizationRepository.saveAndFlush(authorization)
     }
 
-    Authorization sendToGrantingServer(Authorization authorization, String ascendGrantingUrl) {
+    Authorization sendAuthorization(Authorization authorization, String ascendGrantingUrl) {
         return authorizationRepository.saveAndFlush(objectMapper.readValue(
                 sendHttpMessage(
                         new HttpRequest(

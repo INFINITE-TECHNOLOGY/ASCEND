@@ -13,11 +13,10 @@ interface AuthorizationRepository extends JpaRepository<Authorization, Long> {
     Optional<Authorization> findByGuid(UUID guid)
 
     @Query("""select a from Authorization a
-        join a.scope s
         left join a.claims c
         where a.serverNamespace = :serverNamespace
         and a.clientNamespace = :clientNamespace
-        and s.name = :scopeName
+        and a.name = :name
         and a.expiryDate > CURRENT_TIMESTAMP
         group by a.id, a.creationDate, a.maxUsageCount
         having (a.maxUsageCount > count(c) or a.maxUsageCount is null)
@@ -25,19 +24,19 @@ interface AuthorizationRepository extends JpaRepository<Authorization, Long> {
     Set<Authorization> findAuthorization(
             @Param("clientNamespace") String clientNamespace,
             @Param("serverNamespace") String serverNamespace,
-            @Param("scopeName") String scopeName
+            @Param("name") String name
     )
 
     @Query("""select a from Authorization a
         where a.serverNamespace = :serverNamespace
         and a.clientNamespace = :clientNamespace
-        and a.name in :nameList
+        and a.name = :name
         and a.expiryDate > CURRENT_TIMESTAMP
         order by a.creationDate""")
     Set<Authorization> findPrerequisite(
             @Param("clientNamespace") String clientNamespace,
             @Param("serverNamespace") String serverNamespace,
-            @Param("nameList") List<String> nameList
+            @Param("name") String name
     )
 
     Set<Authorization> findByClientNamespace(String clientNamespace)

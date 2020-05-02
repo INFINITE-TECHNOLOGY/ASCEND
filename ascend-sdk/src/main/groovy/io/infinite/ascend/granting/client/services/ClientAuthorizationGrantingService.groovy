@@ -1,6 +1,7 @@
 package io.infinite.ascend.granting.client.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import groovy.transform.CompileStatic
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.entities.Claim
 import io.infinite.ascend.common.entities.Refresh
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
+@CompileStatic
 @BlackBox(level = CarburetorLevel.METHOD)
 class ClientAuthorizationGrantingService {
 
@@ -87,41 +89,40 @@ class ClientAuthorizationGrantingService {
     }
 
     Authorization grantByScope(String scopeName, String authorizationClientNamespace, String authorizationServerNamespace, String ascendUrl) {
-        Authorization authorization
-        Set<Authorization> existingAuthorizations = authorizationRepository.findAuthorization(authorizationClientNamespace, authorizationServerNamespace, scopeName)
-        if (!existingAuthorizations.isEmpty()) {
-            return authorizationSelector.select(existingAuthorizations)
+        Set<PrototypeAuthorization> prototypeAuthorizations = inquire(scopeName, ascendUrl, authorizationServerNamespace)
+        if (prototypeAuthorizations.empty) {
+            throw new AscendUnauthorizedException("No suitable prototype authorizations found for scope name '$scopeName' with serverNamespace '$authorizationServerNamespace' (Ascend URL $ascendUrl)")
         } else {
-            Set<PrototypeAuthorization> prototypeAuthorizations = inquire(scopeName, ascendUrl, authorizationServerNamespace)
             PrototypeAuthorization prototypeAuthorization = prototypeAuthorizationSelector.select(prototypeAuthorizations)
             PrototypeIdentity prototypeIdentity = prototypeIdentitySelector.select(prototypeAuthorization.identities)
-            Set<Refresh> existingRefresh = refreshRepository.findRefresh(authorizationClientNamespace, authorizationServerNamespace, prototypeAuthorization.name)
-            if (!existingRefresh.isEmpty()) {
-                return serverRefreshGranting(existingRefresh.first(), ascendUrl)
+            Authorization authorization
+            Set<Authorization> existingAuthorizations = authorizationRepository.findAuthorization(authorizationClientNamespace, authorizationServerNamespace, prototypeAuthorization.name)
+            if (!existingAuthorizations.empty) {
+                return authorizationSelector.select(existingAuthorizations)
             } else {
-                if (prototypeAuthorizations.isEmpty()) {
-                    throw new AscendUnauthorizedException("No suitable authorizations found for scope name '$scopeName' with authorization serverNamespace '$authorizationServerNamespace' (Ascend URL $ascendUrl)")
-                }
-                Authorization prerequisite = null
-                if (!prototypeAuthorization.prerequisites.empty) {
-                    Set<Authorization> existingPrerequisites = authorizationRepository.findPrerequisite(
-                            authorizationClientNamespace,
-                            authorizationServerNamespace,
-                            prototypeAuthorization.prerequisites.collect {
-                                it.name
-                            }
-                    )
-                    if (existingPrerequisites.empty) {
+                Set<Refresh> existingRefresh = refreshRepository.findRefresh(authorizationClientNamespace, authorizationServerNamespace, prototypeAuthorization.name)
+                if (!existingRefresh.empty) {
+                    return serverRefreshGranting(existingRefresh.first(), ascendUrl)
+                } else {
+                    Authorization prerequisite = null
+                    if (!prototypeAuthorization.prerequisites.empty) {
                         PrototypeAuthorization prototypeAuthorizationPrerequisite = prototypeAuthorizationSelector.selectPrerequisite(prototypeAuthorization.prerequisites)
                         PrototypeIdentity prototypeIdentityPrerequisite = prototypeIdentitySelector.selectPrerequisite(prototypeAuthorizationPrerequisite.identities)
-                        prerequisite = authenticateAuthorization(prototypeAuthorizationPrerequisite, authorizationClientNamespace, authorizationServerNamespace, prototypeIdentityPrerequisite, ascendUrl)
-                    } else {
-                        prerequisite = authorizationSelector.selectPrerequisite(existingPrerequisites)
+                        Set<Authorization> existingPrerequisites = authorizationRepository.findPrerequisite(
+                                authorizationClientNamespace,
+                                authorizationServerNamespace,
+                                prototypeAuthorizationPrerequisite.name
+                        )
+                        if (existingPrerequisites.empty) {
+                            prerequisite = authenticateAuthorization(prototypeAuthorizationPrerequisite, authorizationClientNamespace, authorizationServerNamespace, prototypeIdentityPrerequisite, ascendUrl)
+                        } else {
+                            prerequisite = authorizationSelector.selectPrerequisite(existingPrerequisites)
+                        }
                     }
+                    authorization = authenticateAuthorization(prototypeAuthorization, authorizationClientNamespace, authorizationServerNamespace, prototypeIdentity, ascendUrl)
+                    authorization.prerequisite = prerequisite
+                    return authorization
                 }
-                authorization = authenticateAuthorization(prototypeAuthorization, authorizationClientNamespace, authorizationServerNamespace, prototypeIdentity, ascendUrl)
-                authorization.prerequisite = prerequisite
-                return authorization
             }
         }
     }

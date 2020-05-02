@@ -1,5 +1,6 @@
 package io.infinite.ascend.common.repositories
 
+
 import io.infinite.ascend.common.entities.Refresh
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -21,5 +22,7 @@ interface RefreshRepository extends JpaRepository<Refresh, Long> {
             @Param("serverNamespace") String serverNamespace,
             @Param("name") String name
     )
+
+    Set<Refresh> findByClientNamespace(String clientNamespace)
 
 }

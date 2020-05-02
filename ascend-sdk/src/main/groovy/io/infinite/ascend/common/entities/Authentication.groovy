@@ -16,7 +16,7 @@ class Authentication {
 
     String name
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     AuthenticationData authenticationData
 
 }

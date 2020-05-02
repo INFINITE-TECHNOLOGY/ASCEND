@@ -16,7 +16,7 @@ class Identity {
 
     String name
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable
     Set<Authentication> authentications = new HashSet<Authentication>()
 

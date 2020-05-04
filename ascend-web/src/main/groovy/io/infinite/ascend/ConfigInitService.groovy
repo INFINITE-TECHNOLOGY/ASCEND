@@ -187,7 +187,7 @@ class ConfigInitService {
                         scopes: [
                                 onboardingScope
                         ].toSet(),
-                        durationSeconds: Duration.ofHours(1).seconds.toInteger(),
+                        durationSeconds: Duration.ofMinutes(30).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
                         refresh: refresh1dayNonRenewable,
                         prerequisites: [

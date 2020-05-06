@@ -250,7 +250,7 @@ class ConfigInitService {
                 )
         )
         authorizationTypeRepository.saveAndFlush(
-                new PrototypeAuthorization(name: "botAdminScopeAuthorization",
+                new PrototypeAuthorization(name: "adminScopeAuthorization",
                         identities: [
                                 admin
                         ].toSet(),

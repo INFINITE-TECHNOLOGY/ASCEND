@@ -57,7 +57,7 @@ class ConfigInitService {
         PrototypeGrant sendOtpSms = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/sendOtpSms"))
         PrototypeGrant registrationGet = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/registration\\/%phone%"))
         PrototypeGrant registrationPost = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/registration\\/%phone%"))
-        PrototypeGrant adminPushNotificationPost = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/pushNotification\\/.*"))
+        PrototypeGrant adminGrant = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/admin\\/.*"))
         PrototypeScope notificationScope = scopeRepository.saveAndFlush(
                 new PrototypeScope(
                         name: "notificationScope",
@@ -89,11 +89,11 @@ class ConfigInitService {
                         name: "knownCustomerScope"
                 )
         )
-        PrototypeScope administratorScope = scopeRepository.saveAndFlush(
+        PrototypeScope adminScope = scopeRepository.saveAndFlush(
                 new PrototypeScope(
-                        name: "administratorScope",
+                        name: "adminScope",
                         grants: [
-                                adminPushNotificationPost
+                                adminGrant
                         ].toSet()
                 )
         )
@@ -167,9 +167,9 @@ class ConfigInitService {
                         ].toSet()
                 )
         )
-        PrototypeIdentity administrator = identityTypeRepository.saveAndFlush(
+        PrototypeIdentity admin = identityTypeRepository.saveAndFlush(
                 new PrototypeIdentity(
-                        name: "administrator",
+                        name: "admin",
                         authentications: [
                                 adminAuthentication
                         ].toSet()
@@ -252,10 +252,10 @@ class ConfigInitService {
         authorizationTypeRepository.saveAndFlush(
                 new PrototypeAuthorization(name: "botAdminScopeAuthorization",
                         identities: [
-                                administrator
+                                admin
                         ].toSet(),
                         scopes: [
-                                administratorScope
+                                adminScope
                         ].toSet(),
                         durationSeconds: Duration.ofMinutes(5).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",

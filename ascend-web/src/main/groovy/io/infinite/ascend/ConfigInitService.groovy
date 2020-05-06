@@ -88,6 +88,11 @@ class ConfigInitService {
                         name: "knownCustomerScope"
                 )
         )
+        PrototypeScope administratorScope = scopeRepository.saveAndFlush(
+                new PrototypeScope(
+                        name: "administratorScope"
+                )
+        )
         PrototypeAuthentication clientJwt = authenticationTypeRepository.saveAndFlush(
                 new PrototypeAuthentication(
                         name: "clientJwt"
@@ -111,6 +116,11 @@ class ConfigInitService {
         PrototypeAuthentication veriffMe = authenticationTypeRepository.saveAndFlush(
                 new PrototypeAuthentication(
                         name: "veriffMe"
+                )
+        )
+        PrototypeAuthentication adminAuthentication = authenticationTypeRepository.saveAndFlush(
+                new PrototypeAuthentication(
+                        name: "admin"
                 )
         )
         PrototypeIdentity clientPrivateKeyOwner = identityTypeRepository.saveAndFlush(
@@ -150,6 +160,14 @@ class ConfigInitService {
                         name: "knownCustomer",
                         authentications: [
                                 veriffMe
+                        ].toSet()
+                )
+        )
+        PrototypeIdentity administrator = identityTypeRepository.saveAndFlush(
+                new PrototypeIdentity(
+                        name: "administrator",
+                        authentications: [
+                                adminAuthentication
                         ].toSet()
                 )
         )
@@ -218,6 +236,22 @@ class ConfigInitService {
                         ].toSet(),
                         scopes: [
                                 knownCustomerScope
+                        ].toSet(),
+                        durationSeconds: Duration.ofMinutes(5).seconds.toInteger(),
+                        serverNamespace: "OrbitSaaS",
+                        refresh: refresh30daysNonRenewable,
+                        prerequisites: [
+                                registeredUserScopeAuthorization
+                        ].toSet()
+                )
+        )
+        authorizationTypeRepository.saveAndFlush(
+                new PrototypeAuthorization(name: "botAdminScopeAuthorization",
+                        identities: [
+                                administrator
+                        ].toSet(),
+                        scopes: [
+                                administratorScope
                         ].toSet(),
                         durationSeconds: Duration.ofMinutes(5).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",

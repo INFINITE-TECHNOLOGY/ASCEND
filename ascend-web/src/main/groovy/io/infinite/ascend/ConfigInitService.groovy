@@ -259,10 +259,7 @@ class ConfigInitService {
                         ].toSet(),
                         durationSeconds: Duration.ofMinutes(5).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
-                        refresh: refresh30daysNonRenewable,
-                        prerequisites: [
-                                registeredUserScopeAuthorization
-                        ].toSet()
+                        refresh: refresh1dayNonRenewable
                 )
         )
         authorizationTypeRepository.flush()

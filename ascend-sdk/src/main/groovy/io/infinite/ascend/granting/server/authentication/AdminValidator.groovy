@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 @BlackBox(level = CarburetorLevel.METHOD)
 @Slf4j
 @Service
-class AdminValidator implements AuthenticationValidator {
+class AdminValidator extends ClientJwtValidator {
 
     @Autowired
     JwtService jwtService
@@ -32,7 +32,7 @@ class AdminValidator implements AuthenticationValidator {
     Map<String, String> validateAuthentication(Authentication authentication) {
         senderDefaultHttps.expectStatus(
                 new HttpRequest(
-                        url: "$orbitUrl/orbit/public/validateAdministratorGuid/${authentication.authenticationData.publicCredentials.get("registrationGuid")}",
+                        url: "$orbitUrl/orbit/public/validateAdministratorGuid/${authentication.authenticationData.publicCredentials.get("adminGuid")}",
                         method: "POST",
                         headers: [
                                 "Content-Type" : "application/json",
@@ -40,9 +40,7 @@ class AdminValidator implements AuthenticationValidator {
                         ]
                 ), 200
         )
-        return [
-                "isAdmin": "true"
-        ]
+        return super.validateAuthentication(authentication)
     }
 
 }

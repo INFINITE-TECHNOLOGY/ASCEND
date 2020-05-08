@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service
 @BlackBox(level = CarburetorLevel.METHOD)
 @Slf4j
 @Service
-class PrivacyPolicyValidator implements AuthenticationValidator {
+class LegalValidator implements AuthenticationValidator {
 
     @Autowired
     JwtService jwtService

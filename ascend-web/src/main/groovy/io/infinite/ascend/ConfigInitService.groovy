@@ -125,22 +125,16 @@ class ConfigInitService {
                         name: "admin"
                 )
         )
-        PrototypeAuthentication privacyPolicy = authenticationTypeRepository.saveAndFlush(
+        PrototypeAuthentication legal = authenticationTypeRepository.saveAndFlush(
                 new PrototypeAuthentication(
-                        name: "privacyPolicy"
-                )
-        )
-        PrototypeAuthentication termsAndConditions = authenticationTypeRepository.saveAndFlush(
-                new PrototypeAuthentication(
-                        name: "termsAndConditions"
+                        name: "legal"
                 )
         )
         PrototypeIdentity legalUser = identityTypeRepository.saveAndFlush(
                 new PrototypeIdentity(
-                        name: "emailOwner",
+                        name: "legalUser",
                         authentications: [
-                                privacyPolicy,
-                                termsAndConditions
+                                legal
                         ].toSet()
                 )
         )

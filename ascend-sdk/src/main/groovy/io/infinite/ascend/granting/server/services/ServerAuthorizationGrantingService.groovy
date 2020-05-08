@@ -181,10 +181,9 @@ class ServerAuthorizationGrantingService {
                 to.each { kTo, vTo ->
                     if (kFrom == kTo && vFrom != vTo) {
                         throw new AscendUnauthorizedException("Inconsistent data")
-                    } else {
-                        to.put(kFrom, from.get(vFrom))
                     }
                 }
+                to.put(kFrom, vFrom)
             }
         }
     }

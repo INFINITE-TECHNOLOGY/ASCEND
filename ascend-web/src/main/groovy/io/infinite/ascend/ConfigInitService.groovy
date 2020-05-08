@@ -86,7 +86,9 @@ class ConfigInitService {
                         name: "adminOnboardingScope",
                         grants: [
                                 adminFindByPhone,
-                                adminFindByEmail
+                                adminFindByEmail,
+                                managedEmail,
+                                managedSms
                         ].toSet()
                 )
         )
@@ -239,10 +241,7 @@ class ConfigInitService {
                         ].toSet(),
                         durationSeconds: Duration.ofMinutes(30).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
-                        refresh: refresh1dayNonRenewable,
-                        prerequisites: [
-                                notificationScopeAuthorization
-                        ].toSet()
+                        refresh: refresh1dayNonRenewable
                 )
         )
         PrototypeAuthorization registeredUserScopeAuthorization = authorizationTypeRepository.saveAndFlush(

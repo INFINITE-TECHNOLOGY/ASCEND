@@ -2,7 +2,6 @@ package io.infinite.ascend.granting.client.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.transform.CompileStatic
-import io.infinite.ascend.common.entities.Authentication
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.entities.Claim
 import io.infinite.ascend.common.entities.Refresh
@@ -111,26 +110,21 @@ class ClientAuthorizationGrantingService {
             if (!existingRefresh.empty) {
                 return sendRefresh(existingRefresh.first(), ascendUrl)
             } else {
-                Authorization prerequisite = null
+                Authorization authorization = prototypeConverter.convertAccessAuthorization(prototypeAuthorization, clientNamespace)
+                authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
+                authorization.identity = prototypeConverter.convertIdentity(prototypeIdentity)
                 if (!prototypeAuthorization.prerequisites.empty) {
                     PrototypeAuthorization prototypeAuthorizationPrerequisite = prototypeAuthorizationSelector.selectPrerequisite(prototypeAuthorization.prerequisites)
-                    prerequisite = grantByPrototype(prototypeAuthorizationPrerequisite, ascendUrl, clientNamespace, serverNamespace)//<<<Recursive call here
+                    //Recursive call here
+                    authorization.identity.publicCredentials = authorization.prerequisite.identity.publicCredentials
+                    authorization.prerequisite = grantByPrototype(prototypeAuthorizationPrerequisite, ascendUrl, clientNamespace, serverNamespace)
                 }
-                Authorization authorization = clientAuthentication(prototypeAuthorization, clientNamespace, prototypeIdentity, Optional.ofNullable(prerequisite?.jwt))
-                authorization.prerequisite = prerequisite
+                authorization.identity.authentications.each { authentication ->
+                    prepareAuthentication(authentication.name, authorization.identity.publicCredentials, authentication.privateCredentials, Optional.ofNullable(authorization.prerequisite?.jwt))
+                }
                 return sendAuthorization(authorization, ascendUrl)
             }
         }
-    }
-
-    Authorization clientAuthentication(PrototypeAuthorization prototypeAuthorization, String clientNamespace, PrototypeIdentity prototypeIdentity, Optional<String> prerequisiteJwt) {
-        Authorization authorization = prototypeConverter.convertAccessAuthorization(prototypeAuthorization, clientNamespace)
-        authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
-        authorization.identity = prototypeConverter.convertIdentity(prototypeIdentity)
-        authorization.identity.authentications.each { authentication ->
-            prepareAuthentication(authentication.name, authorization.identity.publicCredentials, authentication.privateCredentials, prerequisiteJwt)
-        }
-        return authorization
     }
 
     void prepareAuthentication(String authenticationName, Map<String, String> publicCredentials, Map<String, String> privateCredentials, Optional<String> prerequisiteJwt) {

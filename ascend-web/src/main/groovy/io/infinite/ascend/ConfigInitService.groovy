@@ -79,6 +79,11 @@ class ConfigInitService {
                         ].toSet()
                 )
         )
+        PrototypeScope adminOnboardingScope = scopeRepository.saveAndFlush(
+                new PrototypeScope(
+                        name: "adminOnboardingScope"
+                )
+        )
         PrototypeScope registeredUserScope = scopeRepository.saveAndFlush(
                 new PrototypeScope(
                         name: "registeredUserScope"
@@ -112,9 +117,9 @@ class ConfigInitService {
                         name: "emailOtp"
                 )
         )
-        PrototypeAuthentication login = authenticationTypeRepository.saveAndFlush(
+        PrototypeAuthentication userAuthentication = authenticationTypeRepository.saveAndFlush(
                 new PrototypeAuthentication(
-                        name: "login"
+                        name: "user"
                 )
         )
         PrototypeAuthentication veriffMe = authenticationTypeRepository.saveAndFlush(
@@ -135,7 +140,7 @@ class ConfigInitService {
                         ].toSet()
                 )
         )
-        PrototypeIdentity emailOwner = identityTypeRepository.saveAndFlush(
+        PrototypeIdentity verifiedEmailOwner = identityTypeRepository.saveAndFlush(
                 new PrototypeIdentity(
                         name: "emailOwner",
                         authentications: [
@@ -155,7 +160,7 @@ class ConfigInitService {
                 new PrototypeIdentity(
                         name: "registeredUser",
                         authentications: [
-                                login
+                                userAuthentication
                         ].toSet()
                 )
         )
@@ -217,6 +222,23 @@ class ConfigInitService {
                         ].toSet()
                 )
         )
+        PrototypeAuthorization adminOnboardingScopeAuthorization = authorizationTypeRepository.saveAndFlush(
+                new PrototypeAuthorization(name: "onboardingScopeAuthorization",
+                        identities: [
+                                verifiedPhoneOwner,
+                                verifiedEmailOwner
+                        ].toSet(),
+                        scopes: [
+                                adminOnboardingScope
+                        ].toSet(),
+                        durationSeconds: Duration.ofMinutes(30).seconds.toInteger(),
+                        serverNamespace: "OrbitSaaS",
+                        refresh: refresh1dayNonRenewable,
+                        prerequisites: [
+                                notificationScopeAuthorization
+                        ].toSet()
+                )
+        )
         PrototypeAuthorization registeredUserScopeAuthorization = authorizationTypeRepository.saveAndFlush(
                 new PrototypeAuthorization(name: "registeredUserScopeAuthorization",
                         identities: [
@@ -259,7 +281,10 @@ class ConfigInitService {
                         ].toSet(),
                         durationSeconds: Duration.ofMinutes(5).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
-                        refresh: refresh1dayNonRenewable
+                        refresh: refresh1dayNonRenewable,
+                        prerequisites: [
+                                adminOnboardingScopeAuthorization
+                        ].toSet()
                 )
         )
         authorizationTypeRepository.flush()

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service
 @BlackBox(level = CarburetorLevel.METHOD)
 @Slf4j
 @Service
-class LoginValidator implements AuthenticationValidator {
+class UserValidator implements AuthenticationValidator {
 
     @Autowired
     JwtService jwtService
@@ -31,7 +31,7 @@ class LoginValidator implements AuthenticationValidator {
     Map<String, String> validate(Map<String, String> publicCredentials, Map<String, String> privateCredentials) {
         senderDefaultHttps.expectStatus(
                 new HttpRequest(
-                        url: "$orbitUrl/orbit/public/validateRegistrationGuid/${publicCredentials.get("registrationGuid")}",
+                        url: "$orbitUrl/orbit/public/validateUserGuid/${publicCredentials.get("userGuid")}",
                         method: "POST",
                         headers: [
                                 "Content-Type": "application/json",
@@ -40,7 +40,7 @@ class LoginValidator implements AuthenticationValidator {
                 ), 200
         )
         return [
-                "registrationGuid": publicCredentials.get("registrationGuid")
+                "registrationGuid": publicCredentials.get("userGuid")
         ]
     }
 

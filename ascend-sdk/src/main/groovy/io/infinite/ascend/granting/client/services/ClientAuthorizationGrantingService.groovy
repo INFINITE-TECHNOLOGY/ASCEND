@@ -116,31 +116,31 @@ class ClientAuthorizationGrantingService {
                     PrototypeAuthorization prototypeAuthorizationPrerequisite = prototypeAuthorizationSelector.selectPrerequisite(prototypeAuthorization.prerequisites)
                     prerequisite = grantByPrototype(prototypeAuthorizationPrerequisite, ascendUrl, clientNamespace, serverNamespace)//<<<Recursive call here
                 }
-                Authorization authorization = clientAuthentication(prototypeAuthorization, clientNamespace, prototypeIdentity)
+                Authorization authorization = clientAuthentication(prototypeAuthorization, clientNamespace, prototypeIdentity, prerequisite.jwt)
                 authorization.prerequisite = prerequisite
                 return sendAuthorization(authorization, ascendUrl)
             }
         }
     }
 
-    Authorization clientAuthentication(PrototypeAuthorization prototypeAuthorization, String clientNamespace, PrototypeIdentity prototypeIdentity) {
+    Authorization clientAuthentication(PrototypeAuthorization prototypeAuthorization, String clientNamespace, PrototypeIdentity prototypeIdentity, String prerequisiteJwt) {
         Authorization authorization = prototypeConverter.convertAccessAuthorization(prototypeAuthorization, clientNamespace)
         authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
         authorization.identity = prototypeConverter.convertIdentity(prototypeIdentity)
         authorization.identity.authentications.each { authentication ->
-            prepareAuthentication(authentication.name, authorization.identity.publicCredentials, authentication.privateCredentials)
+            prepareAuthentication(authentication.name, authorization.identity.publicCredentials, authentication.privateCredentials, prerequisiteJwt)
         }
         return authorization
     }
 
-    void prepareAuthentication(String authenticationName, Map<String, String> publicCredentials, Map<String, String> privateCredentials) {
+    void prepareAuthentication(String authenticationName, Map<String, String> publicCredentials, Map<String, String> privateCredentials, String prerequisiteJwt) {
         AuthenticationPreparator authenticationPreparator
         try {
             authenticationPreparator = applicationContext.getBean(authenticationName + "Preparator", AuthenticationPreparator.class)
         } catch (NoSuchBeanDefinitionException noSuchBeanDefinitionException) {
             throw new AscendUnauthorizedException("Authentication Preparator not found: ${authenticationName + "Preparator"}", noSuchBeanDefinitionException)
         }
-        authenticationPreparator.prepareAuthentication(publicCredentials, privateCredentials)
+        authenticationPreparator.prepareAuthentication(publicCredentials, privateCredentials, prerequisiteJwt)
     }
 
     void consume(Authorization authorization, Claim claim) {

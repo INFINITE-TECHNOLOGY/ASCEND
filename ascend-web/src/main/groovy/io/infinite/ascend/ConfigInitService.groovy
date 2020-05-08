@@ -55,8 +55,10 @@ class ConfigInitService {
         PrototypeGrant templates = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/templates"))
         PrototypeGrant prototypeOtp = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/prototypeOtp"))
         PrototypeGrant sendOtpSms = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/sendOtpSms"))
-        PrototypeGrant registrationGet = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/registration\\/%phone%"))
-        PrototypeGrant registrationPost = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/registration\\/%phone%"))
+        PrototypeGrant userGet = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/user\\/%phone%"))
+        PrototypeGrant adminFindByPhone = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/admin\\/search\\/findByPhone?%phone%"))
+        PrototypeGrant adminFindByEmail = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/admin\\/search\\/findByEmail?%email%"))
+        PrototypeGrant userPost = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/user\\/%phone%"))
         PrototypeGrant adminGrant = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/%ascendClientPublicKeyName%\\/admin\\/.*"))
         PrototypeScope notificationScope = scopeRepository.saveAndFlush(
                 new PrototypeScope(
@@ -74,14 +76,18 @@ class ConfigInitService {
                 new PrototypeScope(
                         name: "onboardingScope",
                         grants: [
-                                registrationGet,
-                                registrationPost
+                                userGet,
+                                userPost
                         ].toSet()
                 )
         )
         PrototypeScope adminOnboardingScope = scopeRepository.saveAndFlush(
                 new PrototypeScope(
-                        name: "adminOnboardingScope"
+                        name: "adminOnboardingScope",
+                        grants: [
+                                adminFindByPhone,
+                                adminFindByEmail
+                        ].toSet()
                 )
         )
         PrototypeScope registeredUserScope = scopeRepository.saveAndFlush(

@@ -22,7 +22,7 @@ class ClientJwtPreparator implements AuthenticationPreparator {
     String ascendClientPrivateKey
 
     @Override
-    void prepareAuthentication(Map<String, String> publicCredentials, Map<String, String> privateCredentials) {
+    void prepareAuthentication(Map<String, String> publicCredentials, Map<String, String> privateCredentials, String prerequisiteJwt) {
         Authorization selfIssuedAuthorization = new Authorization()
         Instant creationDate = Instant.now()
         selfIssuedAuthorization.creationDate = creationDate.toDate()

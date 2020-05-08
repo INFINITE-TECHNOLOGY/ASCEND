@@ -116,14 +116,14 @@ class ClientAuthorizationGrantingService {
                     PrototypeAuthorization prototypeAuthorizationPrerequisite = prototypeAuthorizationSelector.selectPrerequisite(prototypeAuthorization.prerequisites)
                     prerequisite = grantByPrototype(prototypeAuthorizationPrerequisite, ascendUrl, clientNamespace, serverNamespace)//<<<Recursive call here
                 }
-                Authorization authorization = clientAuthentication(prototypeAuthorization, clientNamespace, prototypeIdentity, prerequisite.jwt)
+                Authorization authorization = clientAuthentication(prototypeAuthorization, clientNamespace, prototypeIdentity, Optional.ofNullable(prerequisite.jwt))
                 authorization.prerequisite = prerequisite
                 return sendAuthorization(authorization, ascendUrl)
             }
         }
     }
 
-    Authorization clientAuthentication(PrototypeAuthorization prototypeAuthorization, String clientNamespace, PrototypeIdentity prototypeIdentity, String prerequisiteJwt) {
+    Authorization clientAuthentication(PrototypeAuthorization prototypeAuthorization, String clientNamespace, PrototypeIdentity prototypeIdentity, Optional<String> prerequisiteJwt) {
         Authorization authorization = prototypeConverter.convertAccessAuthorization(prototypeAuthorization, clientNamespace)
         authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
         authorization.identity = prototypeConverter.convertIdentity(prototypeIdentity)
@@ -133,7 +133,7 @@ class ClientAuthorizationGrantingService {
         return authorization
     }
 
-    void prepareAuthentication(String authenticationName, Map<String, String> publicCredentials, Map<String, String> privateCredentials, String prerequisiteJwt) {
+    void prepareAuthentication(String authenticationName, Map<String, String> publicCredentials, Map<String, String> privateCredentials, Optional<String> prerequisiteJwt) {
         AuthenticationPreparator authenticationPreparator
         try {
             authenticationPreparator = applicationContext.getBean(authenticationName + "Preparator", AuthenticationPreparator.class)

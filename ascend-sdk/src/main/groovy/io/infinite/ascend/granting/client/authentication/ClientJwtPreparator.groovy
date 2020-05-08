@@ -1,7 +1,6 @@
 package io.infinite.ascend.granting.client.authentication
 
 
-import io.infinite.ascend.common.entities.AuthenticationData
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.services.JwtService
 import io.infinite.blackbox.BlackBox
@@ -23,20 +22,15 @@ class ClientJwtPreparator implements AuthenticationPreparator {
     String ascendClientPrivateKey
 
     @Override
-    AuthenticationData prepareAuthentication() {
+    void prepareAuthentication(Map<String, String> publicCredentials, Map<String, String> privateCredentials) {
         Authorization selfIssuedAuthorization = new Authorization()
         Instant creationDate = Instant.now()
         selfIssuedAuthorization.creationDate = creationDate.toDate()
         selfIssuedAuthorization.setExpiryDate((creationDate + Duration.ofSeconds(60)).toDate())
         selfIssuedAuthorization.durationSeconds = 60
         JwtService jwtService = new JwtService()
-        return new AuthenticationData(
-                publicCredentials: ["ascendClientPublicKeyName": ascendClientPublicKeyName],
-                privateCredentials: ["clientJwt": jwtService.authorization2jwt(
-                        selfIssuedAuthorization,
-                        jwtService.loadPrivateKeyFromHexString(ascendClientPrivateKey)
-                )]
-        )
+        publicCredentials.put("ascendClientPublicKeyName", ascendClientPublicKeyName)
+        privateCredentials.put("clientJwt", jwtService.authorization2jwt(selfIssuedAuthorization, jwtService.loadPrivateKeyFromHexString(ascendClientPrivateKey)))
     }
 
 }

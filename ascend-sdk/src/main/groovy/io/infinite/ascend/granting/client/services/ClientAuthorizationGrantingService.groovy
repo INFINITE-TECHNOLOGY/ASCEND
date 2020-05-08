@@ -2,6 +2,7 @@ package io.infinite.ascend.granting.client.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.transform.CompileStatic
+import io.infinite.ascend.common.entities.Authentication
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.entities.Claim
 import io.infinite.ascend.common.entities.Refresh
@@ -10,6 +11,7 @@ import io.infinite.ascend.common.exceptions.AscendForbiddenException
 import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
 import io.infinite.ascend.common.repositories.AuthorizationRepository
 import io.infinite.ascend.common.repositories.RefreshRepository
+import io.infinite.ascend.granting.client.authentication.AuthenticationPreparator
 import io.infinite.ascend.granting.client.services.selectors.AuthorizationSelector
 import io.infinite.ascend.granting.client.services.selectors.PrototypeAuthorizationSelector
 import io.infinite.ascend.granting.client.services.selectors.PrototypeIdentitySelector
@@ -21,7 +23,9 @@ import io.infinite.carburetor.CarburetorLevel
 import io.infinite.http.HttpRequest
 import io.infinite.http.HttpResponse
 import io.infinite.http.SenderDefaultHttps
+import org.springframework.beans.factory.NoSuchBeanDefinitionException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Service
 
 @Service
@@ -47,10 +51,10 @@ class ClientAuthorizationGrantingService {
     PrototypeConverter prototypeConverter
 
     @Autowired
-    ClientAuthenticationPreparationService clientAuthenticationService
+    AuthorizationSelector authorizationSelector
 
     @Autowired
-    AuthorizationSelector authorizationSelector
+    ApplicationContext applicationContext
 
     SenderDefaultHttps senderDefaultHttps = new SenderDefaultHttps()
 
@@ -123,10 +127,20 @@ class ClientAuthorizationGrantingService {
         Authorization authorization = prototypeConverter.convertAccessAuthorization(prototypeAuthorization, clientNamespace)
         authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
         authorization.identity = prototypeConverter.convertIdentity(prototypeIdentity)
-        authorization.identity.authentications.each { prototypeAuthentication ->
-            clientAuthenticationService.prepareAuthentication(prototypeAuthentication)
+        authorization.identity.authentications.each { authentication ->
+            prepareAuthentication(authentication.name, authorization.identity.publicCredentials, authentication.privateCredentials)
         }
         return authorization
+    }
+
+    void prepareAuthentication(String authenticationName, Map<String, String> publicCredentials, Map<String, String> privateCredentials) {
+        AuthenticationPreparator authenticationPreparator
+        try {
+            authenticationPreparator = applicationContext.getBean(authenticationName + "Preparator", AuthenticationPreparator.class)
+        } catch (NoSuchBeanDefinitionException noSuchBeanDefinitionException) {
+            throw new AscendUnauthorizedException("Authentication Preparator not found: ${authenticationName + "Preparator"}", noSuchBeanDefinitionException)
+        }
+        authenticationPreparator.prepareAuthentication(publicCredentials, privateCredentials)
     }
 
     void consume(Authorization authorization, Claim claim) {

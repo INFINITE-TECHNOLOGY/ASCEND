@@ -4,6 +4,6 @@ import io.infinite.ascend.common.entities.AuthenticationData
 
 interface AuthenticationPreparator {
 
-    AuthenticationData prepareAuthentication()
+    void prepareAuthentication(Map<String, String> publicCredentials, Map<String, String> privateCredentials)
 
 }

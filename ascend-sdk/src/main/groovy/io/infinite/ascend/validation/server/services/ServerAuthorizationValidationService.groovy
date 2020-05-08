@@ -86,7 +86,7 @@ class ServerAuthorizationValidationService {
 
     String replaceSubstitutes(String iStringWithSubstitutes, Authorization iAuthorization) {
         String processedString = iStringWithSubstitutes
-        iAuthorization.identity?.authenticatedCredentials?.each {
+        iAuthorization.identity?.publicCredentials?.each {
             processedString = processedString.replace("%" + it.key + "%", it.value)
         }
         return processedString

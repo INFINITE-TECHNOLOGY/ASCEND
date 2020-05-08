@@ -19,4 +19,7 @@ class Authentication {
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     AuthenticationData authenticationData
 
+    @Transient
+    Map<String, String> privateCredentials = new HashMap<String, String>()
+
 }

@@ -13,9 +13,12 @@ import io.infinite.ascend.granting.common.services.PrototypeConverter
 import io.infinite.ascend.granting.configuration.entities.PrototypeAuthentication
 import io.infinite.ascend.granting.configuration.entities.PrototypeAuthorization
 import io.infinite.ascend.granting.configuration.repositories.PrototypeAuthorizationRepository
+import io.infinite.ascend.granting.server.authentication.AuthenticationValidator
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
+import org.springframework.beans.factory.NoSuchBeanDefinitionException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.ApplicationContext
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
@@ -32,9 +35,6 @@ class ServerAuthorizationGrantingService {
     JwtService jwtService
 
     @Autowired
-    ServerAuthenticationValidationService serverAuthenticationService
-
-    @Autowired
     AuthorizationRepository authorizationRepository
 
     @Autowired
@@ -45,6 +45,9 @@ class ServerAuthorizationGrantingService {
 
     @Autowired
     RefreshRepository refreshRepository
+
+    @Autowired
+    ApplicationContext applicationContext
 
     Authorization grantAccessAuthorization(Authorization clientAuthorization) {
         try {
@@ -80,7 +83,7 @@ class ServerAuthorizationGrantingService {
             Authorization accessAuthorization = prototypeConverter.convertAccessAuthorization(prototypeAccess, refresh.clientNamespace)
             accessAuthorization.scope = prototypeConverter.convertScope(prototypeAccess.scopes.first())
             accessAuthorization.identity = prototypeConverter.convertIdentity(prototypeAccess.identities.first())
-            accessAuthorization.identity.authenticatedCredentials = refresh.authenticatedCredentials
+            accessAuthorization.authorizedCredentials = refresh.refreshCredentials
             accessAuthorization.jwt = jwtService.authorization2jwt(accessAuthorization, jwtService.jwtAccessKeyPrivate)
             if (Optional.ofNullable(prototypeAccess.refresh).present) {
                 if (prototypeAccess.refresh.isRenewable) {
@@ -98,7 +101,7 @@ class ServerAuthorizationGrantingService {
     }
 
     Authorization createNewAccessAuthorization(Authorization clientAuthorization, PrototypeAuthorization prototypeAuthorization) {
-        Map<String, String> prerequisiteAuthenticatedCredentials = new HashMap<String, String>()
+        Map<String, String> prerequisiteAuthorizedCredentials = new HashMap<String, String>()
         if (prototypeAuthorization.prerequisites.size() != 0) {
             if (clientAuthorization.prerequisite == null) {
                 throw new AscendUnauthorizedException("Required prerequisite is missing")
@@ -111,7 +114,7 @@ class ServerAuthorizationGrantingService {
             for (PrototypeAuthorization prerequisiteAuthorizationType in prototypeAuthorization.prerequisites) {
                 if (prerequisiteAuthorizationType.name == clientPrerequisiteAuthorization.name) {
                     validatePrerequisite(clientPrerequisiteAuthorization, prerequisiteAuthorizationType)
-                    prerequisiteAuthenticatedCredentials = clientPrerequisiteAuthorization.identity.authenticatedCredentials
+                    prerequisiteAuthorizedCredentials = clientPrerequisiteAuthorization.authorizedCredentials
                     prerequisiteFound = true
                     break
                 }
@@ -120,14 +123,14 @@ class ServerAuthorizationGrantingService {
                 throw new AscendUnauthorizedException("Wrong prerequisite type")
             }
         }
-        Map<String, String> authenticatedCredentials = new HashMap<String, String>()
+        Map<String, String> authorizedCredentials = new HashMap<String, String>()
         for (PrototypeAuthentication authenticationType in prototypeAuthorization.identities.first().authentications) {
             Boolean authenticationFound = false
             for (Authentication authentication in clientAuthorization.identity.authentications) {
                 if (authentication.name == authenticationType.name) {
                     authenticationFound = true
-                    Map<String, String> additionalAuthenticatedCredentials = commonAuthenticationValidation(authentication)
-                    mergeCredentials(additionalAuthenticatedCredentials, authenticatedCredentials)
+                    Map<String, String> authenticatedCredentials = validateAuthentication(authentication.name, clientAuthorization.identity.publicCredentials, authentication.privateCredentials)
+                    safeMerge(authenticatedCredentials, authorizedCredentials)
                     break
                 }
             }
@@ -135,28 +138,29 @@ class ServerAuthorizationGrantingService {
                 throw new AscendUnauthorizedException("Missing authentication")
             }
         }
-        mergeCredentials(prerequisiteAuthenticatedCredentials, authenticatedCredentials)
+        safeMerge(prerequisiteAuthorizedCredentials, authorizedCredentials)
         Authorization authorization = prototypeConverter.convertAccessAuthorization(prototypeAuthorization, clientAuthorization.clientNamespace)
         authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
         authorization.identity = prototypeConverter.convertIdentity(prototypeAuthorization.identities.first())
-        authorization.identity.authenticatedCredentials = authenticatedCredentials
+        authorization.authorizedCredentials = authorizedCredentials
         authorization.jwt = jwtService.authorization2jwt(authorization, jwtService.jwtAccessKeyPrivate)
         if (Optional.ofNullable(prototypeAuthorization.refresh).present) {
             authorization.refresh = prototypeConverter.convertRefresh(prototypeAuthorization, clientAuthorization.clientNamespace)
-            authorization.refresh.authenticatedCredentials = authorization.identity.authenticatedCredentials
+            authorization.refresh.refreshCredentials = authorization.authorizedCredentials
             authorization.refresh.jwt = jwtService.refresh2jwt(authorization.refresh, jwtService.jwtRefreshKeyPrivate)
         }
         authorizationRepository.saveAndFlush(authorization)
         return authorization
     }
 
-    Map<String, String> commonAuthenticationValidation(Authentication authentication) {
+    Map<String, String> validateAuthentication(String authenticationName, Map<String, String> publicCredentials, Map<String, String> privateCredentials) {
+        AuthenticationValidator authenticationValidator
         try {
-            Map<String, String> authenticatedCredentials = serverAuthenticationService.validateAuthentication(authentication)
-            return authenticatedCredentials
-        } finally {
-            authentication.authenticationData?.privateCredentials = null
+            authenticationValidator = applicationContext.getBean(authenticationName + "Validator", AuthenticationValidator.class)
+        } catch (NoSuchBeanDefinitionException noSuchBeanDefinitionException) {
+            throw new AscendUnauthorizedException("Authentication validator not found: ${authenticationName + "Validator"}", noSuchBeanDefinitionException)
         }
+        return authenticationValidator.validate(publicCredentials, privateCredentials)
     }
 
     void validatePrerequisite(Authorization authorization, PrototypeAuthorization prototypeAuthorization) {
@@ -171,16 +175,15 @@ class ServerAuthorizationGrantingService {
         }
     }
 
-    void mergeCredentials(Map<String, String> fromCredentials, Map<String, String> toCredentials) {
-        if (fromCredentials != null) {
-            for (authenticatedCredentialsName in fromCredentials.keySet()) {
-                if (toCredentials.containsKey(authenticatedCredentialsName)) {
-                    if (toCredentials.get(authenticatedCredentialsName) !=
-                            fromCredentials.get(authenticatedCredentialsName)) {
-                        throw new AscendUnauthorizedException("Inconsistent authenticated credentials")
+    void safeMerge(Map<String, String> from, Map<String, String> to) {
+        if (from != null) {
+            from.each { kFrom, vFrom ->
+                to.each { kTo, vTo ->
+                    if (kFrom == kTo && vFrom != vTo) {
+                        throw new AscendUnauthorizedException("Inconsistent data")
+                    } else {
+                        to.put(kFrom, from.get(vFrom))
                     }
-                } else {
-                    toCredentials.put(authenticatedCredentialsName, fromCredentials.get(authenticatedCredentialsName))
                 }
             }
         }

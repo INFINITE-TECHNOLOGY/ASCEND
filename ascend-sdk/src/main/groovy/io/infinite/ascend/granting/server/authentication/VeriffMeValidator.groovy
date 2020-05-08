@@ -1,12 +1,10 @@
 package io.infinite.ascend.granting.server.authentication
 
 import groovy.util.logging.Slf4j
-import io.infinite.ascend.common.entities.Authentication
 import io.infinite.ascend.common.services.JwtService
 import io.infinite.ascend.granting.server.repositories.TrustedPublicKeyRepository
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
-import io.infinite.http.HttpRequest
 import io.infinite.http.SenderDefaultHttps
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -29,7 +27,7 @@ class VeriffMeValidator implements AuthenticationValidator {
     String orbitUrl
 
     @Override
-    Map<String, String> validateAuthentication(Authentication authentication) {
+    Map<String, String> validate(Map<String, String> publicCredentials, Map<String, String> privateCredentials) {
         return null
     }
 

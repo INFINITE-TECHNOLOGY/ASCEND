@@ -1,12 +1,11 @@
 package io.infinite.ascend.granting.server.authentication
 
 import groovy.util.logging.Slf4j
-import io.infinite.ascend.common.entities.Authentication
 import io.infinite.ascend.common.entities.Authorization
+import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
 import io.infinite.ascend.common.services.JwtService
 import io.infinite.ascend.granting.server.entities.TrustedPublicKey
 import io.infinite.ascend.granting.server.repositories.TrustedPublicKeyRepository
-import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
 import io.infinite.blackbox.BlackBox
 import io.infinite.carburetor.CarburetorLevel
 import org.apache.commons.lang3.time.FastDateFormat
@@ -25,9 +24,9 @@ class ClientJwtValidator implements AuthenticationValidator {
     TrustedPublicKeyRepository trustedAppRepository
 
     @Override
-    Map<String, String> validateAuthentication(Authentication authentication) {
-        String ascendClientPublicKeyName = authentication.authenticationData.publicCredentials.get("ascendClientPublicKeyName")
-        String clientJwt = authentication.authenticationData.privateCredentials.get("clientJwt")
+    Map<String, String> validate(Map<String, String> publicCredentials, Map<String, String> privateCredentials) {
+        String ascendClientPublicKeyName = publicCredentials.get("ascendClientPublicKeyName")
+        String clientJwt = privateCredentials.get("clientJwt")
         if (ascendClientPublicKeyName == null || clientJwt == null) {
             throw new AscendUnauthorizedException("Missing ascendClientPublicKeyName or clientJwt")
         }
@@ -41,7 +40,7 @@ class ClientJwtValidator implements AuthenticationValidator {
         if (selfIssuedAuthorization.expiryDate.before(new Date())) {
             throw new AscendUnauthorizedException("Expired clientJwt")
         }
-        return ["ascendClientPublicKeyName": authentication.authenticationData.publicCredentials.get("ascendClientPublicKeyName")]
+        return ["ascendClientPublicKeyName": publicCredentials.get("ascendClientPublicKeyName")]
     }
 
 }

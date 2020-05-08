@@ -1,7 +1,6 @@
 package io.infinite.ascend.granting.server.authentication
 
 import groovy.util.logging.Slf4j
-import io.infinite.ascend.common.entities.Authentication
 import io.infinite.ascend.common.services.JwtService
 import io.infinite.ascend.granting.server.repositories.TrustedPublicKeyRepository
 import io.infinite.blackbox.BlackBox
@@ -29,19 +28,19 @@ class LoginValidator implements AuthenticationValidator {
     String orbitUrl
 
     @Override
-    Map<String, String> validateAuthentication(Authentication authentication) {
+    Map<String, String> validate(Map<String, String> publicCredentials, Map<String, String> privateCredentials) {
         senderDefaultHttps.expectStatus(
                 new HttpRequest(
-                        url: "$orbitUrl/orbit/public/validateRegistrationGuid/${authentication.authenticationData.publicCredentials.get("registrationGuid")}",
+                        url: "$orbitUrl/orbit/public/validateRegistrationGuid/${publicCredentials.get("registrationGuid")}",
                         method: "POST",
                         headers: [
-                                "Content-Type" : "application/json",
-                                "Accept"       : "application/json"
+                                "Content-Type": "application/json",
+                                "Accept"      : "application/json"
                         ]
                 ), 200
         )
         return [
-                "registrationGuid": authentication.authenticationData.publicCredentials.get("registrationGuid")
+                "registrationGuid": publicCredentials.get("registrationGuid")
         ]
     }
 

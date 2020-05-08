@@ -21,6 +21,6 @@ class Identity {
     Set<Authentication> authentications = new HashSet<Authentication>()
 
     @ElementCollection(fetch = FetchType.EAGER)
-    Map<String, String> authenticatedCredentials = new HashMap<String, String>()
+    Map<String, String> publicCredentials = new HashMap<String, String>()
 
 }

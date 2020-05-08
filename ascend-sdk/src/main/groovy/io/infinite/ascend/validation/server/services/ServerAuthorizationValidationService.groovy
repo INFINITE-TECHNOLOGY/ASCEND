@@ -50,13 +50,13 @@ class ServerAuthorizationValidationService {
         for (grant in authorization.scope.grants) {
             if (grant.httpMethod.toLowerCase() == claim.method.toLowerCase()) {
                 if (grant.urlRegex != null) {
-                    String processedUrlRegex = replaceSubstitutes(grant.urlRegex, authorization)
+                    String processedUrlRegex = replaceSubstitutes(grant.urlRegex, authorization.authorizedCredentials)
                     log.debug("Processed URL regex", processedUrlRegex)
                     if (claim.url.matches(processedUrlRegex)) {
                         log.debug("URL matched regex.")
                         if (grant.bodyRegex != null) {
                             //todo: check for DDOS (never ending input stream)
-                            String processedBodyRegex = replaceSubstitutes(grant.bodyRegex, authorization)
+                            String processedBodyRegex = replaceSubstitutes(grant.bodyRegex, authorization.authorizedCredentials)
                             log.debug("Body", claim.body)
                             log.debug("Processed body regex", processedUrlRegex)
                             if (!claim.body.matches(processedBodyRegex)) {
@@ -84,9 +84,9 @@ class ServerAuthorizationValidationService {
         throw new AscendUnauthorizedException("Unauthorized")
     }
 
-    String replaceSubstitutes(String iStringWithSubstitutes, Authorization iAuthorization) {
-        String processedString = iStringWithSubstitutes
-        iAuthorization.identity?.publicCredentials?.each {
+    String replaceSubstitutes(String string, Map<String, String> authorizedCredentials) {
+        String processedString = string
+        authorizedCredentials.each {
             processedString = processedString.replace("%" + it.key + "%", it.value)
         }
         return processedString

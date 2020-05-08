@@ -116,7 +116,7 @@ class ClientAuthorizationGrantingService {
                     PrototypeAuthorization prototypeAuthorizationPrerequisite = prototypeAuthorizationSelector.selectPrerequisite(prototypeAuthorization.prerequisites)
                     prerequisite = grantByPrototype(prototypeAuthorizationPrerequisite, ascendUrl, clientNamespace, serverNamespace)//<<<Recursive call here
                 }
-                Authorization authorization = clientAuthentication(prototypeAuthorization, clientNamespace, prototypeIdentity, Optional.ofNullable(prerequisite.jwt))
+                Authorization authorization = clientAuthentication(prototypeAuthorization, clientNamespace, prototypeIdentity, Optional.ofNullable(prerequisite?.jwt))
                 authorization.prerequisite = prerequisite
                 return sendAuthorization(authorization, ascendUrl)
             }

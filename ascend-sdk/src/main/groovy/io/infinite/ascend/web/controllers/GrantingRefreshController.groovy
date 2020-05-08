@@ -20,7 +20,7 @@ class GrantingRefreshController {
     @Autowired
     ServerAuthorizationGrantingService serverAuthorizationGrantingService
 
-    @PostMapping(value = "/ascend/public/granting/refresh")
+    @PostMapping(value = "/public/granting/refresh")
     @ResponseBody
     @CompileDynamic
     @BlackBox(level = CarburetorLevel.METHOD)

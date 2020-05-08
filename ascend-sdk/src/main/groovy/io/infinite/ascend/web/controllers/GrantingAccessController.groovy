@@ -20,7 +20,7 @@ class GrantingAccessController {
     @Autowired
     ServerAuthorizationGrantingService serverAuthorizationGrantingService
 
-    @PostMapping(value = "/ascend/public/granting/access")
+    @PostMapping(value = "/public/granting/access")
     @ResponseBody
     @CompileDynamic
     @BlackBox(level = CarburetorLevel.METHOD)

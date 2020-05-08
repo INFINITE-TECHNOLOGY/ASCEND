@@ -23,7 +23,7 @@ class KeyPairController {
     @Autowired
     JwtService jwtService
 
-    @GetMapping(value = "/ascend/public/keyPair")
+    @GetMapping(value = "/public/keyPair")
     @ResponseBody
     @CompileDynamic
     @BlackBox(level = CarburetorLevel.ERROR)

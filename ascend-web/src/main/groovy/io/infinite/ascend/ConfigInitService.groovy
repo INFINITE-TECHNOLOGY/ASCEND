@@ -51,6 +51,7 @@ class ConfigInitService {
         ))
         log.info("Initializing config")
         PrototypeGrant sendOtpSms = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/secured\\/sendOtpSms"))
+        PrototypeGrant sendOtpEmail = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/secured\\/sendOtpEmail"))
         PrototypeGrant userGet = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/secured\\/user\\/%phone%"))
         PrototypeGrant userPost = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/secured\\/user\\/%phone%"))
         PrototypeGrant adminFindByPhone = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/secured\\/admin\\/search\\/findByPhone\\?phone=%phone%"))
@@ -60,7 +61,8 @@ class ConfigInitService {
                 new PrototypeScope(
                         name: "legalScope",
                         grants: [
-                                sendOtpSms
+                                sendOtpSms,
+                                sendOtpEmail
                         ].toSet()
                 )
         )

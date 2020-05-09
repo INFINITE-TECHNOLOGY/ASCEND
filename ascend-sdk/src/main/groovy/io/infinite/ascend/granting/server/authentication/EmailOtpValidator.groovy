@@ -10,4 +10,9 @@ import org.springframework.stereotype.Service
 @Service
 class EmailOtpValidator extends SmsOtpValidator {
 
+    @Override
+    Map<String, String> authorizeCredentials(Map<String, String> publicCredentials) {
+        return ["email": publicCredentials.get("email")]
+    }
+
 }

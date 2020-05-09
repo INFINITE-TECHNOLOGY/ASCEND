@@ -43,9 +43,11 @@ class SmsOtpValidator implements AuthenticationValidator {
 }"""
                 ), 200
         )
-        return [
-                "phone": publicCredentials.get("phone")
-        ]
+        return authorizeCredentials(publicCredentials)
+    }
+
+    Map<String, String> authorizeCredentials(Map<String, String> publicCredentials) {
+        return ["phone": publicCredentials.get("phone")]
     }
 
 }

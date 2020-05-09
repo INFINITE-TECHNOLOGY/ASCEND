@@ -52,7 +52,7 @@ class ClientAuthorizationValidationService {
                 throw new AscendUnauthorizedException(httpResponse.body)
                 break
             default:
-                throw new AscendException("Unexpected Ascend Validation Server HTTP status: " + httpResponse.toString())
+                throw new AscendException("Unexpected Ascend Validation Server HTTP status: " + httpResponse.status)
                 break
         }
     }

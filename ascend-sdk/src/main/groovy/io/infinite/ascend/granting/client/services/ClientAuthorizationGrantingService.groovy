@@ -86,7 +86,7 @@ class ClientAuthorizationGrantingService {
                 throw new AscendUnauthorizedException(httpResponse.body)
                 break
             default:
-                throw new AscendException("Unexpected HTTP status: " + httpResponse.toString())
+                throw new AscendException("Unexpected HTTP status: " + httpResponse.status)
                 break
         }
     }
@@ -131,8 +131,8 @@ class ClientAuthorizationGrantingService {
         AuthenticationPreparator authenticationPreparator
         try {
             authenticationPreparator = applicationContext.getBean(authenticationName + "Preparator", AuthenticationPreparator.class)
-        } catch (NoSuchBeanDefinitionException noSuchBeanDefinitionException) {
-            throw new AscendUnauthorizedException("Authentication Preparator not found: ${authenticationName + "Preparator"}", noSuchBeanDefinitionException)
+        } catch (NoSuchBeanDefinitionException ignored) {
+            throw new AscendUnauthorizedException("Authentication Preparator not found: ${authenticationName + "Preparator"}")
         }
         authenticationPreparator.prepareAuthentication(publicCredentials, privateCredentials, prerequisiteJwt)
     }

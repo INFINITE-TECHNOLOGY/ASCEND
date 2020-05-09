@@ -220,7 +220,7 @@ class ConfigInitService {
                 )
         )
         PrototypeAuthorization adminOnboardingScopeAuthorization = authorizationTypeRepository.saveAndFlush(
-                new PrototypeAuthorization(name: "onboardingScopeAuthorization",
+                new PrototypeAuthorization(name: "adminOnboardingScopeAuthorization",
                         identities: [
                                 verifiedPhoneOwner,
                                 verifiedEmailOwner

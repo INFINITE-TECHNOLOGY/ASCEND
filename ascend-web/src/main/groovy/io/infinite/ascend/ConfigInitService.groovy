@@ -58,7 +58,7 @@ class ConfigInitService {
         PrototypeGrant adminGrant = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/secured\\/admin\\/.*"))
         PrototypeScope legalScope = scopeRepository.saveAndFlush(
                 new PrototypeScope(
-                        name: "onboardingScope",
+                        name: "legalScope",
                         grants: [
                                 sendOtpSms
                         ].toSet()

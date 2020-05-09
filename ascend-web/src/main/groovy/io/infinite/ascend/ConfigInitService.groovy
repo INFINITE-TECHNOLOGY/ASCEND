@@ -57,6 +57,7 @@ class ConfigInitService {
         PrototypeGrant adminFindByPhone = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/secured\\/admin\\/search\\/findByPhone\\?phone=%phone%"))
         PrototypeGrant adminFindByEmail = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/secured\\/admin\\/search\\/findByEmail\\?email=%email%"))
         PrototypeGrant adminGrant = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/secured\\/admin\\/.*"))
+        PrototypeGrant adminGrantGet = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: "https:\\/\\/orbit-secured\\.herokuapp\\.com\\/orbit\\/secured\\/admin\\/.*"))
         PrototypeScope legalScope = scopeRepository.saveAndFlush(
                 new PrototypeScope(
                         name: "legalScope",
@@ -98,7 +99,8 @@ class ConfigInitService {
                 new PrototypeScope(
                         name: "adminScope",
                         grants: [
-                                adminGrant
+                                adminGrant,
+                                adminGrantGet
                         ].toSet()
                 )
         )

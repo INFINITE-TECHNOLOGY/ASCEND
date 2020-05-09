@@ -160,7 +160,13 @@ class ServerAuthorizationGrantingService {
         } catch (NoSuchBeanDefinitionException noSuchBeanDefinitionException) {
             throw new AscendUnauthorizedException("Authentication validator not found: ${authenticationName + "Validator"}", noSuchBeanDefinitionException)
         }
-        return authenticationValidator.validate(publicCredentials, privateCredentials)
+        Map<String, String> authenticatedCredentials
+        try {
+            authenticatedCredentials = authenticationValidator.validate(publicCredentials, privateCredentials)
+        } catch (Exception exception) {
+            throw new AscendUnauthorizedException("Authentication failed", exception)
+        }
+        return authenticatedCredentials
     }
 
     void validatePrerequisite(Authorization authorization, PrototypeAuthorization prototypeAuthorization) {

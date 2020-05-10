@@ -154,7 +154,7 @@ class ServerAuthorizationGrantingService {
         if (Optional.ofNullable(prototypeAuthorization.refresh).present) {
             authorization.refresh = prototypeConverter.convertRefresh(prototypeAuthorization, clientAuthorization.clientNamespace)
             authorization.refresh.identityName = authorization.identity.name
-            authorization.refresh.scopeName = authorization.refresh.scopeName
+            authorization.refresh.scopeName = authorization.scope.name
             authorization.refresh.refreshCredentials = authorization.authorizedCredentials
             authorization.refresh.jwt = jwtService.refresh2jwt(authorization.refresh, jwtService.jwtRefreshKeyPrivate)
         }

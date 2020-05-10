@@ -34,11 +34,17 @@ interface PrototypeAuthorizationRepository extends JpaRepository<PrototypeAuthor
     )
 
     @Query("""select a from PrototypeAuthorization a
+        join fetch a.identities i
+        join fetch a.scopes s
         where a.serverNamespace = :serverNamespace
-        and a.name = :refreshAuthorizationName""")
+        and a.name = :refreshAuthorizationName
+        and i.name = :identityName
+        and s.name = :scopeName""")
     Optional<PrototypeAuthorization> findAccessByRefresh(
             @Param("serverNamespace") String serverNamespace,
-            @Param("refreshAuthorizationName") String refreshAuthorizationName
+            @Param("refreshAuthorizationName") String refreshAuthorizationName,
+            @Param("identityName") String identityName,
+            @Param("scopeName") String scopeName
     )
 
 }

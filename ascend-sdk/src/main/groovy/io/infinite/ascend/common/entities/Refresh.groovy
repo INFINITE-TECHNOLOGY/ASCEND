@@ -20,6 +20,10 @@ class Refresh {
 
     String name
 
+    String identityName
+
+    String scopeName
+
     String serverNamespace
 
     String clientNamespace

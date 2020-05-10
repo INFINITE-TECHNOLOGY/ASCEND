@@ -72,7 +72,12 @@ class ServerAuthorizationGrantingService {
     Authorization exchangeRefreshJwt(String refreshJwt) {
         try {
             Refresh refresh = jwtService.jwt2refresh(refreshJwt, jwtService.jwtRefreshKeyPublic)
-            Optional<PrototypeAuthorization> prototypeAccessOptional = prototypeAuthorizationRepository.findAccessByRefresh(refresh.serverNamespace, refresh.name)
+            Optional<PrototypeAuthorization> prototypeAccessOptional = prototypeAuthorizationRepository.findAccessByRefresh(
+                    refresh.serverNamespace,
+                    refresh.name,
+                    refresh.identityName,
+                    refresh.scopeName
+            )
             if (!prototypeAccessOptional.present) {
                 throw new AscendUnauthorizedException("No access authorizations associated with this refresh")
             }
@@ -88,6 +93,8 @@ class ServerAuthorizationGrantingService {
             if (Optional.ofNullable(prototypeAccess.refresh).present) {
                 if (prototypeAccess.refresh.isRenewable) {
                     accessAuthorization.refresh = prototypeConverter.convertRefresh(prototypeAccess, refresh.clientNamespace)
+                    accessAuthorization.refresh.identityName = accessAuthorization.identity.name
+                    accessAuthorization.refresh.scopeName = accessAuthorization.scope.name
                     accessAuthorization.refresh.jwt = jwtService.refresh2jwt(accessAuthorization.refresh, jwtService.jwtRefreshKeyPrivate)
                 }
             }
@@ -146,6 +153,8 @@ class ServerAuthorizationGrantingService {
         authorization.jwt = jwtService.authorization2jwt(authorization, jwtService.jwtAccessKeyPrivate)
         if (Optional.ofNullable(prototypeAuthorization.refresh).present) {
             authorization.refresh = prototypeConverter.convertRefresh(prototypeAuthorization, clientAuthorization.clientNamespace)
+            authorization.refresh.identityName = authorization.identity.name
+            authorization.refresh.scopeName = authorization.refresh.scopeName
             authorization.refresh.refreshCredentials = authorization.authorizedCredentials
             authorization.refresh.jwt = jwtService.refresh2jwt(authorization.refresh, jwtService.jwtRefreshKeyPrivate)
         }

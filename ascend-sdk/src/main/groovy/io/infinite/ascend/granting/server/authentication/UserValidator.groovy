@@ -40,7 +40,7 @@ class UserValidator implements AuthenticationValidator {
                 ), 200
         )
         return [
-                "registrationGuid": publicCredentials.get("userGuid")
+                "userGuid": publicCredentials.get("userGuid")
         ]
     }
 

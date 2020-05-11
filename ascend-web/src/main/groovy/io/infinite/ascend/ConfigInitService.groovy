@@ -89,7 +89,11 @@ class ConfigInitService {
         )
         PrototypeScope registeredUserScope = scopeRepository.saveAndFlush(
                 new PrototypeScope(
-                        name: "registeredUserScope"
+                        name: "registeredUserScope",
+                        grants: [
+                                userGrantGet,
+                                userGrantPost
+                        ].toSet()
                 )
         )
         PrototypeScope knownCustomerScope = scopeRepository.saveAndFlush(

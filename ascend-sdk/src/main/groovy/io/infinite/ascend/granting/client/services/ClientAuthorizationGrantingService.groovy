@@ -9,6 +9,7 @@ import io.infinite.ascend.common.exceptions.AscendException
 import io.infinite.ascend.common.exceptions.AscendForbiddenException
 import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
 import io.infinite.ascend.common.repositories.AuthorizationRepository
+import io.infinite.ascend.common.repositories.ClaimRepository
 import io.infinite.ascend.common.repositories.RefreshRepository
 import io.infinite.ascend.granting.client.authentication.AuthenticationPreparator
 import io.infinite.ascend.granting.client.services.selectors.AuthorizationSelector
@@ -38,6 +39,9 @@ class ClientAuthorizationGrantingService {
     AuthorizationRepository authorizationRepository
 
     @Autowired
+    ClaimRepository claimRepository
+
+    @Autowired
     RefreshRepository refreshRepository
 
     @Autowired
@@ -65,11 +69,13 @@ class ClientAuthorizationGrantingService {
                 authorizedHttpRequest.authorizationServerNamespace
         )
         authorizedHttpRequest.headers.put("Authorization", "Bearer " + authorization.jwt)
-        consume(authorization, new Claim(
+        Claim claim = new Claim(
                 url: authorizedHttpRequest.url,
                 method: authorizedHttpRequest.method,
                 body: authorizedHttpRequest.body
-        ))
+        )
+        authorization.claims.add(claimRepository.save(claim))
+        authorizationRepository.saveAndFlush(authorization)
         return sendHttpMessage(authorizedHttpRequest)
     }
 
@@ -135,11 +141,6 @@ class ClientAuthorizationGrantingService {
             throw new AscendUnauthorizedException("Authentication Preparator not found: ${authenticationName + "Preparator"}")
         }
         authenticationPreparator.prepareAuthentication(publicCredentials, privateCredentials, prerequisiteJwt)
-    }
-
-    void consume(Authorization authorization, Claim claim) {
-        authorization.claims.add(claim)
-        authorizationRepository.saveAndFlush(authorization)
     }
 
     Set<PrototypeAuthorization> inquire(String scopeName, String ascendGrantingUrl, String authorizationServerNamespace) {

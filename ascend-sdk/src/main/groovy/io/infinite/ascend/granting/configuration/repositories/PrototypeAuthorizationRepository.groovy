@@ -24,13 +24,13 @@ interface PrototypeAuthorizationRepository extends JpaRepository<PrototypeAuthor
         join fetch a.scopes s
         where a.name = :authorizationName
         and s.name = :scopeName
-        and i.name = :identityTypeName
+        and i.name = :identityName
         and a.serverNamespace = :serverNamespace""")
     Optional<PrototypeAuthorization> findForGranting(
             @Param("serverNamespace") String serverNamespace
             , @Param("authorizationName") String authorizationName
             , @Param("scopeName") String scopeName
-            , @Param("identityTypeName") String identityTypeName
+            , @Param("identityName") String identityName
     )
 
     @Query("""select a from PrototypeAuthorization a

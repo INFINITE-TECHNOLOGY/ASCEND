@@ -54,8 +54,8 @@ class ServerAuthorizationGrantingService {
             Optional<PrototypeAuthorization> authorizationTypes = authorizationTypeRepository.findForGranting(
                     clientAuthorization.serverNamespace,
                     clientAuthorization.name,
-                    clientAuthorization.scope?.name,
-                    clientAuthorization.identity?.name
+                    clientAuthorization.scope.name,
+                    clientAuthorization.identity.name
             )
             if (!authorizationTypes.present) {
                 throw new AscendUnauthorizedException("No authorization types found")
@@ -72,6 +72,9 @@ class ServerAuthorizationGrantingService {
     Authorization exchangeRefreshJwt(String refreshJwt) {
         try {
             Refresh refresh = jwtService.jwt2refresh(refreshJwt, jwtService.jwtRefreshKeyPublic)
+            if (refresh.expiryDate.before(new Date())) {
+                throw new AscendForbiddenException("Expired Refresh Authorization")
+            }
             Optional<PrototypeAuthorization> prototypeAccessOptional = prototypeAuthorizationRepository.findAccessByRefresh(
                     refresh.serverNamespace,
                     refresh.name,
@@ -80,9 +83,6 @@ class ServerAuthorizationGrantingService {
             )
             if (!prototypeAccessOptional.present) {
                 throw new AscendUnauthorizedException("No access authorizations associated with this refresh")
-            }
-            if (refresh.expiryDate.before(new Date())) {
-                throw new AscendForbiddenException("Expired Refresh Authorization")
             }
             PrototypeAuthorization prototypeAccess = prototypeAccessOptional.get()
             Authorization accessAuthorization = prototypeConverter.convertAccessAuthorization(prototypeAccess, refresh.clientNamespace)

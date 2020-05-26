@@ -152,7 +152,7 @@ class ConfigInitService {
         )
         PrototypeIdentity verifiedEmailOwner = identityTypeRepository.saveAndFlush(
                 new PrototypeIdentity(
-                        name: "emailOwner",
+                        name: "Verified Email Owner",
                         authentications: [
                                 emailOtp
                         ].toSet()
@@ -160,7 +160,7 @@ class ConfigInitService {
         )
         PrototypeIdentity verifiedPhoneOwner = identityTypeRepository.saveAndFlush(
                 new PrototypeIdentity(
-                        name: "verifiedPhoneOwner",
+                        name: "Verified Telephone Owner",
                         authentications: [
                                 smsOtp
                         ].toSet()
@@ -218,7 +218,8 @@ class ConfigInitService {
         PrototypeAuthorization onboardingScopeAuthorization = authorizationTypeRepository.saveAndFlush(
                 new PrototypeAuthorization(name: "onboardingScopeAuthorization",
                         identities: [
-                                verifiedPhoneOwner
+                                verifiedPhoneOwner,
+                                verifiedEmailOwner
                         ].toSet(),
                         scopes: [
                                 onboardingScope

@@ -43,6 +43,7 @@ class SmsOtpValidator implements AuthenticationValidator {
 }"""
                 ), 200
         )
+        //vulnerability here: phone is not validated...
         return authorizeCredentials(publicCredentials)
     }
 

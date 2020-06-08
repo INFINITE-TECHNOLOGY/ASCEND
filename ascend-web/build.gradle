@@ -39,6 +39,7 @@ sourceSets {
 dependencies {
     compile project(':ascend-sdk')
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.8'
+    compile 'org.codehaus.groovy:groovy-all:2.5.4'
 }
 
 ext {

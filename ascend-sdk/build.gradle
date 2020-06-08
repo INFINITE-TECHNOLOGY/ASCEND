@@ -29,7 +29,7 @@ ext['springBootVersion'] = '2.2.6.RELEASE'
 
 sourceCompatibility = 1.8
 group = "io.i-t"
-version = "0.6.6"
+version = "0.6.7"
 description = "Web Service Access Management"
 
 repositories {
@@ -48,7 +48,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-security'
     compile "io.i-t:bobbin:3.0.0"
     compile 'io.i-t:blackbox:1.0.21'
-    compile 'io.i-t:http:1.0.1'
+    compile 'io.i-t:http:1.0.4'
     compile group: 'org.apache.shiro', name: 'shiro-core', version: '1.4.1'
     compile 'io.jsonwebtoken:jjwt-api:0.10.7'
     compile 'io.jsonwebtoken:jjwt-impl:0.10.7'

@@ -5,7 +5,7 @@ import groovy.util.logging.Slf4j
 import io.infinite.ascend.common.model.AscendKeyPair
 import io.infinite.ascend.common.services.JwtService
 import io.infinite.blackbox.BlackBox
-import io.infinite.carburetor.CarburetorLevel
+import io.infinite.blackbox.BlackBoxLevel
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import java.security.KeyPair
 
 @Controller
-@BlackBox(level = CarburetorLevel.METHOD)
+@BlackBox(level = BlackBoxLevel.METHOD)
 @Slf4j
 class KeyPairController {
 
@@ -26,7 +26,7 @@ class KeyPairController {
     @GetMapping(value = "/public/keyPair")
     @ResponseBody
     @CompileDynamic
-    @BlackBox(level = CarburetorLevel.ERROR)
+    @BlackBox(level = BlackBoxLevel.ERROR)
     AscendKeyPair getAscendKeyPair() {
         KeyPair keyPair = Keys.keyPairFor(SignatureAlgorithm.RS512)
         AscendKeyPair ascendKeyPair = new AscendKeyPair()

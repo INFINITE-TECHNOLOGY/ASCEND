@@ -24,7 +24,7 @@ bootJar {
     version = '1.0.0'
 }
 
-ext['groovy.version'] = '2.5.4'
+ext['groovy.version'] = '2.5.10'
 ext['springBootVersion'] = '2.2.6.RELEASE'
 
 sourceCompatibility = 1.8
@@ -44,7 +44,7 @@ sourceSets {
 dependencies {
     compile project(':ascend-sdk')
     compile 'info.picocli:picocli:4.2.0'
-    compile 'org.codehaus.groovy:groovy-all:2.5.4'
+    compile 'org.codehaus.groovy:groovy-all:2.5.10'
 }
 
 task sourceJar(type: Jar) {

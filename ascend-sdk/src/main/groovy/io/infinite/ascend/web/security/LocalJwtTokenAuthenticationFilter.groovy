@@ -7,7 +7,7 @@ import io.infinite.ascend.common.exceptions.AscendForbiddenException
 import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
 import io.infinite.ascend.validation.server.services.ServerAuthorizationValidationService
 import io.infinite.blackbox.BlackBox
-import io.infinite.carburetor.CarburetorLevel
+import io.infinite.blackbox.BlackBoxLevel
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.context.SecurityContextHolder
@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse
  */
 
 @Slf4j
-@BlackBox(level = CarburetorLevel.METHOD)
+@BlackBox(level = BlackBoxLevel.METHOD)
 @Component
 class LocalJwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
@@ -33,7 +33,7 @@ class LocalJwtTokenAuthenticationFilter extends OncePerRequestFilter {
     ServerAuthorizationValidationService serverAuthorizationValidationService
 
     @Override
-    @BlackBox(level = CarburetorLevel.METHOD)
+    @BlackBox(level = BlackBoxLevel.METHOD)
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
         try {
             String authorizationHeader = request.getHeader("Authorization")

@@ -4,14 +4,14 @@ package io.infinite.ascend.granting.client.authentication
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.services.JwtService
 import io.infinite.blackbox.BlackBox
-import io.infinite.carburetor.CarburetorLevel
+import io.infinite.blackbox.BlackBoxLevel
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 import java.time.Duration
 import java.time.Instant
 
-@BlackBox(level = CarburetorLevel.METHOD)
+@BlackBox(level = BlackBoxLevel.METHOD)
 @Service
 class ClientJwtPreparator implements AuthenticationPreparator {
 

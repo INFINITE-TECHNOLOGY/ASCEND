@@ -7,7 +7,7 @@ import io.infinite.ascend.granting.configuration.repositories.*
 import io.infinite.ascend.granting.server.entities.TrustedPublicKey
 import io.infinite.ascend.granting.server.repositories.TrustedPublicKeyRepository
 import io.infinite.blackbox.BlackBox
-import io.infinite.carburetor.CarburetorLevel
+import io.infinite.blackbox.BlackBoxLevel
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -16,7 +16,7 @@ import java.time.Duration
 
 @Service
 @Slf4j
-@BlackBox(level = CarburetorLevel.METHOD)
+@BlackBox(level = BlackBoxLevel.METHOD)
 @CompileStatic
 class ConfigInitService {
 

@@ -5,7 +5,7 @@ import io.infinite.ascend.common.repositories.AuthorizationRepository
 import io.infinite.ascend.common.services.JwtService
 import io.infinite.ascend.granting.configuration.entities.*
 import io.infinite.blackbox.BlackBox
-import io.infinite.carburetor.CarburetorLevel
+import io.infinite.blackbox.BlackBoxLevel
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Service
@@ -14,7 +14,7 @@ import java.time.Duration
 import java.time.Instant
 
 @Service
-@BlackBox(level = CarburetorLevel.METHOD)
+@BlackBox(level = BlackBoxLevel.METHOD)
 class PrototypeConverter {
 
     @Autowired

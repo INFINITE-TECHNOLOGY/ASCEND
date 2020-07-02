@@ -23,7 +23,7 @@ bootJar {
     version = '1.0.0'
 }
 
-ext['groovy.version'] = '2.5.4'
+ext['groovy.version'] = '2.5.10'
 ext['springBootVersion'] = '2.2.6.RELEASE'
 
 sourceCompatibility = 1.8
@@ -39,7 +39,7 @@ sourceSets {
 dependencies {
     compile project(':ascend-sdk')
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.8'
-    compile 'org.codehaus.groovy:groovy-all:2.5.4'
+    compile 'org.codehaus.groovy:groovy-all:2.5.10'
 }
 
 ext {

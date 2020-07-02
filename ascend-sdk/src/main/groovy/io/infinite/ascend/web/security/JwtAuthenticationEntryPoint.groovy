@@ -2,7 +2,7 @@ package io.infinite.ascend.web.security
 
 import groovy.util.logging.Slf4j
 import io.infinite.blackbox.BlackBox
-import io.infinite.carburetor.CarburetorLevel
+import io.infinite.blackbox.BlackBoxLevel
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.stereotype.Component
@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse
 class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
-    @BlackBox(level = CarburetorLevel.METHOD)
+    @BlackBox(level = BlackBoxLevel.METHOD)
     void commence(HttpServletRequest httpServletRequest, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "UNAUTHORIZED")
     }

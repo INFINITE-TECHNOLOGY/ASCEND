@@ -8,7 +8,7 @@ import groovy.util.logging.Slf4j
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.entities.Refresh
 import io.infinite.blackbox.BlackBox
-import io.infinite.carburetor.CarburetorLevel
+import io.infinite.blackbox.BlackBoxLevel
 import io.jsonwebtoken.CompressionCodecs
 import io.jsonwebtoken.Jwt
 import io.jsonwebtoken.Jwts
@@ -26,7 +26,7 @@ import java.security.spec.X509EncodedKeySpec
 
 @Service
 @Slf4j
-@BlackBox(level = CarburetorLevel.METHOD)
+@BlackBox(level = BlackBoxLevel.METHOD)
 class JwtService {
 
     @Value('${jwtAccessKeyPublic}')
@@ -66,7 +66,7 @@ class JwtService {
     )
 
     @CompileDynamic
-    @BlackBox(level = CarburetorLevel.ERROR)
+    @BlackBox(level = BlackBoxLevel.ERROR)
     Authorization jwt2authorization(String jwtString, PublicKey publicKey) {
         Jwt jwt = Jwts.parser().setSigningKey(publicKey).parse(jwtString)
         Authorization authorization = objectMapper.readValue(jwt.getBody() as String, Authorization.class)
@@ -75,7 +75,7 @@ class JwtService {
     }
 
     @CompileDynamic
-    @BlackBox(level = CarburetorLevel.ERROR)
+    @BlackBox(level = BlackBoxLevel.ERROR)
     Refresh jwt2refresh(String jwtString, PublicKey publicKey) {
         Jwt jwt = Jwts.parser().setSigningKey(publicKey).parse(jwtString)
         Refresh refresh = objectMapper.readValue(jwt.getBody() as String, Refresh.class)
@@ -84,7 +84,7 @@ class JwtService {
     }
 
     @CompileDynamic
-    @BlackBox(level = CarburetorLevel.ERROR)
+    @BlackBox(level = BlackBoxLevel.ERROR)
     String authorization2jwt(Authorization authorization, PrivateKey privateKey) {
         String body = objectMapper.writeValueAsString(authorization)
         log.debug(body)
@@ -98,7 +98,7 @@ class JwtService {
     }
 
     @CompileDynamic
-    @BlackBox(level = CarburetorLevel.ERROR)
+    @BlackBox(level = BlackBoxLevel.ERROR)
     String refresh2jwt(Refresh refresh, PrivateKey privateKey) {
         String body = objectMapper.writeValueAsString(refresh)
         log.debug(body)
@@ -111,19 +111,19 @@ class JwtService {
         return jwt
     }
 
-    @BlackBox(level = CarburetorLevel.NONE)
+    @BlackBox(level = BlackBoxLevel.NONE)
     PKCS8EncodedKeySpec loadSpecFromHexStringPrivate(String hexString) {
         PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(Hex.decode(hexString))
         return pkcs8EncodedKeySpec
     }
 
-    @BlackBox(level = CarburetorLevel.NONE)
+    @BlackBox(level = BlackBoxLevel.NONE)
     X509EncodedKeySpec loadSpecFromHexStringPublic(String hexString) {
         X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(Hex.decode(hexString))
         return x509EncodedKeySpec
     }
 
-    @BlackBox(level = CarburetorLevel.NONE)
+    @BlackBox(level = BlackBoxLevel.NONE)
     PrivateKey loadPrivateKeyFromHexString(String hexString) {
         return KeyFactory.getInstance(SignatureAlgorithm.RS512.getFamilyName()).generatePrivate(loadSpecFromHexStringPrivate(hexString))
     }
@@ -132,7 +132,7 @@ class JwtService {
         return KeyFactory.getInstance(SignatureAlgorithm.RS512.getFamilyName()).generatePublic(loadSpecFromHexStringPublic(hexString))
     }
 
-    @BlackBox(level = CarburetorLevel.NONE)
+    @BlackBox(level = BlackBoxLevel.NONE)
     String privateKeyToString(PrivateKey privateKey) {
         return Hex.encodeToString(privateKey.getEncoded())
     }

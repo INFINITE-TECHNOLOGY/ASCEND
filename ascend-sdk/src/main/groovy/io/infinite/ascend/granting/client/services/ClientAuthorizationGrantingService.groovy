@@ -19,7 +19,7 @@ import io.infinite.ascend.granting.common.services.PrototypeConverter
 import io.infinite.ascend.granting.configuration.entities.PrototypeAuthorization
 import io.infinite.ascend.granting.configuration.entities.PrototypeIdentity
 import io.infinite.blackbox.BlackBox
-import io.infinite.carburetor.CarburetorLevel
+import io.infinite.blackbox.BlackBoxLevel
 import io.infinite.http.HttpRequest
 import io.infinite.http.HttpResponse
 import io.infinite.http.SenderDefaultHttps
@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service
 
 @Service
 @CompileStatic
-@BlackBox(level = CarburetorLevel.METHOD)
+@BlackBox(level = BlackBoxLevel.METHOD)
 class ClientAuthorizationGrantingService {
 
     ObjectMapper objectMapper = new ObjectMapper()

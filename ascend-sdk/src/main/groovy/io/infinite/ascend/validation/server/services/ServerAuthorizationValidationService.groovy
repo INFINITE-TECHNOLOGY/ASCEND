@@ -8,9 +8,13 @@ import io.infinite.ascend.common.repositories.ClaimRepository
 import io.infinite.ascend.common.services.JwtService
 import io.infinite.ascend.common.exceptions.AscendForbiddenException
 import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
+import io.infinite.ascend.granting.server.authentication.AuthenticationValidator
+import io.infinite.ascend.validation.server.authorization.BodyValidator
 import io.infinite.blackbox.BlackBox
 import io.infinite.blackbox.BlackBoxLevel
+import org.springframework.beans.factory.NoSuchBeanDefinitionException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.ApplicationContext
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
@@ -28,6 +32,9 @@ class ServerAuthorizationValidationService {
 
     @Autowired
     ClaimRepository claimRepository
+
+    @Autowired
+    ApplicationContext applicationContext
 
     Authorization validateClaim(Claim claim) {
         try {
@@ -54,14 +61,18 @@ class ServerAuthorizationValidationService {
                     log.debug("Processed URL regex", processedUrlRegex)
                     if (claim.url.matches(processedUrlRegex)) {
                         log.debug("URL matched regex.")
-                        if (grant.bodyRegex != null) {
+                        if (grant.bodyValidatorName != null) {
                             //todo: check for DDOS (never ending input stream)
-                            String processedBodyRegex = replaceSubstitutes(grant.bodyRegex, authorization.authorizedCredentials)
-                            log.debug("Body", claim.body)
-                            log.debug("Processed body regex", processedUrlRegex)
-                            if (!claim.body.matches(processedBodyRegex)) {
-                                log.debug("Body does not match regex")
-                                throw new AscendUnauthorizedException("Unauthorized")
+                            BodyValidator bodyValidator
+                            try {
+                                bodyValidator = applicationContext.getBean(grant.bodyValidatorName + "BodyValidator", BodyValidator.class)
+                            } catch (NoSuchBeanDefinitionException noSuchBeanDefinitionException) {
+                                throw new AscendUnauthorizedException("Body validator not found: ${grant.bodyValidatorName + "BodyValidator"}", noSuchBeanDefinitionException)
+                            }
+                            try {
+                                bodyValidator.validate(authorization.authorizedCredentials, claim.body)
+                            } catch (Exception exception) {
+                                throw new AscendUnauthorizedException("Authentication failed", exception)
                             }
                         }
                         Optional<Authorization> existingAuthorization = authorizationRepository.findByGuid(authorization.guid)

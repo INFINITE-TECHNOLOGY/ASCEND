@@ -25,10 +25,6 @@ class Grant {
     @Type(type = "org.hibernate.type.TextType")
     String urlRegex
 
-    @Lob
-    @Type(type = "org.hibernate.type.TextType")
-    String bodyValidatorName
-
     String httpMethod
 
 }

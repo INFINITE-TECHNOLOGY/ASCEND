@@ -61,20 +61,6 @@ class ServerAuthorizationValidationService {
                     log.debug("Processed URL regex", processedUrlRegex)
                     if (claim.url.matches(processedUrlRegex)) {
                         log.debug("URL matched regex.")
-                        if (grant.bodyValidatorName != null) {
-                            //todo: check for DDOS (never ending input stream)
-                            BodyValidator bodyValidator
-                            try {
-                                bodyValidator = applicationContext.getBean(grant.bodyValidatorName + "BodyValidator", BodyValidator.class)
-                            } catch (NoSuchBeanDefinitionException noSuchBeanDefinitionException) {
-                                throw new AscendUnauthorizedException("Body validator not found: ${grant.bodyValidatorName + "BodyValidator"}", noSuchBeanDefinitionException)
-                            }
-                            try {
-                                bodyValidator.validate(authorization.authorizedCredentials, claim.body)
-                            } catch (Exception exception) {
-                                throw new AscendUnauthorizedException("Authentication failed", exception)
-                            }
-                        }
                         Optional<Authorization> existingAuthorization = authorizationRepository.findByGuid(authorization.guid)
                         if (existingAuthorization.isPresent()) {
                             if (authorization.maxUsageCount > 0 && existingAuthorization.get().claims.size() >= authorization.maxUsageCount) {

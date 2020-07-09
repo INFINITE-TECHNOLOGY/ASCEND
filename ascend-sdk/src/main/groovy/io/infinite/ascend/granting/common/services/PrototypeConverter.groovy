@@ -75,7 +75,6 @@ class PrototypeConverter {
     Grant convertGrant(PrototypeGrant prototypeGrant) {
         return new Grant(
                 urlRegex: prototypeGrant.urlRegex,
-                bodyValidatorName: prototypeGrant.bodyValidatorName,
                 httpMethod: prototypeGrant.httpMethod
         )
     }

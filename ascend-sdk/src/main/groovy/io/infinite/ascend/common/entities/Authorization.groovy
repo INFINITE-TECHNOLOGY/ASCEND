@@ -11,7 +11,6 @@ import javax.persistence.*
 @Entity
 @Table(name = "authorizations")
 @ToString(includeNames = true, includeFields = true, excludes = ["jwt"])
-@JsonIgnoreProperties(ignoreUnknown = true)
 class Authorization {
 
     @Id

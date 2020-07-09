@@ -1,6 +1,7 @@
 package io.infinite.ascend.common.entities
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import groovy.transform.ToString
 import org.hibernate.annotations.Type
 
@@ -14,6 +15,7 @@ import javax.persistence.Table
 @Entity
 @Table(name = "grants")
 @ToString(includeNames = true, includeFields = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 class Grant {
 
     @Id

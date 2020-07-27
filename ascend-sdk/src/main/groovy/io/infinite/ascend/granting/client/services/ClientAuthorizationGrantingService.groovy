@@ -91,7 +91,7 @@ class ClientAuthorizationGrantingService {
     }
 
     HttpResponse expectAuthorizedStatus(AuthorizedHttpRequest authorizedHttpRequest, Integer expectedStatus) {
-        HttpResponse httpResponse = sendAuthorizedHttpMessage(authorizedHttpRequest)
+        HttpResponse httpResponse = senderDefaultHttps.sendHttpMessage(authorizedHttpRequest)
         if (httpResponse.status != expectedStatus) {
             throw new HttpException("Failed HTTP Response code: ${httpResponse.status}")
         }

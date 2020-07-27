@@ -65,10 +65,10 @@ class ClientAuthorizationGrantingService {
 
     SenderDefaultHttps senderDefaultHttps = new SenderDefaultHttps()
 
-    @Value("${refreshBufferSeconds:10}")
+    @Value('${refreshBufferSeconds:10}')
     Integer refreshBufferSeconds
 
-    @Value("${accessBufferSeconds:5}")
+    @Value('${accessBufferSeconds:5}')
     Integer accessBufferSeconds
 
     HttpResponse sendAuthorizedHttpMessage(AuthorizedHttpRequest authorizedHttpRequest) {

@@ -150,7 +150,7 @@ class ClientAuthorizationGrantingService {
         } catch (NoSuchBeanDefinitionException ignored) {
             throw new AscendUnauthorizedException("Authentication Preparator not found: ${authenticationName + "Preparator"}")
         }
-        authenticationPreparator.prepareAuthentication(publicCredentials, privateCredentials, prerequisiteJwt)
+        authenticationPreparator.prepareAuthentication(publicCredentials, privateCredentials)
     }
 
     Set<PrototypeAuthorization> inquire(String scopeName, String ascendGrantingUrl, String authorizationServerNamespace) {

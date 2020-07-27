@@ -20,6 +20,7 @@ import io.infinite.ascend.granting.configuration.entities.PrototypeAuthorization
 import io.infinite.ascend.granting.configuration.entities.PrototypeIdentity
 import io.infinite.blackbox.BlackBox
 import io.infinite.blackbox.BlackBoxLevel
+import io.infinite.http.HttpException
 import io.infinite.http.HttpRequest
 import io.infinite.http.HttpResponse
 import io.infinite.http.SenderDefaultHttps
@@ -87,6 +88,14 @@ class ClientAuthorizationGrantingService {
         authorization.claims.add(claimRepository.save(claim))
         authorizationRepository.saveAndFlush(authorization)
         return sendHttpMessage(authorizedHttpRequest)
+    }
+
+    HttpResponse expectAuthorizedStatus(AuthorizedHttpRequest authorizedHttpRequest, Integer expectedStatus) {
+        HttpResponse httpResponse = sendAuthorizedHttpMessage(authorizedHttpRequest)
+        if (httpResponse.status != expectedStatus) {
+            throw new HttpException("Failed HTTP Response code: ${httpResponse.status}")
+        }
+        return httpResponse
     }
 
     HttpResponse sendHttpMessage(HttpRequest httpRequest) {

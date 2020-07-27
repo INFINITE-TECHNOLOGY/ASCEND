@@ -25,8 +25,12 @@ import io.infinite.http.HttpResponse
 import io.infinite.http.SenderDefaultHttps
 import org.springframework.beans.factory.NoSuchBeanDefinitionException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Service
+
+import java.time.Duration
+import java.time.Instant
 
 @Service
 @CompileStatic
@@ -60,6 +64,12 @@ class ClientAuthorizationGrantingService {
     ApplicationContext applicationContext
 
     SenderDefaultHttps senderDefaultHttps = new SenderDefaultHttps()
+
+    @Value("${refreshBufferSeconds:10}")
+    Integer refreshBufferSeconds
+
+    @Value("${accessBufferSeconds:5}")
+    Integer accessBufferSeconds
 
     HttpResponse sendAuthorizedHttpMessage(AuthorizedHttpRequest authorizedHttpRequest) {
         Authorization authorization = grantByScope(
@@ -108,11 +118,11 @@ class ClientAuthorizationGrantingService {
 
     Authorization grantByPrototype(PrototypeAuthorization prototypeAuthorization, String ascendUrl, String clientNamespace, String serverNamespace) {
         PrototypeIdentity prototypeIdentity = prototypeIdentitySelector.select(prototypeAuthorization.identities)
-        Set<Authorization> existingAuthorizations = authorizationRepository.findAuthorization(clientNamespace, serverNamespace, prototypeAuthorization.name)
+        Set<Authorization> existingAuthorizations = authorizationRepository.findAuthorization(clientNamespace, serverNamespace, prototypeAuthorization.name, cutoff(accessBufferSeconds))
         if (!existingAuthorizations.empty) {
             return authorizationSelector.select(existingAuthorizations)
         } else {
-            Set<Refresh> existingRefresh = refreshRepository.findRefresh(clientNamespace, serverNamespace, prototypeAuthorization.name)
+            Set<Refresh> existingRefresh = refreshRepository.findRefresh(clientNamespace, serverNamespace, prototypeAuthorization.name, cutoff(refreshBufferSeconds))
             if (!existingRefresh.empty) {
                 return sendRefresh(existingRefresh.first(), ascendUrl)
             } else {
@@ -185,6 +195,10 @@ class ClientAuthorizationGrantingService {
                                 body: objectMapper.writeValueAsString(authorization)
                         )
                 ).body, Authorization.class))
+    }
+
+    Date cutoff(Integer bufferSeconds) {
+        return (Instant.now() + Duration.ofSeconds(bufferSeconds)).toDate()
     }
 
 }

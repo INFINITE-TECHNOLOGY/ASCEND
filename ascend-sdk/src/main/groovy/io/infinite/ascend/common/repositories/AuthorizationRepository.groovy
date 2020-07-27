@@ -17,14 +17,15 @@ interface AuthorizationRepository extends JpaRepository<Authorization, Long> {
         where a.serverNamespace = :serverNamespace
         and a.clientNamespace = :clientNamespace
         and a.name = :name
-        and a.expiryDate > CURRENT_TIMESTAMP
+        and a.expiryDate > :cutoffDate
         group by a.id, a.creationDate, a.maxUsageCount
         having (a.maxUsageCount > count(c) or a.maxUsageCount is null)
         order by a.creationDate""")
     Set<Authorization> findAuthorization(
             @Param("clientNamespace") String clientNamespace,
             @Param("serverNamespace") String serverNamespace,
-            @Param("name") String name
+            @Param("name") String name,
+            @Param("cutoffDate") Date cutoffDate
     )
 
     Set<Authorization> findByClientNamespace(String clientNamespace)

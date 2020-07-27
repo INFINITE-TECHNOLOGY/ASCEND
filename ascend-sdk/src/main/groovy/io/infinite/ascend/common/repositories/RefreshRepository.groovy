@@ -16,11 +16,12 @@ interface RefreshRepository extends JpaRepository<Refresh, Long> {
         where r.name = :name
         and r.serverNamespace = :serverNamespace
         and r.clientNamespace = :clientNamespace
-        and r.expiryDate > CURRENT_TIMESTAMP""")
+        and r.expiryDate > :cutoffDate""")
     Set<Refresh> findRefresh(
             @Param("clientNamespace") String clientNamespace,
             @Param("serverNamespace") String serverNamespace,
-            @Param("name") String name
+            @Param("name") String name,
+            @Param("cutoffDate") Date cutoffDate
     )
 
     Set<Refresh> findByClientNamespace(String clientNamespace)

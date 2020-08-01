@@ -72,7 +72,7 @@ class ClientAuthorizationGrantingService {
     @Value('${accessBufferSeconds:5}')
     Integer accessBufferSeconds
 
-    HttpResponse sendAuthorizedHttpMessage(AuthorizedHttpRequest authorizedHttpRequest, Integer expectedStatus = null) {
+    HttpResponse sendAuthorizedHttpMessage(AuthorizedHttpRequest authorizedHttpRequest) {
         Authorization authorization = grantByScope(
                 authorizedHttpRequest.scopeName,
                 authorizedHttpRequest.ascendUrl,
@@ -87,15 +87,11 @@ class ClientAuthorizationGrantingService {
         )
         authorization.claims.add(claimRepository.save(claim))
         authorizationRepository.saveAndFlush(authorization)
-        if (expectedStatus == null) {
-            return sendHttpMessage(authorizedHttpRequest)
-        } else {
-            return senderDefaultHttps.sendHttpMessage(authorizedHttpRequest)
-        }
+        return senderDefaultHttps.sendHttpMessage(authorizedHttpRequest)
     }
 
     HttpResponse expectAuthorizedStatus(AuthorizedHttpRequest authorizedHttpRequest, Integer expectedStatus) {
-        HttpResponse httpResponse = sendAuthorizedHttpMessage(authorizedHttpRequest, expectedStatus)
+        HttpResponse httpResponse = sendAuthorizedHttpMessage(authorizedHttpRequest)
         if (httpResponse.status != expectedStatus) {
             throw new HttpException("Failed HTTP Response code: ${httpResponse.status}")
         }

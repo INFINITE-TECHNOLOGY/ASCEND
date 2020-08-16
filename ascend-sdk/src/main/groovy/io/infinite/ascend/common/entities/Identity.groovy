@@ -17,7 +17,7 @@ class Identity {
     String name
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinTable
+    @JoinTable//todo: remove join table?
     Set<Authentication> authentications = new HashSet<Authentication>()
 
     @ElementCollection(fetch = FetchType.EAGER)

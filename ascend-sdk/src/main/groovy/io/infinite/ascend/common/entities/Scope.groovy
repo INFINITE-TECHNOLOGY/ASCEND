@@ -17,7 +17,7 @@ class Scope {
     String name
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinTable
+    @JoinTable//todo: remove join table?
     Set<Grant> grants = new HashSet<Grant>()
 
 }

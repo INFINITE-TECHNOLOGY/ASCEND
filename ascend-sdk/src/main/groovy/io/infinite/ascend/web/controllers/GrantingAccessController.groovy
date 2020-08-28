@@ -8,6 +8,7 @@ import io.infinite.blackbox.BlackBox
 import io.infinite.blackbox.BlackBoxLevel
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.ResponseBody
@@ -24,6 +25,7 @@ class GrantingAccessController {
     @ResponseBody
     @CompileDynamic
     @BlackBox(level = BlackBoxLevel.METHOD)
+    @CrossOrigin
     Authorization postAuthorization(@RequestBody Authorization authorization) {
         return serverAuthorizationGrantingService.grantAccessAuthorization(authorization)
     }

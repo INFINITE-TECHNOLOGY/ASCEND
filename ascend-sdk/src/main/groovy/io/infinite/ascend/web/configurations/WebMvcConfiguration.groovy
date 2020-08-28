@@ -10,6 +10,7 @@ import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.web.filter.CommonsRequestLoggingFilter
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer
+import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 /**
@@ -69,5 +70,14 @@ class WebMvcConfiguration implements WebMvcConfigurer {
         }
         return tomcat
     }*/
+
+    /**
+     * Taken from https://stackoverflow.com/a/43559441/6784237
+     */
+    @Override
+    void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH");
+    }
 
 }

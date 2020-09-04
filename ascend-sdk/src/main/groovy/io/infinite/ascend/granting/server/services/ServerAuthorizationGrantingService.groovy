@@ -84,7 +84,7 @@ class ServerAuthorizationGrantingService {
             }
             PrototypeAuthorization prototypeAccess = prototypeAccessOptional.get()
             Authorization accessAuthorization = prototypeConverter.convertAccessAuthorization(prototypeAccess, refresh.clientNamespace)
-            accessAuthorization.scopes = prototypeConverter.convertScopes(prototypeAccess.scopes)
+            accessAuthorization.scopes = refresh.scopes
             accessAuthorization.identity = prototypeConverter.convertIdentity(prototypeAccess.identities.first())
             accessAuthorization.authorizedCredentials = refresh.refreshCredentials
             accessAuthorization.jwt = jwtService.authorization2jwt(accessAuthorization, jwtService.jwtAccessKeyPrivate)
@@ -92,6 +92,7 @@ class ServerAuthorizationGrantingService {
                 if (prototypeAccess.refresh.isRenewable) {
                     accessAuthorization.refresh = prototypeConverter.convertRefresh(prototypeAccess, refresh.clientNamespace)
                     accessAuthorization.refresh.identityName = accessAuthorization.identity.name
+                    accessAuthorization.refresh.scopes = accessAuthorization.scopes
                     accessAuthorization.refresh.jwt = jwtService.refresh2jwt(accessAuthorization.refresh, jwtService.jwtRefreshKeyPrivate)
                 }
             }
@@ -152,6 +153,7 @@ class ServerAuthorizationGrantingService {
             authorization.refresh = prototypeConverter.convertRefresh(prototypeAuthorization, clientAuthorization.clientNamespace)
             authorization.refresh.identityName = authorization.identity.name
             authorization.refresh.refreshCredentials = authorization.authorizedCredentials
+            authorization.refresh.scopes = authorization.scopes
             authorization.refresh.jwt = jwtService.refresh2jwt(authorization.refresh, jwtService.jwtRefreshKeyPrivate)
         }
         authorizationRepository.saveAndFlush(authorization)

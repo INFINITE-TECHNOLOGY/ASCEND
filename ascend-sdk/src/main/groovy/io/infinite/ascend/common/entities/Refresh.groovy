@@ -26,6 +26,11 @@ class Refresh {
 
     String clientNamespace
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OrderColumn
+    @JoinTable
+    Set<Scope> scopes = new HashSet<Scope>()
+
     @ElementCollection(fetch = FetchType.EAGER)
     Map<String, String> refreshCredentials = new HashMap<String, String>()
 

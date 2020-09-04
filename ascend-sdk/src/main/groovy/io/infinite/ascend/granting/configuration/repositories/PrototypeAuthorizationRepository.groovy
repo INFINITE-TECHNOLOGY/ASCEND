@@ -11,7 +11,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource
 interface PrototypeAuthorizationRepository extends JpaRepository<PrototypeAuthorization, Long> {
 
     @Query("""select a from PrototypeAuthorization a
-        join fetch a.scopes s
+        join fetch a.scope s
         where s.name = :scopeName
         and a.serverNamespace = :serverNamespace""")
     Set<PrototypeAuthorization> inquire(
@@ -21,7 +21,7 @@ interface PrototypeAuthorizationRepository extends JpaRepository<PrototypeAuthor
 
     @Query("""select a from PrototypeAuthorization a
         join fetch a.identities i
-        join fetch a.scopes s
+        join fetch a.scope s
         where a.name = :authorizationName
         and s.name = :scopeName
         and i.name = :identityName
@@ -35,7 +35,7 @@ interface PrototypeAuthorizationRepository extends JpaRepository<PrototypeAuthor
 
     @Query("""select a from PrototypeAuthorization a
         join fetch a.identities i
-        join fetch a.scopes s
+        join fetch a.scope s
         where a.serverNamespace = :serverNamespace
         and a.name = :refreshAuthorizationName
         and i.name = :identityName

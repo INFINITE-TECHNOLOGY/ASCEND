@@ -22,10 +22,9 @@ class PrototypeAuthorization {
     @JoinTable
     Set<PrototypeIdentity> identities = new HashSet<PrototypeIdentity>()
 
-    @ManyToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @OrderColumn
-    @JoinTable
-    Set<PrototypeScope> scopes = new HashSet<PrototypeScope>()
+    PrototypeScope scope
 
     Integer durationSeconds
 

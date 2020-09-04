@@ -86,7 +86,7 @@ class ServerAuthorizationGrantingService {
             }
             PrototypeAuthorization prototypeAccess = prototypeAccessOptional.get()
             Authorization accessAuthorization = prototypeConverter.convertAccessAuthorization(prototypeAccess, refresh.clientNamespace)
-            accessAuthorization.scope = prototypeConverter.convertScope(prototypeAccess.scopes.first())
+            accessAuthorization.scope = prototypeConverter.convertScope(prototypeAccess.scope)
             accessAuthorization.identity = prototypeConverter.convertIdentity(prototypeAccess.identities.first())
             accessAuthorization.authorizedCredentials = refresh.refreshCredentials
             accessAuthorization.jwt = jwtService.authorization2jwt(accessAuthorization, jwtService.jwtAccessKeyPrivate)
@@ -147,7 +147,7 @@ class ServerAuthorizationGrantingService {
         }
         safeMerge(prerequisiteAuthorizedCredentials, authorizedCredentials)
         Authorization authorization = prototypeConverter.convertAccessAuthorization(prototypeAuthorization, clientAuthorization.clientNamespace)
-        authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
+        authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scope)
         authorization.identity = prototypeConverter.convertIdentity(prototypeAuthorization.identities.first())
         authorization.authorizedCredentials = authorizedCredentials
         authorization.jwt = jwtService.authorization2jwt(authorization, jwtService.jwtAccessKeyPrivate)
@@ -185,7 +185,7 @@ class ServerAuthorizationGrantingService {
         if (!prototypeAuthorization.identities.collect { it.name }.contains(authorization.identity.name)) {
             throw new AscendUnauthorizedException("Wrong prerequisite identity")
         }
-        if (!prototypeAuthorization.scopes.collect { it.name }.contains(authorization.scope.name)) {
+        if (prototypeAuthorization.scope.name != authorization.scope.name) {
             throw new AscendUnauthorizedException("Wrong prerequisite scope")
         }
     }

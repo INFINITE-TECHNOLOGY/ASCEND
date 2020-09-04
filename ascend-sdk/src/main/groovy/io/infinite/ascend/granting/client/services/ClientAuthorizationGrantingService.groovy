@@ -136,7 +136,7 @@ class ClientAuthorizationGrantingService {
                 return sendRefresh(existingRefresh.first(), ascendUrl)
             } else {
                 Authorization authorization = prototypeConverter.convertAccessAuthorization(prototypeAuthorization, clientNamespace)
-                authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scopes.first())
+                authorization.scope = prototypeConverter.convertScope(prototypeAuthorization.scope)
                 authorization.identity = prototypeConverter.convertIdentity(prototypeIdentity)
                 if (!prototypeAuthorization.prerequisites.empty) {
                     PrototypeAuthorization prototypeAuthorizationPrerequisite = prototypeAuthorizationSelector.selectPrerequisite(prototypeAuthorization.prerequisites)

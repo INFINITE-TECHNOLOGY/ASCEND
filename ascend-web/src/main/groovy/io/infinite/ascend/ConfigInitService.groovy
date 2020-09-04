@@ -251,7 +251,9 @@ class ConfigInitService {
                         identities: [
                                 legalUser
                         ].toSet(),
-                        scope: legalScope,
+                        scopes: [
+                                legalScope
+                        ].toSet(),
                         durationSeconds: Duration.ofMinutes(30).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS"
                 )
@@ -262,7 +264,9 @@ class ConfigInitService {
                                 verifiedPhoneOwner,
                                 verifiedEmailOwner
                         ].toSet(),
-                        scope: onboardingScope,
+                        scopes: [
+                                onboardingScope
+                        ].toSet(),
                         durationSeconds: Duration.ofMinutes(30).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
                         refresh: refresh1dayNonRenewable,
@@ -277,7 +281,9 @@ class ConfigInitService {
                                 verifiedPhoneOwner,
                                 verifiedEmailOwner
                         ].toSet(),
-                        scope: adminOnboardingScope,
+                        scopes: [
+                                adminOnboardingScope
+                        ].toSet(),
                         durationSeconds: Duration.ofMinutes(30).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
                         refresh: refresh1dayNonRenewable,
@@ -291,7 +297,9 @@ class ConfigInitService {
                         identities: [
                                 registeredUser
                         ].toSet(),
-                        scope: registeredUserScope,
+                        scopes: [
+                                registeredUserScope
+                        ].toSet(),
                         durationSeconds: Duration.ofMinutes(5).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
                         prerequisites: [
@@ -305,7 +313,9 @@ class ConfigInitService {
                         identities: [
                                 knownCustomer
                         ].toSet(),
-                        scope: knownCustomerScope,
+                        scopes: [
+                                knownCustomerScope
+                        ].toSet(),
                         durationSeconds: Duration.ofMinutes(5).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
                         refresh: refresh30daysNonRenewable,
@@ -319,7 +329,9 @@ class ConfigInitService {
                         identities: [
                                 plaidConfirmed
                         ].toSet(),
-                        scope: sendScope,
+                        scopes: [
+                                sendScope
+                        ].toSet(),
                         durationSeconds: Duration.ofSeconds(60).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
                         prerequisites: [
@@ -332,7 +344,9 @@ class ConfigInitService {
                         identities: [
                                 admin
                         ].toSet(),
-                        scope: restrictedScope,
+                        scopes: [
+                                restrictedScope
+                        ].toSet(),
                         durationSeconds: Duration.ofSeconds(60).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
                         prerequisites: [
@@ -345,7 +359,9 @@ class ConfigInitService {
                         identities: [
                                 admin
                         ].toSet(),
-                        scope: adminScope,
+                        scopes: [
+                                adminScope
+                        ].toSet(),
                         durationSeconds: Duration.ofMinutes(5).seconds.toInteger(),
                         serverNamespace: "OrbitSaaS",
                         refresh: refresh1dayNonRenewable,

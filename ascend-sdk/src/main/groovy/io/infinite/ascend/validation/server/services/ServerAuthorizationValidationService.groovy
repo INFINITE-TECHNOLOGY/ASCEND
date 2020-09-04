@@ -51,25 +51,27 @@ class ServerAuthorizationValidationService {
         if (authorization.expiryDate.before(new Date())) {
             throw new AscendForbiddenException("Expired Authorization")
         }
-        for (grant in authorization.scope.grants) {
-            if (grant.httpMethod.toLowerCase() == claim.method.toLowerCase()) {
-                if (grant.urlRegex != null) {
-                    String processedUrlRegex = replaceSubstitutes(grant.urlRegex, authorization.authorizedCredentials)
-                    log.debug("Processed URL regex", processedUrlRegex)
-                    if (claim.url.matches(processedUrlRegex)) {
-                        log.debug("URL matched regex.")
-                        Optional<Authorization> existingAuthorization = authorizationRepository.findByGuid(authorization.guid)
-                        if (existingAuthorization.isPresent()) {
-                            if (authorization.maxUsageCount > 0 && existingAuthorization.get().claims.size() >= authorization.maxUsageCount) {
-                                throw new AscendUnauthorizedException("Exceeded maximum usage count")
+        for (scope in authorization.scopes) {
+            for (grant in scope.grants) {
+                if (grant.httpMethod.toLowerCase() == claim.method.toLowerCase()) {
+                    if (grant.urlRegex != null) {
+                        String processedUrlRegex = replaceSubstitutes(grant.urlRegex, authorization.authorizedCredentials)
+                        log.debug("Processed URL regex", processedUrlRegex)
+                        if (claim.url.matches(processedUrlRegex)) {
+                            log.debug("URL matched regex.")
+                            Optional<Authorization> existingAuthorization = authorizationRepository.findByGuid(authorization.guid)
+                            if (existingAuthorization.isPresent()) {
+                                if (authorization.maxUsageCount > 0 && existingAuthorization.get().claims.size() >= authorization.maxUsageCount) {
+                                    throw new AscendUnauthorizedException("Exceeded maximum usage count")
+                                }
+                                authorization = existingAuthorization.get()
                             }
-                            authorization = existingAuthorization.get()
+                            claim = claimRepository.saveAndFlush(claim)
+                            authorization.claims.add(claim)
+                            authorization = authorizationRepository.saveAndFlush(authorization)
+                            log.debug("Authorized")
+                            return authorization
                         }
-                        claim = claimRepository.saveAndFlush(claim)
-                        authorization.claims.add(claim)
-                        authorization = authorizationRepository.saveAndFlush(authorization)
-                        log.debug("Authorized")
-                        return authorization
                     }
                 }
             }

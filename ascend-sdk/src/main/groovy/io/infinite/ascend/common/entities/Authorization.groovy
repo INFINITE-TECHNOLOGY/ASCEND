@@ -2,7 +2,6 @@ package io.infinite.ascend.common.entities
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import groovy.transform.ToString
 import org.hibernate.annotations.Type
 
@@ -29,8 +28,10 @@ class Authorization {
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     Identity identity
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    Scope scope
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OrderColumn
+    @JoinTable
+    Set<Scope> scopes = new HashSet<Scope>()
 
     Integer durationSeconds
 

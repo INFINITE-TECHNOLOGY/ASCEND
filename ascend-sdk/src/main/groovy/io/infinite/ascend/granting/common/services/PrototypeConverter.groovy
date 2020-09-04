@@ -65,11 +65,15 @@ class PrototypeConverter {
         )
     }
 
-    Scope convertScope(PrototypeScope prototypeScope) {
-        return new Scope(
-                name: prototypeScope.name,
-                grants: prototypeScope.grants.collect { convertGrant(it) }.toSet()
-        )
+    Set<Scope> convertScopes(Set<PrototypeScope> prototypeScopes) {
+        return prototypeScopes.collect { prototypeScope ->
+            new Scope(
+                    name: prototypeScope.name,
+                    grants: prototypeScope.grants.collect { prototypeGrant ->
+                        convertGrant(prototypeGrant)
+                    }.toSet()
+            )
+        }.toSet()
     }
 
     Grant convertGrant(PrototypeGrant prototypeGrant) {

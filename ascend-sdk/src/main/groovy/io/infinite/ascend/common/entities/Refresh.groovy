@@ -22,8 +22,6 @@ class Refresh {
 
     String identityName
 
-    String scopeName
-
     String serverNamespace
 
     String clientNamespace

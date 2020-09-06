@@ -63,9 +63,9 @@ class ConfigInitService {
         PrototypeGrant adminGrantGet = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/admin\/.*$$/$))
         PrototypeGrant userGrantGet = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/user\/%phone%\/.*$$/$))
         PrototypeGrant userGrantPost = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/user\/%phone%\/.*$$/$))
-        PrototypeGrant userGrantDeletePlaid = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "DELETE", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/user\/%phone%\/plaid$$/$))
-        PrototypeGrant userGrantDeletePlaidAccounts = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "DELETE", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/user\/%phone%\/plaidAccounts$$/$))
-        PrototypeGrant paymentGrant = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: $/^$orbitUrlRegex\/orbit\/restricted\/user\/%phone%\/payment/%plaidAccountIdList%$$/$))
+        PrototypeGrant userGrantDeleteDda = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "DELETE", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/user\/%phone%\/dda$$/$))
+        PrototypeGrant userGrantDeleteDdaAccounts = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "DELETE", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/user\/%phone%\/ddaAccounts$$/$))
+        PrototypeGrant paymentGrant = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: $/^$orbitUrlRegex\/orbit\/restricted\/user\/%phone%\/payment/%ddaAccountIdList%$$/$))
         PrototypeScope legalScope = scopeRepository.saveAndFlush(
                 new PrototypeScope(
                         name: "legalScope",
@@ -110,8 +110,8 @@ class ConfigInitService {
                                 adminFindByPhone,
                                 userGrantPost,
                                 userGrantGet,
-                                userGrantDeletePlaid,
-                                userGrantDeletePlaidAccounts
+                                userGrantDeleteDda,
+                                userGrantDeleteDdaAccounts
                         ].toSet()
                 )
         )
@@ -162,9 +162,9 @@ class ConfigInitService {
                         name: "kyc"
                 )
         )
-        PrototypeAuthentication plaid = authenticationTypeRepository.saveAndFlush(
+        PrototypeAuthentication dda = authenticationTypeRepository.saveAndFlush(
                 new PrototypeAuthentication(
-                        name: "plaid"
+                        name: "dda"
                 )
         )
         PrototypeAuthentication adminAuthentication = authenticationTypeRepository.saveAndFlush(
@@ -217,11 +217,11 @@ class ConfigInitService {
                         ].toSet()
                 )
         )
-        PrototypeIdentity plaidConfirmed = identityTypeRepository.saveAndFlush(
+        PrototypeIdentity ddaConfirmed = identityTypeRepository.saveAndFlush(
                 new PrototypeIdentity(
-                        name: "plaidConfirmed",
+                        name: "ddaConfirmed",
                         authentications: [
-                                plaid
+                                dda
                         ].toSet()
                 )
         )
@@ -327,7 +327,7 @@ class ConfigInitService {
         PrototypeAuthorization sendScopeAuthorization = authorizationTypeRepository.saveAndFlush(
                 new PrototypeAuthorization(name: "sendScopeAuthorization",
                         identities: [
-                                plaidConfirmed
+                                ddaConfirmed
                         ].toSet(),
                         scopes: [
                                 sendScope

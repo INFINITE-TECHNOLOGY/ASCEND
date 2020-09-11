@@ -54,18 +54,11 @@ class ConfigInitService {
         log.info("Initializing config")
         PrototypeGrant sendOtpSms = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/sendOtpSms$$/$))
         PrototypeGrant sendOtpEmail = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/sendOtpEmail$$/$))
-        PrototypeGrant userGet = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/user\/%phone%$$/$))
-        PrototypeGrant userPut = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "PUT", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/user\/%phone%$$/$))
-        PrototypeGrant userPost = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/user\/%phone%$$/$))
-        PrototypeGrant adminFindByPhone = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/admin\/search\/findByPhone\?phone=%phone%$$/$))
-        PrototypeGrant adminFindByEmail = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/admin\/search\/findByEmail\?email=%email%$$/$))
-        PrototypeGrant adminGrant = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/admin\/.*$$/$))
-        PrototypeGrant adminGrantGet = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/admin\/.*$$/$))
-        PrototypeGrant userGrantGet = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/user\/%phone%\/.*$$/$))
-        PrototypeGrant userGrantPost = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/user\/%phone%\/.*$$/$))
-        PrototypeGrant userGrantDeleteDda = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "DELETE", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/user\/%phone%\/dda$$/$))
-        PrototypeGrant userGrantDeleteDdaAccounts = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "DELETE", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/user\/%phone%\/ddaAccounts$$/$))
-        PrototypeGrant paymentGrant = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: $/^$orbitUrlRegex\/orbit\/restricted\/user\/%phone%\/payment/%ddaAccountIdList%$$/$))
+        PrototypeGrant findUserByPhone = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/phone\/%phone%\/user$$/$))
+        PrototypeGrant findUserByEmail = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/email\/%email%\/user$$/$))
+        PrototypeGrant createUserByPhone = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/phone\/%phone%\/user$$/$))
+        PrototypeGrant createUserByEmail = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "POST", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/email\/%email%\/user$$/$))
+        PrototypeGrant userSpaceGrant = grantRepository.saveAndFlush(new PrototypeGrant(httpMethod: "GET", urlRegex: $/^$orbitUrlRegex\/orbit\/secured\/user\/%userGuid%\/.*$$/$))
         PrototypeScope legalScope = scopeRepository.saveAndFlush(
                 new PrototypeScope(
                         name: "legalScope",
@@ -79,17 +72,10 @@ class ConfigInitService {
                 new PrototypeScope(
                         name: "onboardingScope",
                         grants: [
-                                userGet,
-                                userPost
-                        ].toSet()
-                )
-        )
-        PrototypeScope adminOnboardingScope = scopeRepository.saveAndFlush(
-                new PrototypeScope(
-                        name: "adminOnboardingScope",
-                        grants: [
-                                adminFindByPhone,
-                                adminFindByEmail
+                                findUserByPhone,
+                                findUserByEmail,
+                                createUserByPhone,
+                                createUserByEmail
                         ].toSet()
                 )
         )
@@ -97,48 +83,7 @@ class ConfigInitService {
                 new PrototypeScope(
                         name: "registeredUserScope",
                         grants: [
-                                userGrantGet
-                        ].toSet()
-                )
-        )
-        PrototypeScope knownCustomerScope = scopeRepository.saveAndFlush(
-                new PrototypeScope(
-                        name: "knownCustomerScope",
-                        grants: [
-                                userGet,
-                                userPut,
-                                adminFindByPhone,
-                                userGrantPost,
-                                userGrantGet,
-                                userGrantDeleteDda,
-                                userGrantDeleteDdaAccounts
-                        ].toSet()
-                )
-        )
-        PrototypeScope sendScope = scopeRepository.saveAndFlush(
-                new PrototypeScope(
-                        name: "sendScope",
-                        grants: [
-                                adminFindByPhone,
-                                userGrantGet,
-                                userGrantPost
-                        ].toSet()
-                )
-        )
-        PrototypeScope restrictedScope = scopeRepository.saveAndFlush(
-                new PrototypeScope(
-                        name: "restrictedScope",
-                        grants: [
-                                paymentGrant
-                        ].toSet()
-                )
-        )
-        PrototypeScope adminScope = scopeRepository.saveAndFlush(
-                new PrototypeScope(
-                        name: "adminScope",
-                        grants: [
-                                adminGrant,
-                                adminGrantGet
+                                userSpaceGrant
                         ].toSet()
                 )
         )
@@ -155,21 +100,6 @@ class ConfigInitService {
         PrototypeAuthentication userAuthentication = authenticationTypeRepository.saveAndFlush(
                 new PrototypeAuthentication(
                         name: "user"
-                )
-        )
-        PrototypeAuthentication kyc = authenticationTypeRepository.saveAndFlush(
-                new PrototypeAuthentication(
-                        name: "kyc"
-                )
-        )
-        PrototypeAuthentication dda = authenticationTypeRepository.saveAndFlush(
-                new PrototypeAuthentication(
-                        name: "dda"
-                )
-        )
-        PrototypeAuthentication adminAuthentication = authenticationTypeRepository.saveAndFlush(
-                new PrototypeAuthentication(
-                        name: "admin"
                 )
         )
         PrototypeAuthentication legal = authenticationTypeRepository.saveAndFlush(
@@ -209,30 +139,6 @@ class ConfigInitService {
                         ].toSet()
                 )
         )
-        PrototypeIdentity knownCustomer = identityTypeRepository.saveAndFlush(
-                new PrototypeIdentity(
-                        name: "knownCustomer",
-                        authentications: [
-                                kyc
-                        ].toSet()
-                )
-        )
-        PrototypeIdentity ddaConfirmed = identityTypeRepository.saveAndFlush(
-                new PrototypeIdentity(
-                        name: "ddaConfirmed",
-                        authentications: [
-                                dda
-                        ].toSet()
-                )
-        )
-        PrototypeIdentity admin = identityTypeRepository.saveAndFlush(
-                new PrototypeIdentity(
-                        name: "admin",
-                        authentications: [
-                                adminAuthentication
-                        ].toSet()
-                )
-        )
         identityTypeRepository.flush()
         PrototypeRefresh refresh1dayNonRenewable = prototypeRefreshRepository.saveAndFlush(new PrototypeRefresh(
                 durationSeconds: Duration.ofDays(1).seconds.toInteger(),
@@ -241,10 +147,6 @@ class ConfigInitService {
         PrototypeRefresh refresh30daysNonRenewable = prototypeRefreshRepository.saveAndFlush(new PrototypeRefresh(
                 durationSeconds: Duration.ofDays(30).seconds.toInteger(),
                 isRenewable: false
-        ))
-        PrototypeRefresh refresh30daysRenewable = prototypeRefreshRepository.saveAndFlush(new PrototypeRefresh(
-                durationSeconds: Duration.ofDays(30).seconds.toInteger(),
-                isRenewable: true
         ))
         PrototypeAuthorization legalAuthorization = authorizationTypeRepository.saveAndFlush(
                 new PrototypeAuthorization(name: "legalAuthorization",
@@ -275,24 +177,7 @@ class ConfigInitService {
                         ].toSet()
                 )
         )
-        PrototypeAuthorization adminOnboardingScopeAuthorization = authorizationTypeRepository.saveAndFlush(
-                new PrototypeAuthorization(name: "adminOnboardingScopeAuthorization",
-                        identities: [
-                                verifiedPhoneOwner,
-                                verifiedEmailOwner
-                        ].toSet(),
-                        scopes: [
-                                adminOnboardingScope
-                        ].toSet(),
-                        durationSeconds: Duration.ofMinutes(30).seconds.toInteger(),
-                        serverNamespace: "OrbitSaaS",
-                        refresh: refresh1dayNonRenewable,
-                        prerequisites: [
-                                legalAuthorization
-                        ].toSet()
-                )
-        )
-        PrototypeAuthorization registeredUserScopeAuthorization = authorizationTypeRepository.saveAndFlush(
+        authorizationTypeRepository.saveAndFlush(
                 new PrototypeAuthorization(name: "registeredUserScopeAuthorization",
                         identities: [
                                 registeredUser
@@ -306,68 +191,6 @@ class ConfigInitService {
                                 onboardingScopeAuthorization
                         ].toSet(),
                         refresh: refresh30daysNonRenewable
-                )
-        )
-        PrototypeAuthorization kycScopeAuthorization = authorizationTypeRepository.saveAndFlush(
-                new PrototypeAuthorization(name: "kycScopeAuthorization",
-                        identities: [
-                                knownCustomer
-                        ].toSet(),
-                        scopes: [
-                                knownCustomerScope
-                        ].toSet(),
-                        durationSeconds: Duration.ofMinutes(5).seconds.toInteger(),
-                        serverNamespace: "OrbitSaaS",
-                        refresh: refresh30daysNonRenewable,
-                        prerequisites: [
-                                registeredUserScopeAuthorization
-                        ].toSet()
-                )
-        )
-        PrototypeAuthorization sendScopeAuthorization = authorizationTypeRepository.saveAndFlush(
-                new PrototypeAuthorization(name: "sendScopeAuthorization",
-                        identities: [
-                                ddaConfirmed
-                        ].toSet(),
-                        scopes: [
-                                sendScope
-                        ].toSet(),
-                        durationSeconds: Duration.ofSeconds(60).seconds.toInteger(),
-                        serverNamespace: "OrbitSaaS",
-                        prerequisites: [
-                                kycScopeAuthorization
-                        ].toSet()
-                )
-        )
-        authorizationTypeRepository.saveAndFlush(
-                new PrototypeAuthorization(name: "restrictedAuthorization",
-                        identities: [
-                                admin
-                        ].toSet(),
-                        scopes: [
-                                restrictedScope
-                        ].toSet(),
-                        durationSeconds: Duration.ofSeconds(60).seconds.toInteger(),
-                        serverNamespace: "OrbitSaaS",
-                        prerequisites: [
-                                sendScopeAuthorization
-                        ].toSet()
-                )
-        )
-        authorizationTypeRepository.saveAndFlush(
-                new PrototypeAuthorization(name: "adminScopeAuthorization",
-                        identities: [
-                                admin
-                        ].toSet(),
-                        scopes: [
-                                adminScope
-                        ].toSet(),
-                        durationSeconds: Duration.ofMinutes(5).seconds.toInteger(),
-                        serverNamespace: "OrbitSaaS",
-                        refresh: refresh1dayNonRenewable,
-                        prerequisites: [
-                                adminOnboardingScopeAuthorization
-                        ].toSet()
                 )
         )
         authorizationTypeRepository.flush()

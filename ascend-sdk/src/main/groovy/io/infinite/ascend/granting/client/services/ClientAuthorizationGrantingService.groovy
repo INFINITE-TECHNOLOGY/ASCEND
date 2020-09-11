@@ -144,21 +144,21 @@ class ClientAuthorizationGrantingService {
                     authorization.identity.publicCredentials = authorization.prerequisite.authorizedCredentials
                 }
                 authorization.identity.authentications.each { authentication ->
-                    prepareAuthentication(authentication.name, authorization.identity.publicCredentials, authentication.privateCredentials, Optional.ofNullable(authorization.prerequisite?.jwt))
+                    prepareAuthentication(authentication.name, authorization.identity.publicCredentials, authentication.privateCredentials, authorization.prerequisite?.jwt)
                 }
                 return sendAuthorization(authorization, ascendUrl)
             }
         }
     }
 
-    void prepareAuthentication(String authenticationName, Map<String, String> publicCredentials, Map<String, String> privateCredentials, Optional<String> prerequisiteJwt) {
+    void prepareAuthentication(String authenticationName, Map<String, String> publicCredentials, Map<String, String> privateCredentials, String prerequisiteJwt) {
         AuthenticationPreparator authenticationPreparator
         try {
             authenticationPreparator = applicationContext.getBean(authenticationName + "Preparator", AuthenticationPreparator.class)
         } catch (NoSuchBeanDefinitionException ignored) {
             throw new AscendUnauthorizedException("Authentication Preparator not found: ${authenticationName + "Preparator"}")
         }
-        authenticationPreparator.prepareAuthentication(publicCredentials, privateCredentials)
+        authenticationPreparator.prepareAuthentication(publicCredentials, privateCredentials, prerequisiteJwt)
     }
 
     Set<PrototypeAuthorization> inquire(String scopeName, String ascendGrantingUrl, String authorizationServerNamespace) {

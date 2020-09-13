@@ -99,7 +99,7 @@ class ServerAuthorizationGrantingService {
             if (refresh.scopeName != null) {
                 accessAuthorization.scopes = getScopesForRefresh(prototypeAccess).toSet()
             } else {
-                accessAuthorization.scopes = refresh.scopes
+                accessAuthorization.scopes.addAll(refresh.scopes)
             }
             accessAuthorization.identity = prototypeConverter.convertIdentity(prototypeAccess.identities.first())
             accessAuthorization.authorizedCredentials = refresh.refreshCredentials

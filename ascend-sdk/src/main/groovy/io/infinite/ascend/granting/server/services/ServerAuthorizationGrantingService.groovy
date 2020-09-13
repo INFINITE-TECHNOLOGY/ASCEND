@@ -4,6 +4,7 @@ import groovy.util.logging.Slf4j
 import io.infinite.ascend.common.entities.Authentication
 import io.infinite.ascend.common.entities.Authorization
 import io.infinite.ascend.common.entities.Refresh
+import io.infinite.ascend.common.entities.Scope
 import io.infinite.ascend.common.exceptions.AscendForbiddenException
 import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
 import io.infinite.ascend.common.repositories.AuthorizationRepository
@@ -68,6 +69,17 @@ class ServerAuthorizationGrantingService {
         }
     }
 
+    List<Scope> getScopesForRefresh(PrototypeAuthorization prototypeAuthorization) {
+        List<Scope> scopes = []
+        prototypeAuthorization.scopes.each {
+            scopes += prototypeConverter.convertLegacyScope(it)
+        }
+        prototypeAuthorization.prerequisites.each {
+            scopes += getScopesForRefresh(it)
+        }
+        return scopes
+    }
+
     Authorization exchangeRefreshJwt(String refreshJwt) {
         try {
             Refresh refresh = jwtService.jwt2refresh(refreshJwt, jwtService.jwtRefreshKeyPublic)
@@ -85,9 +97,7 @@ class ServerAuthorizationGrantingService {
             PrototypeAuthorization prototypeAccess = prototypeAccessOptional.get()
             Authorization accessAuthorization = prototypeConverter.convertAccessAuthorization(prototypeAccess, refresh.clientNamespace)
             if (refresh.scopeName != null) {
-                accessAuthorization.scopes = [prototypeConverter.convertLegacyScope(prototypeAccess.scopes.find {
-                    it.name == refresh.scopeName
-                })].toSet()
+                accessAuthorization.scopes = getScopesForRefresh(prototypeAccess).toSet()
             } else {
                 accessAuthorization.scopes = refresh.scopes
             }

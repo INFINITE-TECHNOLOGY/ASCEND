@@ -26,6 +26,8 @@ class Refresh {
 
     String clientNamespace
 
+    String scopeName
+
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @OrderColumn
     @JoinTable

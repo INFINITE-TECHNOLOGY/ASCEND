@@ -76,6 +76,13 @@ class PrototypeConverter {
         }.toSet()
     }
 
+    Scope convertLegacyScope(PrototypeScope prototypeScope) {
+        return new Scope(
+                name: prototypeScope.name,
+                grants: prototypeScope.grants.collect { convertGrant(it) }.toSet()
+        )
+    }
+
     Grant convertGrant(PrototypeGrant prototypeGrant) {
         return new Grant(
                 urlRegex: prototypeGrant.urlRegex,

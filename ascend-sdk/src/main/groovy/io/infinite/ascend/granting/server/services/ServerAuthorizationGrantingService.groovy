@@ -84,7 +84,13 @@ class ServerAuthorizationGrantingService {
             }
             PrototypeAuthorization prototypeAccess = prototypeAccessOptional.get()
             Authorization accessAuthorization = prototypeConverter.convertAccessAuthorization(prototypeAccess, refresh.clientNamespace)
-            accessAuthorization.scopes = refresh.scopes
+            if (refresh.scopeName != null) {
+                accessAuthorization.scopes = [prototypeConverter.convertLegacyScope(prototypeAccess.scopes.find {
+                    it.name == refresh.scopeName
+                })].toSet()
+            } else {
+                accessAuthorization.scopes = refresh.scopes
+            }
             accessAuthorization.identity = prototypeConverter.convertIdentity(prototypeAccess.identities.first())
             accessAuthorization.authorizedCredentials = refresh.refreshCredentials
             accessAuthorization.jwt = jwtService.authorization2jwt(accessAuthorization, jwtService.jwtAccessKeyPrivate)

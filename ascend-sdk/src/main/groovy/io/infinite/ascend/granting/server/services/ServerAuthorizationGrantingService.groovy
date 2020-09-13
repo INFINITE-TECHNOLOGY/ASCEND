@@ -102,7 +102,7 @@ class ServerAuthorizationGrantingService {
                 accessAuthorization.scopes.addAll(refresh.scopes)
             }
             accessAuthorization.identity = prototypeConverter.convertIdentity(prototypeAccess.identities.first())
-            accessAuthorization.authorizedCredentials = refresh.refreshCredentials
+            accessAuthorization.authorizedCredentials.putAll(refresh.refreshCredentials)
             accessAuthorization.jwt = jwtService.authorization2jwt(accessAuthorization, jwtService.jwtAccessKeyPrivate)
             if (Optional.ofNullable(prototypeAccess.refresh).present) {
                 if (prototypeAccess.refresh.isRenewable) {

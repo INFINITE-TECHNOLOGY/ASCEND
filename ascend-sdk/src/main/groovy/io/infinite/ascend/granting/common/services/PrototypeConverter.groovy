@@ -92,20 +92,20 @@ class PrototypeConverter {
     }
 
     @SuppressWarnings('GrMethodMayBeStatic')
-    Set<Scope> getScopesForRefresh(Set<Scope> refreshScopes) {
-        List<Scope> authorizationScopes = []
-        refreshScopes.each { refreshScope ->
-            authorizationScopes.add(new Scope(
-                    name: refreshScope.name,
-                    grants: refreshScope.grants.collect { refreshScopeGrant ->
+    Set<Scope> cloneScopes(Set<Scope> scopes) {
+        List<Scope> clonedScopes = []
+        scopes.each { scope ->
+            clonedScopes.add(new Scope(
+                    name: scope.name,
+                    grants: scope.grants.collect { scopeGrant ->
                         new Grant(
-                                urlRegex: refreshScopeGrant.urlRegex,
-                                httpMethod: refreshScopeGrant.httpMethod
+                                urlRegex: scopeGrant.urlRegex,
+                                httpMethod: scopeGrant.httpMethod
                         )
                     }.toSet()
             ))
         }
-        return authorizationScopes.toSet()
+        return clonedScopes.toSet()
     }
 
     List<Scope> getScopesForLegacyRefresh(PrototypeAuthorization prototypeAuthorization) {

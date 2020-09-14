@@ -85,7 +85,7 @@ class ServerAuthorizationGrantingService {
             if (refresh.scopeName != null) {
                 accessAuthorization.scopes = prototypeConverter.getScopesForLegacyRefresh(prototypeAccess).toSet()
             } else {
-                accessAuthorization.scopes = prototypeConverter.getScopesForRefresh(refresh.scopes)
+                accessAuthorization.scopes = prototypeConverter.cloneScopes(refresh.scopes)
             }
             accessAuthorization.identity = prototypeConverter.convertIdentity(prototypeAccess.identities.first())
             accessAuthorization.authorizedCredentials.putAll(refresh.refreshCredentials)
@@ -109,6 +109,7 @@ class ServerAuthorizationGrantingService {
 
     Authorization createNewAccessAuthorization(Authorization clientAuthorization, PrototypeAuthorization prototypeAuthorization) {
         Map<String, String> prerequisiteAuthorizedCredentials = new HashMap<String, String>()
+        Set<Scope> prerequisiteScopes = new HashSet<>()
         if (prototypeAuthorization.prerequisites.size() != 0) {
             if (clientAuthorization.prerequisite == null) {
                 throw new AscendUnauthorizedException("Required prerequisite is missing")
@@ -122,6 +123,7 @@ class ServerAuthorizationGrantingService {
                 if (prerequisiteAuthorizationType.name == clientPrerequisiteAuthorization.name) {
                     validatePrerequisite(clientPrerequisiteAuthorization, prerequisiteAuthorizationType)
                     prerequisiteAuthorizedCredentials = clientPrerequisiteAuthorization.authorizedCredentials
+                    prerequisiteScopes = clientPrerequisiteAuthorization.scopes
                     prerequisiteFound = true
                     break
                 }
@@ -148,6 +150,7 @@ class ServerAuthorizationGrantingService {
         safeMerge(prerequisiteAuthorizedCredentials, authorizedCredentials)
         Authorization authorization = prototypeConverter.convertAccessAuthorization(prototypeAuthorization, clientAuthorization.clientNamespace)
         authorization.scopes = prototypeConverter.convertScopes(prototypeAuthorization.scopes)
+        authorization.scopes += prototypeConverter.cloneScopes(prerequisiteScopes)
         authorization.identity = prototypeConverter.convertIdentity(prototypeAuthorization.identities.first())
         authorization.authorizedCredentials = authorizedCredentials
         authorization.jwt = jwtService.authorization2jwt(authorization, jwtService.jwtAccessKeyPrivate)

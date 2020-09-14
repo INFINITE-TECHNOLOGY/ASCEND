@@ -1,6 +1,6 @@
 package io.infinite.ascend.granting.configuration.repositories
 
-
+import io.infinite.ascend.common.entities.Refresh
 import io.infinite.ascend.granting.configuration.entities.PrototypeAuthorization
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -32,13 +32,11 @@ interface PrototypeAuthorizationRepository extends JpaRepository<PrototypeAuthor
 
     @Query("""select a from PrototypeAuthorization a
         join fetch a.identities i
-        where a.serverNamespace = :serverNamespace
-        and a.name = :refreshAuthorizationName
-        and i.name = :identityName""")
+        where a.serverNamespace = :refresh.authorization.serverNamespace
+        and a.name = :refresh.authorization.name
+        and i.name = :refresh.identity.name""")
     Optional<PrototypeAuthorization> findAccessByRefresh(
-            @Param("serverNamespace") String serverNamespace,
-            @Param("refreshAuthorizationName") String refreshAuthorizationName,
-            @Param("identityName") String identityName
+            @Param("refresh") Refresh refresh
     )
 
 }

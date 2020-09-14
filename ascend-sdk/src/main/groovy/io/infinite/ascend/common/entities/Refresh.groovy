@@ -21,27 +21,14 @@ class Refresh {
     @Column(unique = true)
     UUID guid = UUID.randomUUID()
 
-    String name
-
-    String identityName
-
-    String serverNamespace
-
-    String clientNamespace
-
-    String scopeName
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @OrderColumn
-    @JoinTable
-    Set<Scope> scopes = new HashSet<Scope>()
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    Map<String, String> refreshCredentials = new HashMap<String, String>()
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    Authorization authorization
 
     Integer durationSeconds
 
     Integer maxUsageCount
+
+    String scopeName//compatibility
 
     @JsonFormat(timezone = "UTC", pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     Date creationDate

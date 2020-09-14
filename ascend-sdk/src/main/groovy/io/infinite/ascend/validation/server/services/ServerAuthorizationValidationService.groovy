@@ -8,6 +8,7 @@ import io.infinite.ascend.common.exceptions.AscendUnauthorizedException
 import io.infinite.ascend.common.repositories.AuthorizationRepository
 import io.infinite.ascend.common.repositories.ClaimRepository
 import io.infinite.ascend.common.services.JwtService
+import io.infinite.ascend.granting.common.services.PrototypeConverter
 import io.infinite.blackbox.BlackBox
 import io.infinite.blackbox.BlackBoxLevel
 import org.springframework.beans.factory.annotation.Autowired
@@ -33,6 +34,9 @@ class ServerAuthorizationValidationService {
     @Autowired
     ApplicationContext applicationContext
 
+    @Autowired
+    PrototypeConverter prototypeConverter
+
     Authorization validateClaim(Claim claim) {
         try {
             Authorization authorization = jwtService.jwt2authorization(claim.jwt, jwtService.jwtAccessKeyPublic)
@@ -51,7 +55,7 @@ class ServerAuthorizationValidationService {
         if (authorization.expiryDate.before(new Date())) {
             throw new AscendForbiddenException("Expired Authorization")
         }
-        for (scope in authorization.scopes) {
+        for (scope in prototypeConverter.collectRecursiveScopes(authorization)) {
             for (grant in scope.grants) {
                 if (grant.httpMethod.toLowerCase() == claim.method.toLowerCase()) {
                     if (grant.urlRegex != null) {
@@ -80,6 +84,7 @@ class ServerAuthorizationValidationService {
         throw new AscendUnauthorizedException("Unauthorized")
     }
 
+    @SuppressWarnings('GrMethodMayBeStatic')
     String replaceSubstitutes(String string, Map<String, String> authorizedCredentials) {
         String processedString = string
         authorizedCredentials.each {

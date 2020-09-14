@@ -26,6 +26,7 @@ class PrototypeConverter {
     @Autowired
     ApplicationContext applicationContext
 
+    @SuppressWarnings('GrMethodMayBeStatic')
     Authorization convertAccessAuthorization(PrototypeAuthorization prototypeAuthorization, String clientNamespace) {
         return new Authorization(
                 name: prototypeAuthorization.name,
@@ -38,11 +39,9 @@ class PrototypeConverter {
         )
     }
 
+    @SuppressWarnings('GrMethodMayBeStatic')
     Refresh convertRefresh(PrototypeAuthorization prototypeAuthorization, String clientNamespace) {
         return new Refresh(
-                name: prototypeAuthorization.name,
-                serverNamespace: prototypeAuthorization.serverNamespace,
-                clientNamespace: clientNamespace,
                 durationSeconds: prototypeAuthorization.refresh.durationSeconds,
                 maxUsageCount: prototypeAuthorization.refresh.maxUsageCount,
                 creationDate: Instant.now().toDate(),
@@ -119,5 +118,13 @@ class PrototypeConverter {
         return scopes
     }
 
+    List<Scope> collectRecursiveScopes(Authorization authorization) {
+        List<Scope> scopes = []
+        scopes += cloneScopes(authorization.scopes)
+        if (authorization.prerequisite != null) {
+            scopes += collectRecursiveScopes(authorization.prerequisite)
+        }
+        return scopes
+    }
 
 }

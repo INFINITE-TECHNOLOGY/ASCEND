@@ -13,7 +13,8 @@ interface RefreshRepository extends JpaRepository<Refresh, Long> {
     Optional<Refresh> findByGuid(UUID guid)
 
     @Query("""select r from Refresh r
-        where r.name = :name
+        join r.authorization a
+        where a.name = :name
         and r.serverNamespace = :serverNamespace
         and r.clientNamespace = :clientNamespace
         and r.expiryDate > :cutoffDate""")

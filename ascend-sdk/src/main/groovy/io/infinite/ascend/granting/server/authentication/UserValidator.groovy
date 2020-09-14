@@ -40,6 +40,7 @@ class UserValidator implements AuthenticationValidator {
                 ), 200
         )
         return [
+                //todo: validate with phone - by returning phone
                 "userGuid": publicCredentials.get("userGuid")
         ]
     }

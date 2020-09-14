@@ -83,11 +83,41 @@ class PrototypeConverter {
         )
     }
 
+    @SuppressWarnings('GrMethodMayBeStatic')
     Grant convertGrant(PrototypeGrant prototypeGrant) {
         return new Grant(
                 urlRegex: prototypeGrant.urlRegex,
                 httpMethod: prototypeGrant.httpMethod
         )
     }
+
+    @SuppressWarnings('GrMethodMayBeStatic')
+    Set<Scope> getScopesForRefresh(HashSet<Scope> refreshScopes) {
+        List<Scope> authorizationScopes = []
+        refreshScopes.each { refreshScope ->
+            authorizationScopes.add(new Scope(
+                    name: refreshScope.name,
+                    grants: refreshScope.grants.collect { refreshScopeGrant ->
+                        new Grant(
+                                urlRegex: refreshScopeGrant.urlRegex,
+                                httpMethod: refreshScopeGrant.httpMethod
+                        )
+                    }.toSet()
+            ))
+        }
+        return authorizationScopes.toSet()
+    }
+
+    List<Scope> getScopesForLegacyRefresh(PrototypeAuthorization prototypeAuthorization) {
+        List<Scope> scopes = []
+        prototypeAuthorization.scopes.each {
+            scopes += convertLegacyScope(it)
+        }
+        prototypeAuthorization.prerequisites.each {
+            scopes += getScopesForLegacyRefresh(it)
+        }
+        return scopes
+    }
+
 
 }

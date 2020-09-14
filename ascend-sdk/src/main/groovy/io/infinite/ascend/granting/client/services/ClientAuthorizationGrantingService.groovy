@@ -203,24 +203,12 @@ class ClientAuthorizationGrantingService {
                                 body: objectMapper.writeValueAsString(authorization)
                         )
                 ).body, Authorization.class)
-        mergePrerequisites(serverAuthorization)
         return authorizationRepository.saveAndFlush(serverAuthorization)
     }
 
     @SuppressWarnings('GrMethodMayBeStatic')
     Date cutoff(Integer bufferSeconds) {
         return (Instant.now() + Duration.ofSeconds(bufferSeconds)).toDate()
-    }
-
-    void mergePrerequisites(Authorization authorization) {
-        if (authorization.prerequisite != null) {
-            Optional<Authorization> clientAuthorizationOptional =
-                    authorizationRepository.findByGuid(authorization.prerequisite.guid)
-            if (clientAuthorizationOptional.present) {
-                authorization.prerequisite = clientAuthorizationOptional.get()
-                mergePrerequisites(authorization.prerequisite)
-            }
-        }
     }
 
 }

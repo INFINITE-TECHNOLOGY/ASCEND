@@ -166,6 +166,7 @@ class ServerAuthorizationGrantingService {
             authorization.refresh.jwt = jwtService.refresh2jwt(authorization.refresh, jwtService.jwtRefreshKeyPrivate)
         }
         authorizationRepository.saveAndFlush(authorization)
+        authorization.prerequisite = null
         return authorization
     }
 

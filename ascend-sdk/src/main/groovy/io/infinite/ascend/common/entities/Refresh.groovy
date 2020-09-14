@@ -21,8 +21,7 @@ class Refresh {
     @Column(unique = true)
     UUID guid = UUID.randomUUID()
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    Authorization authorization
+    UUID authorizationGuid
 
     Integer durationSeconds
 

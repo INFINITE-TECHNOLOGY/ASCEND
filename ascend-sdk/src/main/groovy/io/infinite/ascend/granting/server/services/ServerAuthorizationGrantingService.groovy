@@ -74,30 +74,31 @@ class ServerAuthorizationGrantingService {
             if (refresh.expiryDate.before(new Date())) {
                 throw new AscendForbiddenException("Expired Refresh Authorization")
             }
+            Optional<Authorization> refreshAuthorizationOptional = authorizationRepository.findByGuid(refresh.authorizationGuid)
+            if (!refreshAuthorizationOptional.present) {
+                throw new AscendForbiddenException("Refresh Authorization not found")
+            }
+            Authorization refreshAuthorization = refreshAuthorizationOptional.get()
             Optional<PrototypeAuthorization> prototypeAccessOptional = prototypeAuthorizationRepository.findAccessByRefresh(
-                    refresh.authorization.serverNamespace,
-                    refresh.authorization.name,
-                    refresh.authorization.identity.name
+                    refreshAuthorization.serverNamespace,
+                    refreshAuthorization.name,
+                    refreshAuthorization.identity.name
             )
             if (!prototypeAccessOptional.present) {
                 throw new AscendUnauthorizedException("No access authorizations associated with this refresh")
             }
             PrototypeAuthorization prototypeAccess = prototypeAccessOptional.get()
-            Authorization accessAuthorization = prototypeConverter.convertAccessAuthorization(prototypeAccess, refresh.authorization.clientNamespace)
-            accessAuthorization.scopes = prototypeConverter.cloneScopes(refresh.authorization.scopes)
+            Authorization accessAuthorization = prototypeConverter.convertAccessAuthorization(prototypeAccess, refreshAuthorization.clientNamespace)
+            accessAuthorization.scopes = prototypeConverter.cloneScopes(refreshAuthorization.scopes)
             accessAuthorization.identity = prototypeConverter.convertIdentity(prototypeAccess.identities.first())
-            accessAuthorization.authorizedCredentials.putAll(refresh.authorization.authorizedCredentials)
+            accessAuthorization.authorizedCredentials.putAll(refreshAuthorization.authorizedCredentials)
             accessAuthorization.jwt = jwtService.authorization2jwt(accessAuthorization, jwtService.jwtAccessKeyPrivate)
             if (prototypeAccess.refresh?.isRenewable) {
-                accessAuthorization.refresh = prototypeConverter.convertRefresh(prototypeAccess, refresh.authorization.clientNamespace)
-                accessAuthorization.refresh.authorization = accessAuthorization
+                accessAuthorization.refresh = prototypeConverter.convertRefresh(prototypeAccess, refreshAuthorization.clientNamespace)
+                accessAuthorization.refresh.authorizationGuid = accessAuthorization.guid
                 accessAuthorization.refresh.jwt = jwtService.refresh2jwt(accessAuthorization.refresh, jwtService.jwtRefreshKeyPrivate)
-                authorizationRepository.saveAndFlush(accessAuthorization)
-                accessAuthorization.refresh.authorization = accessAuthorization
-                authorizationRepository.saveAndFlush(accessAuthorization)
-            } else {
-                authorizationRepository.saveAndFlush(accessAuthorization)
             }
+            authorizationRepository.saveAndFlush(accessAuthorization)
             return accessAuthorization
         } catch (AscendUnauthorizedException ascendUnauthorizedException) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized", ascendUnauthorizedException)
@@ -155,7 +156,7 @@ class ServerAuthorizationGrantingService {
         authorization.jwt = jwtService.authorization2jwt(authorization, jwtService.jwtAccessKeyPrivate)
         if (Optional.ofNullable(prototypeAuthorization.refresh).present) {
             authorization.refresh = prototypeConverter.convertRefresh(prototypeAuthorization, clientAuthorization.clientNamespace)
-            authorization.refresh.authorization = authorization
+            authorization.refresh.authorizationGuid = authorization.guid
             authorization.refresh.jwt = jwtService.refresh2jwt(authorization.refresh, jwtService.jwtRefreshKeyPrivate)
         }
         authorizationRepository.saveAndFlush(authorization)

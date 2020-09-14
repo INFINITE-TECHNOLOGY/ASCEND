@@ -92,7 +92,7 @@ class PrototypeConverter {
     }
 
     @SuppressWarnings('GrMethodMayBeStatic')
-    Set<Scope> getScopesForRefresh(HashSet<Scope> refreshScopes) {
+    Set<Scope> getScopesForRefresh(Set<Scope> refreshScopes) {
         List<Scope> authorizationScopes = []
         refreshScopes.each { refreshScope ->
             authorizationScopes.add(new Scope(

@@ -191,7 +191,7 @@ class ClientAuthorizationGrantingService {
     }
 
     Authorization sendAuthorization(Authorization authorization, String ascendGrantingUrl) {
-        return authorizationRepository.saveAndFlush(objectMapper.readValue(
+        Authorization serverAuthorization = objectMapper.readValue(
                 sendHttpMessage(
                         new HttpRequest(
                                 url: "$ascendGrantingUrl/ascend/public/granting/access",
@@ -202,11 +202,25 @@ class ClientAuthorizationGrantingService {
                                 method: "POST",
                                 body: objectMapper.writeValueAsString(authorization)
                         )
-                ).body, Authorization.class))
+                ).body, Authorization.class)
+        mergePrerequisites(serverAuthorization)
+        return authorizationRepository.saveAndFlush(serverAuthorization)
     }
 
+    @SuppressWarnings('GrMethodMayBeStatic')
     Date cutoff(Integer bufferSeconds) {
         return (Instant.now() + Duration.ofSeconds(bufferSeconds)).toDate()
+    }
+
+    void mergePrerequisites(Authorization authorization) {
+        if (authorization.prerequisite != null) {
+            Optional<Authorization> clientAuthorizationOptional =
+                    authorizationRepository.findByGuid(authorization.prerequisite.guid)
+            if (clientAuthorizationOptional.present) {
+                authorization.prerequisite = clientAuthorizationOptional.get()
+                mergePrerequisites(authorization.prerequisite)
+            }
+        }
     }
 
 }

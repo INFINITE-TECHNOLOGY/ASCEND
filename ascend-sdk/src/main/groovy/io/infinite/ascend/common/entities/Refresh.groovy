@@ -28,8 +28,6 @@ class Refresh {
 
     Integer maxUsageCount
 
-    String scopeName//compatibility
-
     @JsonFormat(timezone = "UTC", pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     Date creationDate
 

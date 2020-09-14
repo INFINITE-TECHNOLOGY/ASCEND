@@ -15,8 +15,8 @@ interface RefreshRepository extends JpaRepository<Refresh, Long> {
     @Query("""select r from Refresh r
         join r.authorization a
         where a.name = :name
-        and r.serverNamespace = :serverNamespace
-        and r.clientNamespace = :clientNamespace
+        and a.serverNamespace = :serverNamespace
+        and a.clientNamespace = :clientNamespace
         and r.expiryDate > :cutoffDate""")
     Set<Refresh> findRefresh(
             @Param("clientNamespace") String clientNamespace,
@@ -24,7 +24,5 @@ interface RefreshRepository extends JpaRepository<Refresh, Long> {
             @Param("name") String name,
             @Param("cutoffDate") Date cutoffDate
     )
-
-    Set<Refresh> findByClientNamespace(String clientNamespace)
 
 }

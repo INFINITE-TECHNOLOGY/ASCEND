@@ -75,18 +75,16 @@ class ServerAuthorizationGrantingService {
                 throw new AscendForbiddenException("Expired Refresh Authorization")
             }
             Optional<PrototypeAuthorization> prototypeAccessOptional = prototypeAuthorizationRepository.findAccessByRefresh(
-                    refresh
+                    refresh.authorization.serverNamespace,
+                    refresh.authorization.name,
+                    refresh.authorization.identity.name
             )
             if (!prototypeAccessOptional.present) {
                 throw new AscendUnauthorizedException("No access authorizations associated with this refresh")
             }
             PrototypeAuthorization prototypeAccess = prototypeAccessOptional.get()
             Authorization accessAuthorization = prototypeConverter.convertAccessAuthorization(prototypeAccess, refresh.authorization.clientNamespace)
-            if (refresh.scopeName != null) {
-                accessAuthorization.scopes = prototypeConverter.getScopesForLegacyRefresh(prototypeAccess).toSet()
-            } else {
-                accessAuthorization.scopes = prototypeConverter.cloneScopes(refresh.authorization.scopes)
-            }
+            accessAuthorization.scopes = prototypeConverter.cloneScopes(refresh.authorization.scopes)
             accessAuthorization.identity = prototypeConverter.convertIdentity(prototypeAccess.identities.first())
             accessAuthorization.authorizedCredentials.putAll(refresh.authorization.authorizedCredentials)
             accessAuthorization.jwt = jwtService.authorization2jwt(accessAuthorization, jwtService.jwtAccessKeyPrivate)

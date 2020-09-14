@@ -75,13 +75,6 @@ class PrototypeConverter {
         }.toSet()
     }
 
-    Scope convertLegacyScope(PrototypeScope prototypeScope) {
-        return new Scope(
-                name: prototypeScope.name,
-                grants: prototypeScope.grants.collect { convertGrant(it) }.toSet()
-        )
-    }
-
     @SuppressWarnings('GrMethodMayBeStatic')
     Grant convertGrant(PrototypeGrant prototypeGrant) {
         return new Grant(
@@ -105,17 +98,6 @@ class PrototypeConverter {
             ))
         }
         return clonedScopes.toSet()
-    }
-
-    List<Scope> getScopesForLegacyRefresh(PrototypeAuthorization prototypeAuthorization) {
-        List<Scope> scopes = []
-        prototypeAuthorization.scopes.each {
-            scopes += convertLegacyScope(it)
-        }
-        prototypeAuthorization.prerequisites.each {
-            scopes += getScopesForLegacyRefresh(it)
-        }
-        return scopes
     }
 
     List<Scope> collectRecursiveScopes(Authorization authorization) {

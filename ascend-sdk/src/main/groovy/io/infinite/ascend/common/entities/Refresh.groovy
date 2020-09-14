@@ -23,6 +23,12 @@ class Refresh {
 
     UUID authorizationGuid
 
+    String authorizationName
+
+    String serverNamespace
+
+    String clientNamespace
+
     Integer durationSeconds
 
     Integer maxUsageCount

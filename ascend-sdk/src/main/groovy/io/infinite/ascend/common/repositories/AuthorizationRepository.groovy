@@ -1,7 +1,6 @@
 package io.infinite.ascend.common.repositories
 
 import io.infinite.ascend.common.entities.Authorization
-import io.infinite.ascend.common.entities.Refresh
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param

@@ -96,6 +96,9 @@ class ServerAuthorizationGrantingService {
             if (prototypeAccess.refresh?.isRenewable) {
                 accessAuthorization.refresh = prototypeConverter.convertRefresh(prototypeAccess, refreshAuthorization.clientNamespace)
                 accessAuthorization.refresh.authorizationGuid = accessAuthorization.guid
+                accessAuthorization.refresh.authorizationName = accessAuthorization.name
+                accessAuthorization.refresh.serverNamespace = accessAuthorization.serverNamespace
+                accessAuthorization.refresh.clientNamespace = accessAuthorization.clientNamespace
                 accessAuthorization.refresh.jwt = jwtService.refresh2jwt(accessAuthorization.refresh, jwtService.jwtRefreshKeyPrivate)
             }
             authorizationRepository.saveAndFlush(accessAuthorization)
@@ -157,6 +160,9 @@ class ServerAuthorizationGrantingService {
         if (Optional.ofNullable(prototypeAuthorization.refresh).present) {
             authorization.refresh = prototypeConverter.convertRefresh(prototypeAuthorization, clientAuthorization.clientNamespace)
             authorization.refresh.authorizationGuid = authorization.guid
+            authorization.refresh.authorizationName = authorization.name
+            authorization.refresh.serverNamespace = authorization.serverNamespace
+            authorization.refresh.clientNamespace = authorization.clientNamespace
             authorization.refresh.jwt = jwtService.refresh2jwt(authorization.refresh, jwtService.jwtRefreshKeyPrivate)
         }
         authorizationRepository.saveAndFlush(authorization)
